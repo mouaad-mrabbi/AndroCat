@@ -1,0 +1,210 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//User
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  username String @unique @db.VarChar(30)
+  password String
+
+  phoneNumber String? @unique
+  country     String?
+  profile     String  @default("/images/default-profile.png")
+
+  role Role @default(USER)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  lastLogin DateTime?
+
+  isVerified        Boolean @default(false)
+  verificationToken String? @unique
+
+  resetPasswordToken   String?   @unique
+  resetPasswordExpires DateTime?
+
+  // Relations
+  createdItems   Item[]        @relation(name: "CreatedBy")
+  validatedItems Item[]        @relation(name: "ValidatedBy")
+  
+  pendingItems   PendingItem[]
+
+  rejectedPendingItems RejectedPendingItem[] @relation("RejectedBy")
+}
+
+enum Role {
+  USER // Regular user
+  ADMIN // Admin with limited control
+  SUPER_ADMIN // Higher-level admin
+  OWNER // System owner with full control
+}
+
+//Item
+enum ItemType {
+  GAME
+  PROGRAM
+}
+
+enum ItemCategories {
+  ACTION
+  CARDS
+  ARCADE
+  RPG
+  SHOOTER
+  CASUAL
+  STRATEGY
+  SPORT
+  SIMULATIONS
+  RACE
+  DESKTOP
+  LOGICAL
+  QUESTS
+  ADVENTURE
+  MUSIC
+  ROLE_PLAYING
+  PUZZLE
+}
+
+model ItemRating {
+  id        String @id @default(cuid())
+  ipAddress String
+  rate      Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  itemId String
+  item   Item   @relation(fields: [itemId], references: [id])
+
+  @@unique([itemId, ipAddress]) // منع نفس الـ IP من تقييم نفس العنصر أكثر من مرة
+  @@index([itemId]) // فهرس لتحسين الأداء
+}
+
+model Item {
+  id          String       @id @default(cuid())
+  title       String
+  description String
+  image       String
+  developer   String
+  version     String
+  androidVer  String
+  ratings     ItemRating[]
+
+  itemType   ItemType
+  categories ItemCategories
+
+  OBB    Boolean @default(false)
+  Script Boolean @default(false)
+
+  linkAPK    String
+  linkOBB    String?
+  linkVideo  String?
+  linkScript String?
+
+  sizeFileAPK    String
+  sizeFileOBB    String?
+  sizeFileScript String?
+
+  appScreens String[]
+  keywords   String[]
+
+  isMod   Boolean @default(false)
+  typeMod String?
+
+  ratedFor Int
+  installs String
+
+  ratingCount   Int   @default(0)
+  averageRating Float @default(0.0)
+
+  views         Int? @default(0)
+  downloadCount Int? @default(0)
+
+  isApproved Boolean @default(false)
+
+  createdById   String
+  validatedById String
+
+  createdAt   DateTime
+  updatedAt   DateTime @updatedAt
+  validatedAt DateTime @default(now())
+
+  createdBy   User @relation(name: "CreatedBy", fields: [createdById], references: [id])
+  validatedBy User @relation(name: "ValidatedBy", fields: [validatedById], references: [id])
+
+  pendingItem PendingItem?
+}
+
+//Pending Item
+enum ActionType {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+model PendingItem {
+  id       String     @id @default(cuid())
+  status   ActionType
+  checking Boolean    @default(false)
+
+  title       String
+  description String
+  image       String
+  developer   String
+  version     String
+  androidVer  String
+
+  itemType   ItemType
+  categories ItemCategories
+
+  OBB    Boolean @default(false)
+  Script Boolean @default(false)
+
+  linkAPK    String
+  linkOBB    String?
+  linkVideo  String?
+  linkScript String?
+
+  sizeFileAPK    String
+  sizeFileOBB    String?
+  sizeFileScript String?
+
+  appScreens String[]
+  keywords   String[]
+
+  isMod   Boolean @default(false)
+  typeMod String?
+
+  ratedFor Int
+  installs String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+
+  itemId String? @unique
+  item   Item?   @relation(fields: [itemId], references: [id])
+
+  rejected RejectedPendingItem?
+}
+
+model RejectedPendingItem {
+  id            String      @id @default(cuid())
+  pendingItemId String      @unique
+  pendingItem   PendingItem @relation(fields: [pendingItemId], references: [id], onDelete: Cascade)
+
+  rejectedAt   DateTime @default(now())
+  rejectedById String
+  rejectedBy   User     @relation("RejectedBy", fields: [rejectedById], references: [id])
+
+  reason String
+}

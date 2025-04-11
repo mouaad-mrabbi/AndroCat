@@ -1,0 +1,89 @@
+"use client";
+
+import { ITEM_PER_PAGE } from "@/utils/constants";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import NotFoundPage from "@/app/not-found";
+import LoadingItems from "@/components/loadingItems";
+import Toolbar from "@/components/toolbar";
+import AppList from "@/components/list/appList";
+import Pagination from "@/components/pagination";
+import {
+  getMyPendingItems,
+  getMyPendingItemsCount,
+} from "@/apiCalls/adminApiCall";
+import { allItem } from "@/utils/types";
+
+interface PageparamsProps {
+  params: Promise<{ pageNumber: string }>;
+}
+
+export default function Page({ params }: PageparamsProps) {
+  const [items, setItems] = useState<allItem[]>([]);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [pages, setPages] = useState<number>(1);
+  const router = useRouter();
+
+  useEffect(() => {
+    const getParams = async () => {
+      const { pageNumber } = await params;
+      const page = Number(pageNumber);
+
+      if (isNaN(page) || page < 1) {
+        router.push("/admin/profile/pendingItems/page/1");
+        return;
+      }
+
+      setPageNumber(page);
+    };
+
+    getParams();
+  }, [params, router]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const PendingItems = await getMyPendingItems(Number(pageNumber));
+        const count = await getMyPendingItemsCount();
+
+        const pages = Math.ceil(count / ITEM_PER_PAGE);
+
+        setPages(pages);
+        setItems(PendingItems);
+      } catch (error: any) {
+        setError("Failed to fetch pending items.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchItems();
+  }, [pageNumber]);
+
+  if (isLoading) {
+    return <LoadingItems />;
+  }
+
+  if (error) {
+    return NotFoundPage();
+  }
+
+  return (
+    <div>
+      <Toolbar local={"dashboard"} firstLocal={"Pending Items"} />
+      <div className="px-7 max-[500px]:px-0">
+        <AppList items={items} url={`profile/pendingItems`} />
+        <Pagination
+          pages={pages}
+          pageSelect={Number(pageNumber)}
+          url={`/admin/profile/pendingItems/page`}
+        />
+      </div>
+    </div>
+  );
+}

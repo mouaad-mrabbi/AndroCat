@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #121416;
+    --foreground: #ffffff;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* HTML: <div class="zig-zag-line"></div> */
+.zig-zag-line {
+  --a: 150deg; /* control the angle */
+  --s: 40px; /* size of the zig-zag */
+  --b: 3px; /* control the thickness */
+
+  background: #233924;
+  height: calc(var(--b) + var(--s) / (2 * tan(var(--a) / 2)));
+  width: 100%;
+  --_g: var(--s) repeat-x
+    conic-gradient(
+      from calc(var(--a) / -2) at bottom,
+      #0000,
+      #000 1deg calc(var(--a) - 1deg),
+      #0000 var(--a)
+    );
+  mask: 50% calc(-1 * var(--b)) / var(--_g) exclude, 50% / var(--_g);
+}
+
+/*  */
+@keyframes blink {
+  50% {
+    border-color: transparent;
+  }
+}
+
+.animate-blink {
+  animation: blink 0.7s steps(2, start) infinite;
+}
