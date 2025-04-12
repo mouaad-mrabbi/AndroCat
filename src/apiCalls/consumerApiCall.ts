@@ -9,7 +9,7 @@ export async function fetchItems(
 ) {
   try {
     const response = await axios.get(`${DOMAIN}/api/consumer/items`, {
-      params: { pageNumber, itemType },
+      params: { pageNumber, itemType, _t: Date.now() }, // 👈 رقم عشوائي لكل طلب
       headers: { "Cache-Control": "no-store" }, // 👈 يمنع الكاش
     });
 
