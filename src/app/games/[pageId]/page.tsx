@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"; // 👈 أضف هذا السطر
+
 import Toolbar from "@/components/toolbar";
 import AppList from "@/components/list/appList";
 import Pagination from "@/components/pagination";
