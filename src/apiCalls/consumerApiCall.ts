@@ -10,6 +10,7 @@ export async function fetchItems(
   try {
     const response = await axios.get(`${DOMAIN}/api/consumer/items`, {
       params: { pageNumber, itemType },
+      headers: { "Cache-Control": "no-store" }, // 👈 يمنع الكاش
     });
 
     return response.data && Array.isArray(response.data) ? response.data : [];
