@@ -1,5 +1,5 @@
 "use client";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
@@ -9,27 +9,12 @@ import Image from "next/image";
 import Link from "next/link";
 
 const SwiperCarousel: FC = () => {
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  useEffect(() => {
-    // تأكد من أن الكود يعمل فقط في بيئة العميل
-    if (typeof window !== 'undefined') {
-      setWindowWidth(window.innerWidth);
-
-      const handleResize = () => {
-        setWindowWidth(window.innerWidth);
-      };
-
-      window.addEventListener('resize', handleResize);
-      return () => window.removeEventListener('resize', handleResize);
-    }
-  }, []); // هذا سيعمل فقط مرة واحدة عند تحميل المكون
   return (
     <div className="w-full relative select-none ">
       <Swiper
         loop={true}
         pagination={{ clickable: true }}
-        navigation={windowWidth >= 1024}
+        /* navigation={windowWidth >= 1024} */
         modules={[Navigation]}
         className="default-carousel"
       >
