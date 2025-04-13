@@ -11,14 +11,19 @@ import Link from "next/link";
 const SwiperCarousel: FC = () => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-useEffect(() => {
-  const handleResize = () => {
-    setWindowWidth(window.innerWidth);
-  };
+  useEffect(() => {
+    // تأكد من أن الكود يعمل فقط في بيئة العميل
+    if (typeof window !== 'undefined') {
+      setWindowWidth(window.innerWidth);
 
-  window.addEventListener('resize', handleResize);
-  return () => window.removeEventListener('resize', handleResize);
-}, []);
+      const handleResize = () => {
+        setWindowWidth(window.innerWidth);
+      };
+
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []); // هذا سيعمل فقط مرة واحدة عند تحميل المكون
   return (
     <div className="w-full relative select-none ">
       <Swiper
@@ -38,7 +43,7 @@ useEffect(() => {
               className="h-full w-full object-cover brightness-[0.35]"
             />
             <div
-              className="absolute top-0 right-0 p-20 w-[400px] lg:w-1/2 h-full bg-[#f77a4c]
+              className="absolute top-0 right-0 p-20 w-[400px] lg:w-1/2 h-full 
              transform lg:skew-x-[-20deg] max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:p-8 
              flex items-center max-lg:bg-transparent "
             >
@@ -59,7 +64,7 @@ useEffect(() => {
           </div>
         </SwiperSlide>
         <SwiperSlide>
-          <div className="bg-indigo-50 h-80 flex items-center">
+          <div className=" h-80 flex items-center">
             <Image
               src="/images/imagePrograms.jpeg"
               width={500}
@@ -68,8 +73,8 @@ useEffect(() => {
               className="h-full w-full object-cover brightness-50"
             />
             <div
-              className="absolute top-0 right-0 p-20 w-[400px] lg:w-1/2 h-full bg-[#f77a4c]
-             transform lg:skew-x-[-20deg] max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:p-0 
+              className="absolute top-0 right-0 p-20 w-[400px] lg:w-1/2 h-full
+             transform lg:skew-x-[-20deg] max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:p-8 
              flex items-center max-lg:bg-transparent "
             >
               <div className="lg:skew-x-[20deg] max-lg:text-center  ">
