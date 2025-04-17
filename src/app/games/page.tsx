@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import GamesPage from "./[pageId]/page";
 
 export default function GamesPageN1() {
