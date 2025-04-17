@@ -18,8 +18,10 @@ export default function RootLayout({
       <body>
         <ToastContainer />
         <Nav />
-        {children}
-        <Footer />
+        <div className="max-w-[1256px] mx-auto">
+          {children}
+          <Footer />
+        </div>
       </body>
     </html>
   );

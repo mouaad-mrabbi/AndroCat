@@ -56,13 +56,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: "No items found" }, { status: 404 });
     }
 
-    return new NextResponse(JSON.stringify(items), {
-      status: 200,
-      headers: {
-        "Content-Type": "application/json",
-        "Cache-Control": "no-store", // 👈 هذا يمنع الكاش من Vercel أو أي CDN
-      },
-    });
+    return NextResponse.json(items, { status: 200 });
   } catch (error) {
     console.error("Error fetching items:", error);
     return NextResponse.json(
