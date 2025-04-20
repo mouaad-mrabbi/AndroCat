@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+/*متوقف حتى يتم دعم دارك مود و white مود 
+ :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -17,6 +18,12 @@
 body {
   color: var(--foreground);
   background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+} */
+
+body {
+  color: #ffffff;
+  background: #121416;
   font-family: Arial, Helvetica, sans-serif;
 }
 

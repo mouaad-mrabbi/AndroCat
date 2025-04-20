@@ -1,5 +1,4 @@
 "use client";
-import { FC } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
@@ -8,7 +7,7 @@ import "swiper/css/pagination";
 import Image from "next/image";
 import Link from "next/link";
 
-const SwiperCarousel: FC = () => {
+const SwiperCarousel= () => {
   return (
     <div className="w-full relative select-none ">
       <Swiper
@@ -40,7 +39,7 @@ const SwiperCarousel: FC = () => {
                 </p>
                 <Link
                   href="/games"
-                  className="bg-[#fd8d64] p-2.5 rounded-full font-bold w-max max-lg:bg-green-500"
+                  className="p-2.5 rounded-full font-bold w-max bg-green-500"
                 >
                   ALL MOD Games
                 </Link>
@@ -69,8 +68,8 @@ const SwiperCarousel: FC = () => {
                   download for free
                 </p>
                 <Link
-                  href="/games"
-                  className="bg-[#fd8d64] p-2.5 rounded-full font-bold w-max max-lg:bg-green-500"
+                  href="/programs"
+                  className=" p-2.5 rounded-full font-bold w-max bg-green-500"
                 >
                   ALL MOD Games
                 </Link>

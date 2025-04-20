@@ -41,28 +41,12 @@ export async function GET(request: NextRequest) {
 
     const offset = (pageNumber - 1) * ITEM_SEARCH_PER_PAGE;
 
-    // 1️⃣ count
-    const { count, error: countError } = await supabase.rpc(
-      "search_items",
-      { search_text: searchText },
-      { count: "exact" }
-    );
-    if (countError) {
-      return NextResponse.json(
-        {
-          message:
-            "Unfortunately, we couldn't find any results. Try changing or shortening your search terms.",
-        },
-        { status: 500 }
-      );
-    }
-
-    // 2️⃣ fetch data with search_items
+    // fetch data with search_items
     const { data, error } = await supabase
       .rpc("search_items", { search_text: searchText })
       .range(offset, offset + ITEM_SEARCH_PER_PAGE - 1);
-
-    if (error||data.length === 0) {
+      
+    if (error || data.length === 0) {
       return NextResponse.json(
         {
           message:
@@ -71,6 +55,8 @@ export async function GET(request: NextRequest) {
         { status: 404 }
       );
     }
+
+    const count=data.length
 
     return NextResponse.json({ data, count, pageNumber }, { status: 200 });
   } catch (error) {

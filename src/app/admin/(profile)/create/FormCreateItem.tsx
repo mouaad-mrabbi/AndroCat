@@ -465,7 +465,7 @@ const FormCreateItem = () => {
   return (
     <div className="min-h-screen   py-8">
       <div className="max-w-2xl mx-auto  p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Create New Item</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">Create New Pending Item</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>

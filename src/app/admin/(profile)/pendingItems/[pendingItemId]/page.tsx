@@ -109,7 +109,7 @@ export default function Page({ params }: PageparamsProps) {
         const response = await creatItem(pendingItem.id);
 
         toast.success(response.data.message || "New items added");
-        router.push(`/admin/profile/items/${response.data.id}`);
+        router.push(`/admin/items/${response.data.id}`);
       } catch (error: any) {
         toast.error(error?.response?.data?.message);
       }

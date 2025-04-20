@@ -58,13 +58,16 @@ export default function Countdown({
           </svg>
         </div>
       ) : (
-        <Link
+        <a
           href={link}
           className="mt-4 flex items-center box-border h-10 py-3 px-6 uppercase bg-green-500 text-white 
-          font-bold rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95"
+  font-bold rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95"
+          download
+          target="_blank"
+          rel="nofollow"
         >
           Download ({fileSize})
-        </Link>
+        </a>
       )}
     </>
   );
