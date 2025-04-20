@@ -6,9 +6,21 @@ import "swiper/css"; // استيراد أنماط Swiper الأساسية
 import "swiper/css/navigation"; // أنماط Navigation
 import "swiper/css/pagination"; // أنماط Pagination
 import Card from "./card/card";
+import { getTopItems } from "@/apiCalls/consumerApiCall";
+import { allItem } from "@/utils/types";
 
-const Carousel = () => {
+export default function Carousel({sectionTitle}:{sectionTitle:"GAME" | "PROGRAM"}) {
   const [isMounted, setIsMounted] = useState(false); // حالة لتتبع تحميل الصفحة
+  const [items, setItems] = useState<allItem[]>([]);
+
+  useEffect(() => {
+    const fetchItems = async () => {
+      const Items = await getTopItems(sectionTitle);
+      setItems(Items);
+    };
+
+    fetchItems();
+  }, []);
 
   useEffect(() => {
     // محاكاة عملية تحميل باستخدام setTimeout
@@ -37,27 +49,25 @@ const Carousel = () => {
         observeParents={true} // يراقب التغييرات في العناصر الأم
         breakpoints={{
           1220: { slidesPerView: 6, spaceBetween: 0, slidesPerGroup: 4 },
-          1030:{ slidesPerView: 5, spaceBetween: 0, slidesPerGroup: 4 },
-          850:{ slidesPerView: 4, spaceBetween: 0, slidesPerGroup: 3 },
-          650:{ slidesPerView: 3, spaceBetween: 0, slidesPerGroup: 2 },
-          450:{ slidesPerView: 2, spaceBetween: 0, slidesPerGroup: 1 },
-          385:{ slidesPerView: 1.8, spaceBetween: 0, slidesPerGroup: 1 },
-          350:{ slidesPerView: 1.6, spaceBetween: 0, slidesPerGroup: 1 },
-          315:{ slidesPerView: 1.4, spaceBetween: 0, slidesPerGroup: 1 },
-          280:{ slidesPerView: 1.2, spaceBetween: 0, slidesPerGroup: 1 },
-          0:{ slidesPerView: 1, spaceBetween: 0, slidesPerGroup: 1 },
+          1030: { slidesPerView: 5, spaceBetween: 0, slidesPerGroup: 4 },
+          850: { slidesPerView: 4, spaceBetween: 0, slidesPerGroup: 3 },
+          650: { slidesPerView: 3, spaceBetween: 0, slidesPerGroup: 2 },
+          450: { slidesPerView: 2, spaceBetween: 0, slidesPerGroup: 1 },
+          385: { slidesPerView: 1.8, spaceBetween: 0, slidesPerGroup: 1 },
+          350: { slidesPerView: 1.6, spaceBetween: 0, slidesPerGroup: 1 },
+          315: { slidesPerView: 1.4, spaceBetween: 0, slidesPerGroup: 1 },
+          280: { slidesPerView: 1.2, spaceBetween: 0, slidesPerGroup: 1 },
+          0: { slidesPerView: 1, spaceBetween: 0, slidesPerGroup: 1 },
         }}
       >
         <div className="swiper-wrapper ">
-          {Array.from({ length: 20 }, (_, index) => (
+          {items.map((item, index) => (
             <SwiperSlide key={index + 1}>
-              <Card />
+              <Card item={item} />
             </SwiperSlide>
           ))}
         </div>
       </Swiper>
     </div>
   );
-};
-
-export default Carousel;
+}

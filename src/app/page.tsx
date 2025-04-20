@@ -5,9 +5,9 @@ const Home = () => {
   return (
     <div>
       <SwiperCarousel />
-      <SectionSep sectionTitle={"games"}/>
+      <SectionSep sectionTitle={"GAME"}/>
       <div className="zig-zag-line"></div>
-      <SectionSep sectionTitle={"programs"}/>
+      <SectionSep sectionTitle={"PROGRAM"}/>
     </div>
   );
 };

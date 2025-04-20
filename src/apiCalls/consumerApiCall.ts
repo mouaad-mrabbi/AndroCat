@@ -2,6 +2,7 @@ import { DOMAIN } from "@/utils/constants";
 import { Item } from "@prisma/client";
 import prisma from "@/utils/db";
 import axios from "axios";
+import { allItem } from "@/utils/types";
 
 export async function fetchItems(
   pageNumber: number = 1,
@@ -124,5 +125,22 @@ export async function getDownloadData(
     return response.data;
   } catch  {
     throw ( "Failed to get item data Download");
+  }
+}
+
+//get top items 
+export async function getTopItems(
+  itemType: "GAME" | "PROGRAM"
+) :Promise<allItem[]>{
+  try {
+    const response = await axios.get(`${DOMAIN}/api/consumer/items/topItems`, {
+      params: { itemType},
+    });
+
+    return response.data;
+  } catch /* (error: any) */ {
+    throw new Error(
+      /* error.response?.data?.message || */ "Failed to fetch items"
+    );
   }
 }

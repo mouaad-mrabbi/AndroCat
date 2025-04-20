@@ -6,7 +6,7 @@ interface StarProps {
   rating: number; // Accept both number and string for flexibility
 }
 
-export default function Star({ rating }: StarProps) {
+export default function Star({ rating=0 }: StarProps) {
   if (rating < 0) {
     rating = 0;
   } else if (rating > 5) {
