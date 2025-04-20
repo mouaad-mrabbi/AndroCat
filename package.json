@@ -2,6 +2,16 @@
   "name": "my-app",
   "version": "0.1.0",
   "private": true,
+  "description": "AndroCat - Android apps download platform",
+  "author": "MOUAAD MRABBI <mouadmrabbi1@gmail.com> (https://yourwebsite.com)",
+  "license": "UNLICENSED",
+  "contributors": [
+    {
+      "name": "MOUAAD MRABBI",
+      "email": "mouadmrabbi1@gmail.com",
+      "url": "https://yourwebsite.com"
+    }
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
