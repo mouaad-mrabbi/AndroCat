@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface RatingProps {
   rating: number;
-  itemId: string;
+  itemId: number;
 }
 
 export default function Rating({

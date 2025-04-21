@@ -9,7 +9,8 @@ interface ItemsPageProp {
 }
 
 export async function generateMetadata({ params }: ItemsPageProp) {
-  const { itemId } = await params;
+  const itemId = Number((await params).itemId);
+
 
   try {
     const item = await fetchMetadata(itemId);

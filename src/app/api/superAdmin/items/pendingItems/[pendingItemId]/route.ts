@@ -16,7 +16,8 @@ interface Props {
  */
 export async function PUT(request: NextRequest, { params }: Props) {
   try {
-    const { pendingItemId } = await params;
+    const pendingItemId = Number((await params).pendingItemId);
+
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -34,7 +35,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
     const pendingItem = (await prisma.pendingItem.findUnique({
       where: { id: pendingItemId },
-    })) as CreateItemDto & { itemId: string };
+    })) as CreateItemDto & { itemId: number };
     if (!pendingItem) {
       return NextResponse.json(
         { message: "Pending Item not found" },

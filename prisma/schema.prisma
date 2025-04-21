@@ -3,14 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
 //User
 model User {
-  id       String @id @default(cuid())
+  id       Int    @id @default(autoincrement())
   email    String @unique
   username String @unique @db.VarChar(30)
   password String
@@ -32,10 +32,10 @@ model User {
   resetPasswordExpires DateTime?
 
   // Relations
-  createdItems   Item[]        @relation(name: "CreatedBy")
-  validatedItems Item[]        @relation(name: "ValidatedBy")
-  
-  pendingItems   PendingItem[]
+  createdItems   Item[] @relation(name: "CreatedBy")
+  validatedItems Item[] @relation(name: "ValidatedBy")
+
+  pendingItems PendingItem[]
 
   rejectedPendingItems RejectedPendingItem[] @relation("RejectedBy")
 }
@@ -74,22 +74,22 @@ enum ItemCategories {
 }
 
 model ItemRating {
-  id        String @id @default(cuid())
+  id        Int    @id @default(autoincrement())
   ipAddress String
   rate      Float
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  itemId String
-  item   Item   @relation(fields: [itemId], references: [id])
+  itemId Int
+  item   Item @relation(fields: [itemId], references: [id])
 
   @@unique([itemId, ipAddress]) // منع نفس الـ IP من تقييم نفس العنصر أكثر من مرة
   @@index([itemId]) // فهرس لتحسين الأداء
 }
 
 model Item {
-  id          String       @id @default(cuid())
+  id          Int          @id @default(autoincrement())
   title       String
   description String
   image       String
@@ -130,8 +130,8 @@ model Item {
 
   isApproved Boolean @default(false)
 
-  createdById   String
-  validatedById String
+  createdById   Int
+  validatedById Int
 
   createdAt   DateTime
   updatedAt   DateTime @updatedAt
@@ -151,7 +151,7 @@ enum ActionType {
 }
 
 model PendingItem {
-  id       String     @id @default(cuid())
+  id       Int        @id @default(autoincrement())
   status   ActionType
   checking Boolean    @default(false)
 
@@ -189,22 +189,23 @@ model PendingItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdById String
-  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById Int
+  createdBy   User @relation(fields: [createdById], references: [id])
 
-  itemId String? @unique
-  item   Item?   @relation(fields: [itemId], references: [id])
+  itemId Int?  @unique
+  item   Item? @relation(fields: [itemId], references: [id])
 
   rejected RejectedPendingItem?
 }
 
 model RejectedPendingItem {
-  id            String      @id @default(cuid())
-  pendingItemId String      @unique
+  id Int @id @default(autoincrement())
+
+  pendingItemId Int         @unique
   pendingItem   PendingItem @relation(fields: [pendingItemId], references: [id], onDelete: Cascade)
 
   rejectedAt   DateTime @default(now())
-  rejectedById String
+  rejectedById Int
   rejectedBy   User     @relation("RejectedBy", fields: [rejectedById], references: [id])
 
   reason String

@@ -5,7 +5,7 @@ import { ActionType, ItemCategories, ItemType, User } from "@prisma/client";
 import axios from "axios";
 
 interface PendingItem {
-  id: string;
+  id: number;
   status: ActionType;
   checking: boolean;
   title: string;
@@ -35,9 +35,9 @@ interface PendingItem {
   installs: string;
   createdAt: Date;
   updatedAt: Date;
-  createdById: string;
+  createdById: number;
   createdBy: User;
-  itemId?: string | null;
+  itemId?: number | null;
 }
 
 //create pending item (CREATE)
@@ -127,7 +127,7 @@ export async function updateMyPendingItem(
 
 //create pending item (UPDATE)
 export async function createPendingUpdateItem(
-  itemId:string,
+  itemId:number,
   formData: CreateItemDto,
   statusType: "UPDATE" | "DELETE"
 ) {
@@ -146,7 +146,7 @@ export async function createPendingUpdateItem(
 }
 
 //Get single item created by user.
-export async function getItemCreateBy(itemId: string): Promise<PendingItem> {
+export async function getItemCreateBy(itemId: number): Promise<PendingItem> {
   try {
     const response = await axios.get(`${DOMAIN}/api/admin/items/${itemId}`, {
       withCredentials: true,

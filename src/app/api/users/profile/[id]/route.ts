@@ -17,7 +17,8 @@ interface Props {
  */
 export async function DELETE(request: NextRequest, { params }: Props) {
   try {
-    const { id } = await params;
+    const id = Number((await params).id);
+
     const user = await prisma.user.findUnique({
       where: { id: id },
     });
@@ -55,7 +56,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
  */
 export async function GET(request: NextRequest, { params }: Props) {
   try {
-    const { id } = await params;
+    const id = Number((await params).id);
     const user = await prisma.user.findUnique({
       where: { id: id },
       select: {
@@ -95,7 +96,7 @@ export async function GET(request: NextRequest, { params }: Props) {
  */
 export async function PUT(request: NextRequest, { params }: Props) {
   try {
-    const { id } = await params;
+    const id = Number((await params).id);
     const user = await prisma.user.findUnique({
       where: { id: id },
     });

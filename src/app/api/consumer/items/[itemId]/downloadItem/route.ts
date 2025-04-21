@@ -27,7 +27,8 @@ export async function GET(request: NextRequest, { params }: Props) {
       );
     }
 
-    const { itemId } = await params;
+    const itemId = Number((await params).itemId);
+
     if (!itemId) {
       return NextResponse.json(
         { message: "Item ID is required" },

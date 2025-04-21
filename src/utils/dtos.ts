@@ -51,7 +51,7 @@ export interface CreateItemDto {
   ratedFor: number;
   installs: string;
 
-  createdById?: string;
+  createdById: number;
   createdAt?: string | Date;
 }
 
@@ -87,6 +87,6 @@ export interface UpdateItemDto {
   ratedFor?: number;
   installs?: string;
 
-  createdById?: string;
+  createdById?: number;
   createdAt?: string | Date;
 }

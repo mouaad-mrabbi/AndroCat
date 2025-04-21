@@ -15,7 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 
 interface pageProps {
-  itemId: string;
+  itemId: number;
 }
 
 const BUCKET_NAME_IMAGES = "images";
@@ -46,7 +46,7 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
     typeMod: null,
     ratedFor: 0,
     installs: "",
-    createdById: "",
+    createdById: 0,
   });
 
   const [newKeyword, setNewKeyword] = useState("");

@@ -5,7 +5,7 @@ interface paramsProps {
   }
 
 export default async function createPendingUpdateItem({ params }: paramsProps) {
-  const { itemId } = await params;
+  const itemId = Number((await params).itemId);
 
   return (
     <div>

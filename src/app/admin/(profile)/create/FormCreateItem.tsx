@@ -36,7 +36,7 @@ const FormCreateItem = () => {
     typeMod: null,
     ratedFor: 0,
     installs: "",
-    createdById: "",
+    createdById: 0,
     createdAt: new Date(),
   });
 
@@ -126,7 +126,7 @@ const FormCreateItem = () => {
           typeMod: null,
           ratedFor: 0,
           installs: "",
-          createdById: "",
+          createdById: 0,
           createdAt: new Date(),
         });
       }

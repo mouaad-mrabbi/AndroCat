@@ -24,7 +24,8 @@ export async function PUT(request: NextRequest, { params }: Props) {
       );
     }
 
-    const { itemId } = await params;
+    const itemId = Number((await params).itemId);
+    
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {

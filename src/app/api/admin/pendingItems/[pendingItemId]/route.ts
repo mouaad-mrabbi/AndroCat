@@ -16,7 +16,7 @@ interface Props {
  */
 export async function GET(request: NextRequest, { params }: Props) {
   try {
-    const { pendingItemId } = await params;
+    const pendingItemId = Number((await params).pendingItemId);
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -75,7 +75,7 @@ export async function GET(request: NextRequest, { params }: Props) {
  */
 export async function PUT(request: NextRequest, { params }: Props) {
   try {
-    const { pendingItemId } = await params;
+    const pendingItemId = Number((await params).pendingItemId);
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -183,7 +183,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
  */
 export async function DELETE(request: NextRequest, { params }: Props) {
   try {
-    const { pendingItemId } = await params;
+    const pendingItemId = Number((await params).pendingItemId);
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {

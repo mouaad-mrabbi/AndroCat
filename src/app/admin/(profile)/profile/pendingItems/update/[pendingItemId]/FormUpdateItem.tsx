@@ -40,7 +40,7 @@ export default function FormUpdatePendingItem({ pendingItemId }: pageProps) {
     typeMod: null,
     ratedFor: 0,
     installs: "",
-    createdById: "",
+    createdById: 0,
   });
 
   const [newKeyword, setNewKeyword] = useState("");

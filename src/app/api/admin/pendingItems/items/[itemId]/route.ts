@@ -30,7 +30,8 @@ export async function POST(request: NextRequest, { params }: Props) {
       );
     }
 
-    const { itemId } = await params;
+    const itemId = Number((await params).itemId);
+
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -236,10 +237,3 @@ export async function POST(request: NextRequest, { params }: Props) {
     );
   }
 }
-
-/**
- *  @method  GET
- *  @route   ~/api/admin/pendingItems/items/:itemId?pageNumber=1
- *  @desc    get all Pending Item for UPDATE item
- *  @access  private (only user himself can create his items | OWNER can create any users data)
- */

@@ -14,7 +14,8 @@ interface Props {
  */
 export async function GET(request: NextRequest, { params }: Props) {
   try {
-    const { adminId } = await params;
+    const adminId = Number((await params).adminId);
+
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {

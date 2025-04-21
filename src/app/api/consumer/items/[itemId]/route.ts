@@ -13,7 +13,8 @@ interface Props {
  */
 export async function GET(request: NextRequest, { params }: Props) {
   try {
-    const { itemId } = await params;
+    const itemId = Number((await params).itemId);
+
 
     const item = await prisma.item.findUnique({
       where: {

@@ -1,13 +1,13 @@
 import { Prisma } from "@prisma/client";
 
 export type JWTPayload = {
-  id: string;
+  id: number;
   username: string;
   role: string;
 };
 
 export type allItem = {
-  id: string;
+  id: number;
   image: string;
   title: string;
   developer: string;

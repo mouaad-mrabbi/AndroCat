@@ -20,7 +20,7 @@ const rateLimit = new LRUCache({
 export async function POST(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const itemId = searchParams.get("itemId");
+    const itemId = Number(searchParams.get("itemId")) ;
     const rate = parseFloat(searchParams.get("rate") || "");
 
     if (!itemId) {

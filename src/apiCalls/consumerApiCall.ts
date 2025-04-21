@@ -51,7 +51,7 @@ export async function fetchItemById(itemId: string): Promise<Item> {
   }
 }
 
-export async function fetchMetadata(itemId: string) {
+export async function fetchMetadata(itemId: number) {
   if (!itemId) {
     throw { status: 400, message: "ID is required." };
   }
@@ -89,7 +89,7 @@ async function getIPAddress() {
   }
 }
 
-export async function sendRatingToAPI(value: number, itemId: string) {
+export async function sendRatingToAPI(value: number, itemId: number) {
   try {
     const ipAddress = await getIPAddress();
 

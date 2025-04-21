@@ -43,7 +43,7 @@ export async function fetchItem(itemId: string): Promise<ItemAndObjects> {
 }
 
 // Approved item
-export async function approvedItem(itemId: string, approved: string) {
+export async function approvedItem(itemId: number, approved: string) {
   try {
     const response = await axios.put(
       `${DOMAIN}/api/owner/items/${itemId}/approved`,

@@ -3,7 +3,6 @@ import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
 import { createItemSchema } from "@/utils/validationSchemas";
 import { CreateItemDto } from "@/utils/dtos";
-import { Item } from "@prisma/client";
 
 interface Props {
   params: Promise<{ pendingItemId: string }>;
@@ -17,7 +16,7 @@ interface Props {
  */
 export async function GET(request: NextRequest, { params }: Props) {
   try {
-    const { pendingItemId } = await params;
+    const pendingItemId = Number((await params).pendingItemId);
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -74,7 +73,7 @@ export async function GET(request: NextRequest, { params }: Props) {
  */
 export async function POST(request: NextRequest, { params }: Props) {
   try {
-    const { pendingItemId } = await params;
+    const pendingItemId = Number((await params).pendingItemId);
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -92,7 +91,7 @@ export async function POST(request: NextRequest, { params }: Props) {
 
     const pendingItem = (await prisma.pendingItem.findUnique({
       where: { id: pendingItemId },
-    })) as CreateItemDto & { itemId: string };
+    })) as CreateItemDto & { itemId: number };
     if (!pendingItem) {
       return NextResponse.json(
         { message: "Pending Item not found" },
@@ -178,7 +177,7 @@ export async function POST(request: NextRequest, { params }: Props) {
 
         validatedById: userFromToken.id,
 
-        createdById: pendingItem.createdById ?? "default-user-id",
+        createdById: pendingItem.createdById,
         createdAt: pendingItem.createdAt
           ? new Date(pendingItem.createdAt)
           : new Date(),
