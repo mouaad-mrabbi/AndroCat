@@ -64,7 +64,7 @@ export default function BannerAd({ adKey, width, height, delay = 0 }: AdProps) {
   return (
     <div
       ref={containerRef}
-      className="w-full mx-auto"
+      className="w-full mx-auto "
       style={{ maxWidth: `${width}px` }}
     >
       <div

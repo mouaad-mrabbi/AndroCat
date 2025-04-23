@@ -7,12 +7,19 @@ import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
 import InterstitialAd from "@/components/interstitialAd";
 import BannerAd from "@/components/bannerAd";
+import { headers } from "next/headers";
 
 interface ItemsPageProp {
   params: Promise<{ itemId: string }>;
 }
 
 export default async function ItemPage({ params }: ItemsPageProp) {
+  const headersList = await headers();
+  const userAgent = headersList.get("user-agent") || "";
+
+  const isMobile =
+    /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(userAgent);
+
   const { itemId } = await params;
 
   try {
@@ -52,22 +59,41 @@ export default async function ItemPage({ params }: ItemsPageProp) {
             </div>
 
             <div className="my-4">
-              <BannerAd
-                adKey="07f2afe0bcf9b49663131219e82e4d87"
-                width={300}
-                height={250}
-              />
+              {isMobile ? (
+                <BannerAd
+                  adKey="07f2afe0bcf9b49663131219e82e4d87"
+                  width={300}
+                  height={250}
+                />
+              ) : (
+                <BannerAd
+                  adKey="0916e702dcda4948935eb4bd47cd5b6b"
+                  width={728}
+                  height={90}
+                />
+              )}
             </div>
 
             <Countdown fileSize={item.sizeFileOBB} link={item.linkOBB} />
           </div>
         </div>
-        <BannerAd
-          adKey="0916e702dcda4948935eb4bd47cd5b6b"
-          width={728}
-          height={90}
-          delay={3000}
-        />
+        <div className="my-4">
+          {isMobile ? (
+            <BannerAd
+              adKey="07f2afe0bcf9b49663131219e82e4d87"
+              width={300}
+              height={250}
+              delay={500}
+            />
+          ) : (
+            <BannerAd
+              adKey="0916e702dcda4948935eb4bd47cd5b6b"
+              width={728}
+              height={90}
+              delay={500}
+            />
+          )}
+        </div>
       </div>
     );
   } catch {
