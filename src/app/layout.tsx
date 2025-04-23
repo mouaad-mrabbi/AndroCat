@@ -7,6 +7,9 @@ export const metadata = {
   icons: "/images/logo.png",
   author: "MOUAAD MRABBI",
   copyright: "© 2025 AndroCat. All rights reserved.",
+  other: {
+    monetag: "8b44df4fa6b260d97ece7527427a38a7", // ← هنا الإضافة
+  },
 };
 
 import "./globals.css";
