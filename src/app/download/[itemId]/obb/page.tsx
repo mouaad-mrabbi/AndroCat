@@ -5,6 +5,7 @@ import Countdown from "@/components/countdown";
 import NotFoundPage from "@/app/not-found";
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
+import InterstitialAd from "@/components/interstitialAd";
 
 interface ItemsPageProp {
   params: Promise<{ itemId: string }>;
@@ -18,6 +19,7 @@ export default async function ItemPage({ params }: ItemsPageProp) {
 
     return (
       <div className="max-w-[648px] mx-auto p-10">
+        <InterstitialAd /> {/* ←-- Add the ads here*/}
         {/* Back Window */}
         <Link
           href={`/${itemId}`}
