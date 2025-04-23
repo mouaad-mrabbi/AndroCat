@@ -6,6 +6,7 @@ import NotFoundPage from "@/app/not-found";
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
 import InterstitialAd from "@/components/interstitialAd";
+import Banner728x90 from "@/components/banner728x90";
 
 interface ItemsPageProp {
   params: Promise<{ itemId: string }>;
@@ -20,6 +21,7 @@ export default async function ItemPage({ params }: ItemsPageProp) {
     return (
       <div className="max-w-[648px] mx-auto p-10">
         <InterstitialAd /> {/* ←-- Add the ads here*/}
+        <Banner728x90 /> {/* ←-- Add the ads here*/}
         {/* Back Window */}
         <Link
           href={`/${itemId}`}
@@ -27,7 +29,6 @@ export default async function ItemPage({ params }: ItemsPageProp) {
         >
           <IoArrowBack />
         </Link>
-
         {/* Box */}
         <div className="flex flex-col items-center max-w-[480px] mx-auto">
           <div className="aspect-square w-44 mb-9">
