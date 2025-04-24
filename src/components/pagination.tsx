@@ -90,6 +90,7 @@ export default function Pagination({ pages, pageSelect, url }: PageProps) {
           <Link
             href={`${url}/${pageSelect - 1}`}
             className="flex items-center justify-center  hover:text-green-500 w-16 border-r border-gray-400 border-solid"
+            rel="prev" // إضافة rel="prev" هنا
           >
             <BsArrowLeft className=" stroke-1" />
           </Link>
@@ -105,6 +106,7 @@ export default function Pagination({ pages, pageSelect, url }: PageProps) {
           <Link
             href={`${url}/${pageSelect + 1}`}
             className="flex items-center justify-center  hover:text-green-500 w-16 border-l border-gray-400 border-solid"
+            rel="next" // إضافة rel="next" هنا
           >
             <BsArrowRight className=" stroke-1" />
           </Link>

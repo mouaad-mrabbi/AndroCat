@@ -7,7 +7,7 @@ import "swiper/css/pagination";
 import Image from "next/image";
 import Link from "next/link";
 
-const SwiperCarousel= () => {
+const SwiperCarousel = () => {
   return (
     <div className="w-full relative select-none ">
       <Swiper
@@ -34,7 +34,7 @@ const SwiperCarousel= () => {
               <div className="lg:skew-x-[20deg] max-lg:text-center  ">
                 <p className="font-bold text-3xl">MOD Games</p>
                 <p className="font-medium text-lg py-4 ">
-                  A free catalog of the newest MOD game versions available for
+                  A free catalog of the newest MOD Games versions available for
                   download.
                 </p>
                 <Link
@@ -62,16 +62,16 @@ const SwiperCarousel= () => {
              flex items-center max-lg:bg-transparent "
             >
               <div className="lg:skew-x-[20deg] max-lg:text-center  ">
-                <p className="font-bold text-3xl">MOD Games</p>
+                <p className="font-bold text-3xl">programs</p>
                 <p className="font-medium text-lg py-4 ">
-                  Free catalog of the latest MOD versions of games that you can
-                  download for free
+                  A free catalog of the latest versions of useful programs for
+                  Android available for download.
                 </p>
                 <Link
                   href="/programs"
                   className=" p-2.5 rounded-full font-bold w-max bg-green-500"
                 >
-                  ALL MOD Games
+                  ALL programs
                 </Link>
               </div>
             </div>

@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /search
+Disallow: /admin
+
+Allow: /
+Allow: /games/page/
+Allow: /programs/page/
+Allow: /games/page/*
+Allow: /programs/page/*
+Allow: /*
+
+# إذا أضفت لاحقًا sitemap.xml:
+# Sitemap: https://androcat.com/sitemap.xml

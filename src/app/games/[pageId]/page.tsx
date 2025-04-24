@@ -1,9 +1,34 @@
+
+export const metadata = {
+  title: "Download modded games on android",
+  description:
+    "Discover the latest versions of exciting and popular games, with daily updates of curated games and exclusive content for Android devices, ensuring the best Android game download experience.",
+    keywords: [
+      "modded games", 
+      "free modded games", 
+      "virus-free game downloads", 
+      "game hacks", 
+      "modded apps", 
+      "free Android games", 
+      "hack games for Android", 
+      "exclusive modded apps", 
+      "safe game downloads"
+    ],
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: `${DOMAIN}/games/`,
+  },
+};
+
 export const dynamic = "force-dynamic"; // 👈 أضف هذا السطر
 
 import Toolbar from "@/components/toolbar";
 import AppList from "@/components/list/appList";
 import Pagination from "@/components/pagination";
-import { ITEM_PER_PAGE } from "@/utils/constants";
+import { DOMAIN, ITEM_PER_PAGE } from "@/utils/constants";
 import NotFoundPage from "@/app/not-found";
 import { redirect } from "next/navigation";
 import { fetchItems, fetchItemsCount } from "@/apiCalls/consumerApiCall";
