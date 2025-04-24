@@ -10,7 +10,7 @@ export async function fetchItems(
 ) {
   try {
     const response = await axios.get(`${DOMAIN}/api/consumer/items`, {
-      params: { pageNumber, itemType}, // 👈 
+      params: { pageNumber, itemType }, // 👈
     });
 
     return response.data && Array.isArray(response.data) ? response.data : [];
@@ -64,6 +64,13 @@ export async function fetchMetadata(itemId: number) {
         title: true,
         description: true,
         keywords: true,
+        image: true,
+        itemType: true,
+        categories: true,
+        developer: true,
+        version: true,
+        averageRating: true,
+        ratingCount: true,
       },
     });
     if (!item) {
@@ -123,18 +130,18 @@ export async function getDownloadData(
     );
 
     return response.data;
-  } catch  {
-    throw ( "Failed to get item data Download");
+  } catch {
+    throw "Failed to get item data Download";
   }
 }
 
-//get top items 
+//get top items
 export async function getTopItems(
   itemType: "GAME" | "PROGRAM"
-) :Promise<allItem[]>{
+): Promise<allItem[]> {
   try {
     const response = await axios.get(`${DOMAIN}/api/consumer/items/topItems`, {
-      params: { itemType},
+      params: { itemType },
     });
 
     return response.data;

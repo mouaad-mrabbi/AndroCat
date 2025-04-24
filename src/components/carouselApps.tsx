@@ -32,7 +32,7 @@ export default function Carousel({sectionTitle}:{sectionTitle:"GAME" | "PROGRAM"
   if (!isMounted) {
     return (
       <div role="status" className="animate-pulse">
-        <div className="w-full h-80 bg-slate-900"></div>
+        <div className="w-full h-80 bg-slate-900xx"></div>
       </div>
     ); // عرض شاشة التحميل
   }

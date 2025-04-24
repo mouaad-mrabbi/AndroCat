@@ -10,13 +10,24 @@ import Toolbar from "@/components/toolbar";
 import NotFoundPage from "@/app/not-found";
 import { fetchItemById } from "@/apiCalls/consumerApiCall";
 import Rating from "@/components/rating";
+import { headers } from "next/headers";
+import BannerAd from "@/components/bannerAd";
+import InterstitialAd from "@/components/interstitialAd";
 
 export async function ItemContent({ itemId }: { itemId: string }) {
   try {
+    const headersList = await headers();
+    const userAgent = headersList.get("user-agent") || "";
+
+    const isMobile =
+      /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(userAgent);
+
     const item = await fetchItemById(itemId);
 
     return (
       <div className="min-w-[320px]">
+        <InterstitialAd />
+
         <Toolbar
           local={"home"}
           firstLocal={"games"}
@@ -26,11 +37,11 @@ export async function ItemContent({ itemId }: { itemId: string }) {
         <div className="bg-[#1b1d1f] max-[770px]:bg-transparent m-7 max-[770px]:m-0 ">
           <div className="flex max-[770px]:flex-col p-6">
             {/* title */}
-            <p className="text-[1.5rem] font-bold min-[770px]:hidden mb-4">
+            <h1 className="text-[1.5rem] font-bold min-[770px]:hidden mb-4">
               Download <span>{item.title}</span>{" "}
               {item.isMod && <span>({item.typeMod})</span>}{" "}
               <span>{item.version}</span> free on android
-            </p>
+            </h1>
 
             <div className="flex">
               {/* left */}
@@ -55,11 +66,11 @@ export async function ItemContent({ itemId }: { itemId: string }) {
               <div className=" ml-8 max-[770px]:ml-4">
                 <div>
                   {/* title */}
-                  <p className="text-[1.65rem] font-bold max-[770px]:hidden">
+                  <h1 className="text-[1.65rem] font-bold max-[770px]:hidden">
                     Download <span>{item.title}</span>{" "}
                     {item.isMod && <span>({item.typeMod})</span>}{" "}
                     <span>{item.version}</span> free on android
-                  </p>
+                  </h1>
                   {/* developer */}
                   <p className="text-sm text-[#b2b2b2] my-2.5 max-lg:hidden">
                     {item.developer}
@@ -317,6 +328,40 @@ export async function ItemContent({ itemId }: { itemId: string }) {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* ads */}
+        <div className="my-4">
+          {isMobile ? (
+            <BannerAd
+              adKey="07f2afe0bcf9b49663131219e82e4d87"
+              width={300}
+              height={250}
+            />
+          ) : (
+            <BannerAd
+              adKey="0916e702dcda4948935eb4bd47cd5b6b"
+              width={728}
+              height={90}
+            />
+          )}
+        </div>
+        <div className="my-4">
+          {isMobile ? (
+            <BannerAd
+              adKey="07f2afe0bcf9b49663131219e82e4d87"
+              width={300}
+              height={250}
+              delay={1000}
+            />
+          ) : (
+            <BannerAd
+              adKey="0916e702dcda4948935eb4bd47cd5b6b"
+              width={728}
+              height={90}
+              delay={1000}
+            />
+          )}
         </div>
       </div>
     );

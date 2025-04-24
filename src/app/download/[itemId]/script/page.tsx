@@ -84,14 +84,14 @@ export default async function ItemPage({ params }: ItemsPageProp) {
               adKey="07f2afe0bcf9b49663131219e82e4d87"
               width={300}
               height={250}
-              delay={500}
+              delay={1000}
             />
           ) : (
             <BannerAd
               adKey="0916e702dcda4948935eb4bd47cd5b6b"
               width={728}
               height={90}
-              delay={500}
+              delay={1000}
             />
           )}
         </div>
