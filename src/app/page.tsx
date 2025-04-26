@@ -12,9 +12,9 @@ const Home = () => {
 
       <div className="max-[500px]:px-0 px-8">
         <div className="mt-10 text-[#898a8b] max-w-[57.5rem]">
-          <h1 className="text-xl mb-4 font-bold max-[770px]:text-base max-[770px]:mb-2">
+          <h2 className="text-xl mb-4 font-bold max-[770px]:text-base max-[770px]:mb-2">
             Download free games for Android
-          </h1>
+          </h2>
           <div className="max-[770px]:text-sm">
             On Androcat.com, you can download free Android games and apps
             quickly and easily. We offer the latest versions of the most popular

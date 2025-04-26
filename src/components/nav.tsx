@@ -61,7 +61,7 @@ const Example: React.FC = () => {
               <h1 className="sr-only">
                 AndroCat - Download Free Android Games and Programs
               </h1>
-              <Link href={"/"}>
+              <Link href={"/"} title="AndroCat">
                 <Image
                   src="/images/andro.png"
                   alt="AndroCat Logo"
@@ -74,10 +74,11 @@ const Example: React.FC = () => {
             <div className="hidden sm:ml-6 sm:block my-auto">
               <div className="flex gap-4">
                 {navigation.map((item) => (
-                  <a
+                  <Link
                     key={item.href}
                     href={item.href}
                     aria-current={item.current ? "page" : undefined}
+                    title={item.name}
                     className={classNames(
                       item.current
                         ? "text-green-500"
@@ -86,7 +87,7 @@ const Example: React.FC = () => {
                     )}
                   >
                     {item.name}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -99,9 +100,10 @@ const Example: React.FC = () => {
           {navigation.map((item) => (
             <DisclosureButton
               key={item.href}
-              as="a"
+              as={Link}
               href={item.href}
               aria-current={item.current ? "page" : undefined}
+              title={item.name}
               className={classNames(
                 item.current
                   ? "text-green-500"
