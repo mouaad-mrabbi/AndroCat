@@ -57,14 +57,17 @@ const Example: React.FC = () => {
             </DisclosureButton>
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-            <div className="flex shrink-0 items-center">
+            <div className="flex shrink-0 items-center relative">
+              <h1 className="sr-only">
+                AndroCat - Download Free Android Games and Programs
+              </h1>
               <Link href={"/"}>
                 <Image
                   src="/images/andro.png"
-                  alt="logo"
-                  width={160} // اجعل العرض والارتفاع متوافقين مع أبعاد الصورة الحقيقية
+                  alt="AndroCat Logo"
+                  width={160}
                   height={40}
-                  priority={true} // يجبر المتصفح على تحميلها مبكرًا
+                  priority={true}
                 />
               </Link>
             </div>

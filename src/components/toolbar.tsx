@@ -12,7 +12,7 @@ export default function Toolbar({
   scndLocal = "",
 }: propsType) {
   return (
-    <div className="flex items-center gap-2 px-8 py-4 mb-8 border-b border-[#2a2c2e] text-sm">
+    <div className="flex items-center gap-2 px-8 py-4 border-b border-[#2a2c2e] text-sm">
       <Link
         href={local === "home" ? "/" : `/admin/${local}`}
         className="text-green-500"

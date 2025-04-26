@@ -32,7 +32,7 @@ const SwiperCarousel = () => {
              flex items-center max-lg:bg-transparent "
             >
               <div className="lg:skew-x-[20deg] max-lg:text-center  ">
-                <p className="font-bold text-3xl">MOD Games</p>
+                <h2 className="font-bold text-3xl">Games catalog</h2>
                 <p className="font-medium text-lg py-4 ">
                   A free catalog of the newest MOD Games versions available for
                   download.
@@ -41,7 +41,7 @@ const SwiperCarousel = () => {
                   href="/games"
                   className="p-2.5 rounded-full font-bold w-max bg-green-500"
                 >
-                  ALL MOD Games
+                  <span>ALL MOD Games</span>
                 </Link>
               </div>
             </div>
@@ -62,7 +62,7 @@ const SwiperCarousel = () => {
              flex items-center max-lg:bg-transparent "
             >
               <div className="lg:skew-x-[20deg] max-lg:text-center  ">
-                <p className="font-bold text-3xl">programs</p>
+                <h2 className="font-bold text-3xl">programs</h2>
                 <p className="font-medium text-lg py-4 ">
                   A free catalog of the latest versions of useful programs for
                   Android available for download.
@@ -71,7 +71,7 @@ const SwiperCarousel = () => {
                   href="/programs"
                   className=" p-2.5 rounded-full font-bold w-max bg-green-500"
                 >
-                  ALL programs
+                  <span>ALL programs</span>
                 </Link>
               </div>
             </div>

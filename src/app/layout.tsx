@@ -2,12 +2,17 @@
 // All rights reserved © AndroCat
 
 export const metadata = {
-  title: "AndroCat",
+  title: "AndroCat | Download Android games mod and programs for free.",
   description:
-    "Download the latest free Android games and MOD APK apps with AndroCat. Safe, fast and updated daily with top trending apps and games for Android devices.",
+    "Free Android games and MOD APK apps with AndroCat. Safe, fast and updated daily with top trending apps and games for Android devices.",
   keywords: [
-    "MOD APK",
+    "games for android",
+    "programs for android",
+    "mod apk",
     "androcat",
+    "androcat com",
+    "andro cat",
+    "android cat",
     "android apps",
     "free android games",
     "MOD APK download",
@@ -34,7 +39,7 @@ export const metadata = {
     url: `${DOMAIN}`,
     title: "AndroCat - Free MOD APK Games & Android Apps",
     description:
-      "Discover thousands of free Android MOD APKs and trending games on AndroCat. Updated daily. Safe and fast downloads for all your favorite apps.",
+      "Free Android MOD APKs and trending games on AndroCat. Updated daily. Safe and fast downloads for all your favorite apps.",
     images: [
       {
         url: `${DOMAIN}/images/logo.png`,

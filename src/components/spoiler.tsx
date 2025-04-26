@@ -36,6 +36,7 @@ export default function Spoiler({ title, description, isMod, typeMod }: Props) {
   return (
     <div>
       <p
+        itemProp="description"
         ref={textRef}
         className={
           vanish === "hidden"
@@ -55,12 +56,12 @@ export default function Spoiler({ title, description, isMod, typeMod }: Props) {
         {vanish === "hidden" ? (
           <div className="flex items-center gap-2 text-green-500">
             <RiPlayListAddLine />
-            <p>Full description</p>
+            <span>Full description</span>
           </div>
         ) : (
           <div className="flex items-center gap-2 text-green-500">
             <GrTextAlignFull />
-            <p>Hide description</p>
+            <span>Hide description</span>
           </div>
         )}
       </button>
