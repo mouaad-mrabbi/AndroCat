@@ -95,8 +95,6 @@ export default function SearchPage() {
 
   return (
     <>
-      <SearchMeta />
-
       <div className="mt-14 max-[576px]:mt-8">
         <h1 className="text-3xl font-bold my-4 px-7">Search</h1>
 
