@@ -39,6 +39,7 @@ const SwiperCarousel = () => {
                 </p>
                 <Link
                   href="/games"
+                  title="Explore all modded games on Androcat"
                   className="p-2.5 rounded-full font-bold w-max bg-green-500"
                 >
                   <span>ALL MOD Games</span>
@@ -62,14 +63,15 @@ const SwiperCarousel = () => {
              flex items-center max-lg:bg-transparent "
             >
               <div className="lg:skew-x-[20deg] max-lg:text-center  ">
-                <h2 className="font-bold text-3xl">programs</h2>
+                <h2 className="font-bold text-3xl">Programs catalog</h2>
                 <p className="font-medium text-lg py-4 ">
                   A free catalog of the latest versions of useful programs for
                   Android available for download.
                 </p>
                 <Link
                   href="/programs"
-                  className=" p-2.5 rounded-full font-bold w-max bg-green-500"
+                  title="Explore all Android programs on Androcat"
+                  className="p-2.5 rounded-full font-bold w-max bg-green-500"
                 >
                   <span>ALL programs</span>
                 </Link>

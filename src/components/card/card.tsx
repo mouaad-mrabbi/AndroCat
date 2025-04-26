@@ -5,7 +5,12 @@ import { allItem } from "@/utils/types";
 
 export default function Card({ item }: { item: allItem }) {
   return (
-    <Link href={`/${item.id}`}>
+    <Link
+      href={`/${item.id}`}
+      title={`View details for ${item.title} on Androcat ${
+        item.isMod ? "Mod" : ""
+      }`}
+    >
       <div className="flex flex-col bg-[#1b1d1f] hover:bg-[#212325] w-48 max-[450px]:w-44 h-80 p-4 select-none ">
         <div className="relative">
           <Image

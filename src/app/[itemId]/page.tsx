@@ -1,10 +1,7 @@
-import { PrismaClient } from "@prisma/client";
 import { ItemContent } from "./ItemContent";
 import { fetchMetadata } from "@/apiCalls/consumerApiCall";
 import Head from "next/head";
 import { DOMAIN } from "@/utils/constants";
-
-const prisma = new PrismaClient();
 
 interface ItemsPageProp {
   params: Promise<{ itemId: string }>;
@@ -93,6 +90,14 @@ export default async function ItemPage({ params }: ItemsPageProp) {
       "@type": "AggregateRating",
       ratingValue: item.averageRating,
       ratingCount: item.ratingCount,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "AndroCat",
+      logo: {
+        "@type": "ImageObject",
+        url: `${DOMAIN}/images/logo.png`,
+      },
     },
   };
 
