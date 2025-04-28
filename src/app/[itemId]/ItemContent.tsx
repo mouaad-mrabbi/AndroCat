@@ -66,11 +66,11 @@ export async function ItemContent({ itemId }: { itemId: string }) {
               <div className=" ml-8 max-[770px]:ml-4">
                 <div>
                   {/* title */}
-                  <h1 className="text-[1.65rem] font-bold max-[770px]:hidden">
+                  <p className="text-[1.65rem] font-bold max-[770px]:hidden">
                     Download <span>{item.title}</span>{" "}
                     {item.isMod && <span>({item.typeMod})</span>}{" "}
                     <span>{item.version}</span> free on android
-                  </h1>
+                  </p>
                   {/* developer */}
                   <p className="text-sm text-[#b2b2b2] my-2.5 max-lg:hidden">
                     {item.developer}

@@ -1,27 +1,3 @@
-export const metadata = {
-  title: "Download modded games on android",
-  description:
-    "Discover the latest versions of exciting and popular games, with daily updates of curated games and exclusive content for Android devices, ensuring the best Android game download experience.",
-  keywords: [
-    "modded games",
-    "free modded games",
-    "virus-free game downloads",
-    "game hacks",
-    "modded apps",
-    "free Android games",
-    "hack games for Android",
-    "exclusive modded apps",
-    "safe game downloads",
-  ],
-  robots: {
-    index: true,
-    follow: true,
-  },
-  alternates: {
-    canonical: `${DOMAIN}/games/`,
-  },
-};
-
 export const dynamic = "force-dynamic"; // 👈 أضف هذا السطر
 
 import Toolbar from "@/components/toolbar";
@@ -32,9 +8,43 @@ import NotFoundPage from "@/app/not-found";
 import { redirect } from "next/navigation";
 import { fetchItems, fetchItemsCount } from "@/apiCalls/consumerApiCall";
 import CardRow from "@/components/cardRow";
+import Head from "next/head";
 
 interface ItemsPageProp {
   params: Promise<{ pageId: string }>;
+}
+
+export async function generateMetadata({ params }: ItemsPageProp){
+  const { pageId } = await params;
+  const page = Number(pageId);
+
+  const prevPage = page > 1 ? `${DOMAIN}/games/${page - 1}` : null;
+  const nextPage = `${DOMAIN}/games/${page + 1}`;
+
+  return {
+    title: "Download modded games on android",
+    description:
+      "In this section, you can download the latest cool and popular games. We also have daily updates of selected games mod for Android.",
+    alternates: {
+      canonical: `${DOMAIN}/games`,
+      types: {
+        "application/atom+xml": [
+          {
+            rel: "prev",
+            url: prevPage ?? undefined,
+          },
+          {
+            rel: "next",
+            url: nextPage,
+          },
+        ],
+      },
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
 }
 
 export default async function GamesPage({ params }: ItemsPageProp) {
@@ -49,22 +59,42 @@ export default async function GamesPage({ params }: ItemsPageProp) {
 
     const pages = Math.ceil(Number(count) / ITEM_PER_PAGE);
 
-    return (
-      <div>
-        <div className="mb-8">
-          <Toolbar local={"home"} firstLocal={"games"} />
-          <CardRow />
-        </div>
+    const structuredData = {
+      "@context": "https://schema.org",
+      name: "Download modded games on android",
+      description:
+        "In this section, you can download the latest cool and popular games. We also have daily updates of selected games mod for Android.",
+      url: `${DOMAIN}/${pageId}`,
+      keywords:
+        "mod, modded games for free, play free of viruses, hack, modded applications",
+    };
 
-        <div className="px-7 max-[500px]:px-0">
-          <AppList url={"home"} items={items} />
-          <Pagination
-            pages={pages}
-            pageSelect={Number(pageId)}
-            url={"/games"}
+    return (
+      <>
+        <Head>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify(structuredData),
+            }}
           />
+        </Head>
+        <div>
+          <div className="mb-8">
+            <Toolbar local={"home"} firstLocal={"games"} />
+            <CardRow />
+          </div>
+
+          <div className="px-7 max-[500px]:px-0">
+            <AppList url={"home"} items={items} />
+            <Pagination
+              pages={pages}
+              pageSelect={Number(pageId)}
+              url={"/games"}
+            />
+          </div>
         </div>
-      </div>
+      </>
     );
   } catch {
     return NotFoundPage();

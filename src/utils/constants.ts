@@ -11,4 +11,4 @@ export const DOMAIN =
     : DEVELOPMENT_DOMAIN;
 
 
-export const DomainsImages=[ "cacbbglbdrhnfhrmztmz.supabase.co"]
+export const DomainsImages=["cacbbglbdrhnfhrmztmz.supabase.co","cdn.androcat.com",]

@@ -71,6 +71,8 @@ export async function fetchMetadata(itemId: number) {
         version: true,
         averageRating: true,
         ratingCount: true,
+        isMod:true,
+        typeMod:true
       },
     });
     if (!item) {

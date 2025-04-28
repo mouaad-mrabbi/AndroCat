@@ -1,5 +1,5 @@
 "use client";
-import { useState, useRef } from "react";
+import { useState, useRef, FormEvent, ChangeEvent, useEffect } from "react";
 import { CreateItemDto } from "@/utils/dtos";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
@@ -7,6 +7,7 @@ import { ItemCategories, ItemType } from "@prisma/client";
 import { supabase } from "@/lib/supabaseClient";
 import { fileTypeFromBuffer } from "file-type";
 import { createPendingItems } from "@/apiCalls/adminApiCall";
+import UploadFile from "@/components/uploadFile";
 
 const BUCKET_NAME_IMAGES = "images";
 const BUCKET_NAME_FILES = "files";
@@ -43,6 +44,31 @@ const FormCreateItem = () => {
   const [newKeyword, setNewKeyword] = useState("");
   const [newAppScreen, setNewAppScreen] = useState("");
   const recaptchaRef = useRef<ReCAPTCHA>(null);
+
+  const [randomText, setRandomText] = useState<string>("");
+  const [randomNum, setRandomNum] = useState<number>(0);
+  const generateRandomNumber = () => {
+    const number = Math.floor(100000 + Math.random() * 900000);
+    setRandomNum(number);
+  };
+
+  const generateRandomText = () => {
+    const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+    let randomString = "";
+    for (let i = 0; i < 6; i++) {
+      randomString += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    return randomString;
+  };
+  const handleRandomTextChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setRandomText(e.target.value);
+  };
+  useEffect(() => {
+    generateRandomNumber();
+    setRandomText(generateRandomText());
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -330,142 +356,79 @@ const FormCreateItem = () => {
       });
   };
 
-  /* APK */
-  const handleFileAPKChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFormUploadDataAPK = async (data: { publicURL: string }) => {
+    const response = await fetch(data.publicURL, { method: "HEAD" });
+    const size = response.headers.get("content-length");
+    formatSize(Number(size));
 
-    try {
-      // تحميل الملف إلى Supabase Storage
-      const filePath = `apks/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .upload(filePath, file);
-
-      if (error) {
-        toast.error("Failed to upload APK");
-        return;
-      }
-
-      // الحصول على رابط الملف
-      const { data: urlData } = supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .getPublicUrl(filePath);
-
-      // تحديث الحقول في النموذج
-      setFormData({
-        ...formData,
-        linkAPK: urlData.publicUrl,
-        sizeFileAPK: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      });
-    } catch {
-      toast.error("Failed to upload file");
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      sizeFileAPK: formatSize(Number(size)),
+      linkAPK: data.publicURL,
+    }));
   };
 
-  /* OBB */
-  const handleFileOBBUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFormUploadDataScreenshots = async (data: {
+    publicURL: string;
+  }) => {
+    const response = await fetch(data.publicURL, { method: "HEAD" });
+    const size = response.headers.get("content-length");
+    formatSize(Number(size));
 
-    try {
-      const filePath = `OBB/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .upload(filePath, file);
-
-      if (error) {
-        toast.error("Failed to upload OBB");
-        return;
-      }
-
-      const { data: urlData } = supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .getPublicUrl(filePath);
-
-      setFormData({
-        ...formData,
-        linkOBB: urlData.publicUrl,
-        sizeFileOBB: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      });
-    } catch {
-      toast.error("Failed to upload OBB");
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      appScreens: [...prevData.appScreens, data.publicURL],
+    }));
   };
 
-  /* Script */
-  const handleFileScriptUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFormUploadDataOBB = async (data: { publicURL: string }) => {
+    const response = await fetch(data.publicURL, { method: "HEAD" });
+    const size = response.headers.get("content-length");
+    formatSize(Number(size));
 
-    try {
-      const filePath = `scripts/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .upload(filePath, file);
+    setFormData((prevData) => ({
+      ...prevData,
+      sizeFileOBB: formatSize(Number(size)),
+      linkOBB: data.publicURL,
+    }));
+  };
+  
+  const handleFormUploadDataScript = async (data: { publicURL: string }) => {
+    const response = await fetch(data.publicURL, { method: "HEAD" });
+    const size = response.headers.get("content-length");
+    formatSize(Number(size));
 
-      if (error) {
-        toast.error("Failed to upload Script");
-        return;
-      }
-
-      const { data: fileData } = supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .getPublicUrl(filePath);
-
-      setFormData({
-        ...formData,
-        linkScript: fileData.publicUrl,
-        sizeFileScript: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      });
-
-      toast.success("File uploaded successfully!");
-    } catch {
-      toast.error("Failed to upload Script");
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      sizeFileScript: formatSize(Number(size)),
+      linkScript: data.publicURL,
+    }));
   };
 
-  /* image */
-  const handleFileImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const filePath = `image/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage
-        .from(BUCKET_NAME_IMAGES)
-        .upload(filePath, file);
-
-      if (error) {
-        toast.error("Failed to upload Image");
-        return;
-      }
-
-      const { data: urlData } = supabase.storage
-        .from(BUCKET_NAME_IMAGES)
-        .getPublicUrl(filePath);
-
-      setFormData({
-        ...formData,
-        image: urlData.publicUrl,
-      });
-    } catch {
-      toast.error("Failed to upload image");
-    }
+  const handleFormUploadDataImage = async (data: { publicURL: string }) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      image: data.publicURL,
+    }));
   };
 
   return (
     <div className="min-h-screen   py-8">
       <div className="max-w-2xl mx-auto  p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Create New Pending Item</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          Create New Pending Item
+        </h1>
+
+        <div className="mb-6 ">
+          <label className="text-lg font-semibold">Random Text</label>
+          <input
+            type="text"
+            value={randomText}
+            onChange={handleRandomTextChange}
+            className="w-full p-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+          />
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>
@@ -502,19 +465,16 @@ const FormCreateItem = () => {
             />
           </div>
 
-          {/* File image Upload */}
+          {/* image posts Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Upload Image:
+              image posts :
             </label>
-            <input
-              type="file"
-              onChange={handleFileImageUpload}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-              focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-              dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-              dark:focus:border-indigo-500"
-              /* required */
+            <UploadFile
+              title={formData.title}
+              randomText={randomText}
+              fileType={"posts"}
+              onChangeData={handleFormUploadDataImage}
             />
           </div>
 
@@ -675,19 +635,13 @@ const FormCreateItem = () => {
           {/* Upload OBB File */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Upload OBB File:
+              OBB :
             </label>
-            <input
-              type="file"
-              onChange={handleFileOBBUpload}
-              disabled={!formData.OBB}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
-      dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-      dark:focus:border-indigo-500
-      ${
-        !formData.OBB ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed" : ""
-      }`}
+            <UploadFile
+              title={formData.title}
+              randomText={randomText}
+              fileType={"obbs"}
+              onChangeData={handleFormUploadDataOBB}
             />
           </div>
 
@@ -750,21 +704,13 @@ const FormCreateItem = () => {
           {/* File Script Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Upload Script File:
+              Script :
             </label>
-            <input
-              type="file"
-              onChange={handleFileScriptUpload}
-              disabled={!formData.Script}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
-      dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-      dark:focus:border-indigo-500
-      ${
-        !formData.Script
-          ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
-          : ""
-      }`}
+            <UploadFile
+              title={formData.title}
+              randomText={randomText}
+              fileType={"scripts"}
+              onChangeData={handleFormUploadDataScript}
             />
           </div>
 
@@ -817,16 +763,13 @@ const FormCreateItem = () => {
           {/* Upload APK File */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Upload APK File:
+              APK :
             </label>
-            <input
-              type="file"
-              onChange={handleFileAPKChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-              focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-              dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-              dark:focus:border-indigo-500"
-              /* required */
+            <UploadFile
+              title={formData.title}
+              randomText={randomText}
+              fileType={"apks"}
+              onChangeData={handleFormUploadDataAPK}
             />
           </div>
 
@@ -921,82 +864,13 @@ const FormCreateItem = () => {
                 </div>
               ))}
             </div>
-            <div className="flex gap-2 mt-2">
-              <input
-                type="file"
-                onChange={handleScreenChange}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none
-                focus:ring-indigo-500 focus:border-indigo-500
-                dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-                dark:focus:border-indigo-500"
-              />
-              <button
-                type="button"
-                onClick={uploadFileScreen}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 
-                focus:outline-none focus:ring-2 focus:ring-indigo-500
-                dark:bg-indigo-700 dark:hover:bg-indigo-600"
-              >
-                Add
-              </button>
-            </div>
+            <UploadFile
+              title={formData.title}
+              randomText={randomText}
+              fileType={"screenshots"}
+              onChangeData={handleFormUploadDataScreenshots}
+            />
           </div>
-          {uploading && (
-            <div className="mt-6 space-y-3">
-              <div className="w-full bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-2 bg-blue-500 rounded-full transition-all"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
-              <p className="text-sm text-gray-200">
-                {uploadProgress}% Complete ({formatSize(uploadedSize)} /{" "}
-                {formatSize(totalSize)})
-              </p>
-              <p className="text-sm text-gray-200">
-                Remaining: {formatSize(totalSize - uploadedSize)}
-              </p>
-              <p className="text-sm text-gray-200">
-                Estimated time remaining: {remainingTime}
-              </p>
-            </div>
-          )}
-          {imageUrl && (
-            <div className="mt-6">
-              <div className="flex flex-col items-center justify-center">
-                <a
-                  href={imageUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300 block text-center mt-2 w-full break-words overflow-hidden whitespace-nowrap "
-                >
-                  {imageUrl}
-                </a>
-                <button
-                  onClick={() => copyToClipboard(imageUrl)}
-                  className="w-full p-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-300 mt-2"
-                  aria-label="Copy URL to clipboard"
-                >
-                  Copy URL
-                </button>
-              </div>
-              <img
-                src={imageUrl}
-                alt="Uploaded"
-                className="mt-4 mx-auto rounded-lg shadow-lg max-w-full h-auto"
-              />
-              {imageSize && (
-                <p className="mt-4 text-center text-gray-300">
-                  Image dimensions: {imageSize}
-                </p>
-              )}
-              {/*               {fileSize && (
-                <p className="mt-2 text-center text-gray-300">
-                  File size: {fileSize}
-                </p>
-              )} */}
-            </div>
-          )}
 
           {/* Keywords */}
           <div>

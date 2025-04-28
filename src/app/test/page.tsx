@@ -3,7 +3,8 @@ import FileManager from '@/components/file-manager'
 export default function Home() {
   return (
     <div>
-      <FileManager />
+      <p>test</p>
+      {/* <FileManager /> */}
     </div>
   )
 }

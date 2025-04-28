@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { listFiles, getSignedUrlForDownload, deleteFile } from '@/lib/r2'
 
+//get all 
 export async function GET() {
   try {
     const files = await listFiles()
@@ -10,6 +11,7 @@ export async function GET() {
   }
 }
 
+//Download
 export async function POST(request: NextRequest) {
   const { key } = await request.json()
 
@@ -24,6 +26,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+//DELETE
 export async function DELETE(request: NextRequest) {
   const { key } = await request.json()
 

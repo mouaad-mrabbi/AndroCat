@@ -14,18 +14,31 @@ export async function generateMetadata({ params }: ItemsPageProp) {
     const item = await fetchMetadata(itemId);
 
     return {
-      title: item.title,
-      description: item.description,
+      title: `Download ${item.title} ${item.isMod && item.typeMod} ${
+        item.version
+      } free on android`,
+      description: `Download ${item.title} ${item.isMod && item.typeMod} - ${
+        item.description
+      }`,
       keywords: item.keywords?.join(", ") || "games, apps, mods",
       openGraph: {
-        type: "website",
+        site_name: "androcat",
+        type: "article",
         url: `https://androcat.com/${itemId}`,
-        title: item.title,
-        description: item.description,
+        title: `Download ${item.title} ${item.isMod && item.typeMod} ${
+          item.version
+        } free on android`,
+        description: `Download ${item.title} ${item.isMod && item.typeMod} - ${
+        item.description
+      }`,
         images: [
           {
             url: item.image,
-            alt: item.title,
+            alt: `Download ${item.title} ${item.isMod && item.typeMod} ${
+              item.version
+            } free on android`,
+            width: 190,
+            height: 190,
           },
         ],
         article: {
@@ -35,8 +48,12 @@ export async function generateMetadata({ params }: ItemsPageProp) {
       },
       twitter: {
         card: "summary_large_image",
-        title: item.title,
-        description: item.description,
+        title: `Download ${item.title} ${item.isMod && item.typeMod} ${
+          item.version
+        } free on android`,
+        description: `Download ${item.title} ${item.isMod && item.typeMod} - ${
+        item.description
+      }`,
         image: item.image,
         creator: "@YourTwitterHandle",
         site: "@YourSiteTwitterHandle",
@@ -47,6 +64,11 @@ export async function generateMetadata({ params }: ItemsPageProp) {
       robots: {
         index: true,
         follow: true,
+      },
+      viewport: "width=device-width, initial-scale=1.0, maximum-scale=5.0",
+      meta: {
+        "apple-mobile-web-app-capable": "yes",
+        "apple-mobile-web-app-status-bar-style": "default",
       },
     };
   } catch (error) {
@@ -77,8 +99,12 @@ export default async function ItemPage({ params }: ItemsPageProp) {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": item.itemType === "GAME" ? "VideoGame" : "SoftwareApplication",
-    name: item.title,
-    description: item.description,
+    name: `Download ${item.title} ${item.isMod && item.typeMod} ${
+      item.version
+    } free on android`,
+    description: `Download ${item.title} ${item.isMod && item.typeMod} - ${
+        item.description
+      }`,
     url: `${DOMAIN}/${itemId}`,
     image: item.image,
     keywords: item.keywords?.join(", ") || "games, apps, mods",
@@ -90,14 +116,6 @@ export default async function ItemPage({ params }: ItemsPageProp) {
       "@type": "AggregateRating",
       ratingValue: item.averageRating,
       ratingCount: item.ratingCount,
-    },
-    publisher: {
-      "@type": "Organization",
-      name: "AndroCat",
-      logo: {
-        "@type": "ImageObject",
-        url: `${DOMAIN}/images/logo.png`,
-      },
     },
   };
 
