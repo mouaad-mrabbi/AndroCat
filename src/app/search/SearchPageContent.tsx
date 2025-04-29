@@ -8,7 +8,7 @@ import { allItem } from "@/utils/types";
 import AppList from "@/components/list/appList";
 import { FaSearch } from "react-icons/fa";
 import { BsArrowRight, BsArrowLeft } from "react-icons/bs";
-import Loading from "../[itemId]/loading";
+import Loading from "../[slug]/loading";
 import axios from "axios";
 import { IoMdClose } from "react-icons/io";
 

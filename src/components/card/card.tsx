@@ -2,14 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import Star from "./star";
 import { allItem } from "@/utils/types";
+import slugify from "slugify";
 
 export default function Card({ item }: { item: allItem }) {
   return (
     <Link
-      href={`/${item.id}`}
-      title={`View details for ${item.title} on Androcat ${
-        item.isMod ? "Mod" : ""
-      }`}
+      href={`/${item.id}-${slugify(item.title, { lower: true })}${item.isMod?"-mod":""}`}
+      title={`Download ${item.title} ${item.isMod && item.typeMod} free on android in Androcat`}
     >
       <div className="flex flex-col bg-[#1b1d1f] hover:bg-[#212325] w-48 max-[450px]:w-44 h-80 p-4 select-none ">
         <div className="relative">

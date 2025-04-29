@@ -4,11 +4,13 @@ import Head from "next/head";
 import { DOMAIN } from "@/utils/constants";
 
 interface ItemsPageProp {
-  params: Promise<{ itemId: string }>;
+  params: { slug: string };
 }
 
 export async function generateMetadata({ params }: ItemsPageProp) {
-  const itemId = Number((await params).itemId);
+  const { slug } = await params;
+  const [idPart, ...titleParts] = slug.split("-");
+  const itemId = parseInt(idPart);
 
   try {
     const item = await fetchMetadata(itemId);
@@ -24,13 +26,13 @@ export async function generateMetadata({ params }: ItemsPageProp) {
       openGraph: {
         site_name: "androcat",
         type: "article",
-        url: `https://androcat.com/${itemId}`,
+        url: `${DOMAIN}/${slug}`,
         title: `Download ${item.title} ${item.isMod && item.typeMod} ${
           item.version
         } free on android`,
         description: `Download ${item.title} ${item.isMod && item.typeMod} - ${
-        item.description
-      }`,
+          item.description
+        }`,
         images: [
           {
             url: item.image,
@@ -52,20 +54,19 @@ export async function generateMetadata({ params }: ItemsPageProp) {
           item.version
         } free on android`,
         description: `Download ${item.title} ${item.isMod && item.typeMod} - ${
-        item.description
-      }`,
+          item.description
+        }`,
         image: item.image,
         creator: "@YourTwitterHandle",
         site: "@YourSiteTwitterHandle",
       },
       alternates: {
-        canonical: `https://androcat.com/${itemId}`,
+        canonical: `${DOMAIN}/${slug}`,
       },
       robots: {
         index: true,
         follow: true,
       },
-      viewport: "width=device-width, initial-scale=1.0, maximum-scale=5.0",
       meta: {
         "apple-mobile-web-app-capable": "yes",
         "apple-mobile-web-app-status-bar-style": "default",
@@ -92,8 +93,17 @@ export async function generateMetadata({ params }: ItemsPageProp) {
   }
 }
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  maximumScale: 5.0,
+};
+
 export default async function ItemPage({ params }: ItemsPageProp) {
-  const { itemId } = await params;
+  const { slug } = await params;
+  const [idPart, ...titleParts] = slug.split("-");
+  const itemId = parseInt(idPart);
+
   const item = await fetchMetadata(Number(itemId));
 
   const structuredData = {
@@ -103,9 +113,9 @@ export default async function ItemPage({ params }: ItemsPageProp) {
       item.version
     } free on android`,
     description: `Download ${item.title} ${item.isMod && item.typeMod} - ${
-        item.description
-      }`,
-    url: `${DOMAIN}/${itemId}`,
+      item.description
+    }`,
+    url: `${DOMAIN}/${slug}`,
     image: item.image,
     keywords: item.keywords?.join(", ") || "games, apps, mods",
     developer: item.developer,

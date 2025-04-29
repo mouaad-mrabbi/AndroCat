@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { DomainsImages } from "@/utils/constants";
 import { allItem } from "@/utils/types";
+import slugify from "slugify";
 
 type Props = {
   item: allItem;
@@ -26,9 +27,12 @@ export default function LandCard({ item, url, index }: Props) {
   return (
     <Suspense fallback={LoadingLandCard()}>
       <Link
+        title={`${item.title} ${item.isMod ? `(${item.typeMod})` : ""}`}
         href={
           url === "home"
-            ? `/${item.id}`
+            ? `/${item.id}-${slugify(item.title, { lower: true })}${
+                item.isMod ? "-mod" : ""
+              }`
             : url === "pendingItems" || url === "items"
             ? `/admin/${url}/${item.id}`
             : "#"
@@ -41,7 +45,7 @@ export default function LandCard({ item, url, index }: Props) {
             src={imageSrc}
             width={90}
             height={90}
-            alt={item.title ?? "post"}
+            alt={`${item.title} ${item.isMod ? item.typeMod : ""}`}
             className="h-full w-full rounded-2xl object-cover"
             priority={index < 3} // أول 3 صور يتم تحميلها بالأولوية
             draggable="false"

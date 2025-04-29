@@ -58,9 +58,15 @@ const Example: React.FC = () => {
           </div>
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex shrink-0 items-center relative">
-              <h1 className="sr-only">
-                AndroCat - Download Free Android Games and Programs
-              </h1>
+              {pathname === "/" ? (
+                <h1 className="sr-only">
+                  AndroCat - Download Free Android Games and Programs
+                </h1>
+              ) : (
+                <span className="sr-only">
+                  AndroCat - Download Free Android Games and Programs
+                </span>
+              )}
               <Link href={"/"} title="AndroCat">
                 <Image
                   src="/images/andro.png"

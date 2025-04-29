@@ -14,7 +14,7 @@ import { headers } from "next/headers";
 import BannerAd from "@/components/bannerAd";
 import InterstitialAd from "@/components/interstitialAd";
 
-export async function ItemContent({ itemId }: { itemId: string }) {
+export async function ItemContent({ itemId }: { itemId: number }) {
   try {
     const headersList = await headers();
     const userAgent = headersList.get("user-agent") || "";
@@ -52,7 +52,7 @@ export async function ItemContent({ itemId }: { itemId: string }) {
                     src={item.image}
                     width={90}
                     height={90}
-                    alt={item.title || "game"}
+                    alt={`${item.title} ${item.isMod?"mod":""} apk`}
                     className="aspect-square w-full rounded-2xl object-cover"
                     priority // لتحميل الصورة أولاً
                   />
@@ -106,13 +106,15 @@ export async function ItemContent({ itemId }: { itemId: string }) {
                     {item.OBB || item.Script ? (
                       <Link
                         href="#downloads"
+                        title="downloads"
                         className="box-border h-full flex items-center px-4 uppercase bg-green-500 leading-relaxed font-bold rounded-full text-nowrap"
                       >
                         Downloads
                       </Link>
                     ) : (
                       <Link
-                        href={"/"}
+                        href={`/download/${item.id}/apk`}
+                        title={`Download APK ${item.title} Updated to version ${item.version}`}
                         className="box-border h-full flex items-center px-4 uppercase bg-green-500 leading-relaxed font-bold 
                       rounded-full shadow-xl shadow-green-500/20 text-nowrap max-[340px]:text-[10px] max-[500px]:text-xs "
                       >
@@ -127,13 +129,15 @@ export async function ItemContent({ itemId }: { itemId: string }) {
                   {item.OBB || item.Script ? (
                     <Link
                       href="#downloads"
+                      title="downloads"
                       className="box-border h-full flex items-center px-4 uppercase bg-green-500 leading-relaxed font-bold rounded-full text-nowrap"
                     >
                       Downloads
                     </Link>
                   ) : (
                     <Link
-                      href={"/"}
+                      href={`/download/${item.id}/apk`}
+                      title={`Download APK ${item.title} Updated to version ${item.version}`}
                       className="box-border h-full flex items-center px-4 uppercase bg-green-500 leading-relaxed font-bold rounded-full text-nowrap"
                     >
                       Download ({item.sizeFileAPK})
@@ -161,6 +165,7 @@ export async function ItemContent({ itemId }: { itemId: string }) {
               {item.OBB || item.Script ? (
                 <Link
                   href="#downloads"
+                  title="downloads"
                   className="box-border p-4 uppercase bg-green-500 leading-relaxed font-bold rounded-full 
                   shadow-xl shadow-green-500/20 text-nowrap text-center"
                 >
@@ -168,7 +173,8 @@ export async function ItemContent({ itemId }: { itemId: string }) {
                 </Link>
               ) : (
                 <Link
-                  href={"/"}
+                  href={`/download/${item.id}/apk`}
+                  title={`Download APK ${item.title} Updated to version ${item.version}`}
                   className="box-border p-4 uppercase bg-green-500 leading-relaxed font-bold rounded-full shadow-xl shadow-green-500/20 text-nowrap"
                 >
                   Download ({item.sizeFileAPK})
@@ -204,6 +210,7 @@ export async function ItemContent({ itemId }: { itemId: string }) {
               {item.appScreens.map((elem) => (
                 <Link
                   href={elem}
+                  title={`${item.title} ${item.isMod?(item.typeMod):""}`}
                   target="_blank"
                   className="rounded-lg bg-black aspect-[650/300]  h-[300px] max-[400px]:h-[125px] max-[500px]:h-[150px] max-[770px]:h-[200px]"
                   key={elem}
@@ -212,9 +219,9 @@ export async function ItemContent({ itemId }: { itemId: string }) {
                     src={elem}
                     width={90}
                     height={90}
-                    alt={elem}
+                    alt={`${item.title} ${item.isMod?(item.typeMod):""}`}
                     className="object-contain rounded-lg h-full w-full "
-                    priority // To download the image first
+                    loading="lazy"
                   />
                 </Link>
               ))}
@@ -240,6 +247,7 @@ export async function ItemContent({ itemId }: { itemId: string }) {
           {/* APK link */}
           <Link
             href={`/download/${item.id}/apk`}
+            title={`Download APK ${item.title} Updated to version ${item.version}`}
             className="flex items-center justify-between max-[1000px]:flex-col 
           box-border py-4 px-8 max-sm:px-4 uppercase bg-green-500 leading-relaxed 
           font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-green-500/20"
@@ -259,6 +267,7 @@ export async function ItemContent({ itemId }: { itemId: string }) {
           {item.OBB && item.linkOBB && (
             <Link
               href={`/download/${item.id}/obb`}
+              title={`Download OBB ${item.title} Updated to version ${item.version}`}
               className="flex items-center justify-between max-[1000px]:flex-col 
           box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
           font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20"
@@ -279,6 +288,7 @@ export async function ItemContent({ itemId }: { itemId: string }) {
           {item.Script && item.linkScript && (
             <Link
               href={`/download/${item.id}/script`}
+              title={`Download Script ${item.title} Updated to version ${item.version}`}
               className="flex items-center justify-between max-[1000px]:flex-col 
           box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
           font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20 "

@@ -1,16 +1,11 @@
 "use client";
-import { useState, useRef, FormEvent, ChangeEvent, useEffect } from "react";
+import { useState, useRef, ChangeEvent, useEffect } from "react";
 import { CreateItemDto } from "@/utils/dtos";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ItemCategories, ItemType } from "@prisma/client";
-import { supabase } from "@/lib/supabaseClient";
-import { fileTypeFromBuffer } from "file-type";
 import { createPendingItems } from "@/apiCalls/adminApiCall";
 import UploadFile from "@/components/uploadFile";
-
-const BUCKET_NAME_IMAGES = "images";
-const BUCKET_NAME_FILES = "files";
 
 const FormCreateItem = () => {
   const [formData, setFormData] = useState<CreateItemDto>({
@@ -44,13 +39,7 @@ const FormCreateItem = () => {
   const [newKeyword, setNewKeyword] = useState("");
   const [newAppScreen, setNewAppScreen] = useState("");
   const recaptchaRef = useRef<ReCAPTCHA>(null);
-
   const [randomText, setRandomText] = useState<string>("");
-  const [randomNum, setRandomNum] = useState<number>(0);
-  const generateRandomNumber = () => {
-    const number = Math.floor(100000 + Math.random() * 900000);
-    setRandomNum(number);
-  };
 
   const generateRandomText = () => {
     const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -66,7 +55,6 @@ const FormCreateItem = () => {
     setRandomText(e.target.value);
   };
   useEffect(() => {
-    generateRandomNumber();
     setRandomText(generateRandomText());
   }, []);
 
@@ -163,25 +151,6 @@ const FormCreateItem = () => {
     }
   };
 
-  /* App Screenshots */
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const ALLOWED_TYPES_IMAGE = [
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "image/webp",
-  ];
-
-  const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [uploadedSize, setUploadedSize] = useState<number>(0);
-  const [totalSize, setTotalSize] = useState<number>(0);
-  const [imageSize, setImageSize] = useState<string | null>(null); // width x height
-  const [uploadSpeed, setUploadSpeed] = useState<number>(0); // Upload speed in MB/s
-  const [remainingTime, setRemainingTime] = useState<string>(""); // الوقت المتبقي
-
   const addAppScreen = async (newScreenUrl: any) => {
     if (
       newScreenUrl.trim() &&
@@ -201,126 +170,6 @@ const FormCreateItem = () => {
         (screen) => screen !== screenToRemove
       ),
     });
-  };
-
-  const uploadFileScreen = async () => {
-    if (!file) return;
-
-    setUploading(true);
-
-    try {
-      const fileName = `screenshots/${Date.now()}-${file.name}`;
-      const { data: signedUrlData, error: signedUrlError } =
-        await supabase.storage
-          .from(BUCKET_NAME_IMAGES)
-          .createSignedUploadUrl(fileName);
-
-      if (signedUrlError) {
-        toast.error(signedUrlError.message || "Error generating signed URL");
-        throw new Error(signedUrlError.message || "Unknown Supabase error");
-      }
-
-      const { signedUrl } = signedUrlData;
-
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("PUT", signedUrl, true);
-        xhr.setRequestHeader("Content-Type", file.type);
-
-        let lastUploadedSize = 0;
-        let lastTime = Date.now();
-
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable) {
-            const progress = Math.round((event.loaded / event.total) * 100);
-            setUploadProgress(progress);
-            setUploadedSize(event.loaded);
-
-            {
-              /* Download speed calculator */
-            }
-            const currentTime = Date.now();
-            const timeDiff = (currentTime - lastTime) / 1000; // الفرق بالثواني
-            const uploadedDiff = event.loaded - lastUploadedSize; // الفرق بالبايت
-            const speed = uploadedDiff / timeDiff; // السرعة بالبايت/الثانية
-            setUploadSpeed(speed);
-
-            // حساب الوقت المتبقي
-            const remainingSize = totalSize - event.loaded;
-            const remainingTimeInSeconds = remainingSize / speed;
-            setRemainingTime(formatTime(remainingTimeInSeconds));
-
-            lastUploadedSize = event.loaded;
-            lastTime = currentTime;
-          }
-        };
-
-        xhr.onload = async () => {
-          if (xhr.status === 200) {
-            resolve();
-          } else {
-            // ✅ حاول تحويل الرد إلى JSON واستخراج `message`
-            const errorResponse = JSON.parse(xhr.responseText);
-            const errorMessage = errorResponse.message || "Upload failed";
-
-            toast.error(errorMessage);
-            reject(new Error(errorMessage));
-          }
-        };
-
-        xhr.onerror = () => reject(new Error("Upload error"));
-
-        xhr.send(file);
-      });
-
-      const { data: publicUrlData } = supabase.storage
-        .from(BUCKET_NAME_IMAGES)
-        .getPublicUrl(fileName);
-
-      setImageUrl(publicUrlData.publicUrl);
-
-      await new Promise<void>((resolve) => {
-        const img = new Image();
-        img.src = publicUrlData.publicUrl;
-        img.onload = () => {
-          setImageSize(`${img.width}x${img.height}`);
-          resolve();
-        };
-      });
-
-      // تحديث newAppScreen والانتظار حتى يتم التحديث
-      await setNewAppScreen(publicUrlData.publicUrl);
-
-      // استدعاء addAppScreen مع القيمة الجديدة
-      await addAppScreen(publicUrlData.publicUrl);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleScreenChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-
-    if (selectedFile) {
-      // التحقق من نوع الملف باستخدام file-type بعد تحميله
-      const fileBuffer = await selectedFile.arrayBuffer();
-      const { mime } = (await fileTypeFromBuffer(fileBuffer)) || {};
-
-      if (!mime || !ALLOWED_TYPES_IMAGE.includes(mime)) {
-        toast.error("Only images (PNG, JPG, JPEG, WEBP) are allowed.");
-        return;
-      }
-
-      if (selectedFile.size > MAX_FILE_SIZE) {
-        toast.error("File size must be less than 5MB.");
-        return;
-      }
-
-      setFile(selectedFile);
-      setTotalSize(selectedFile.size);
-    }
   };
 
   const formatTime = (seconds: number) => {

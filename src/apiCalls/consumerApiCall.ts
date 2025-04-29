@@ -38,7 +38,7 @@ export async function fetchItemsCount(itemType?: "GAME" | "PROGRAM") {
   }
 }
 
-export async function fetchItemById(itemId: string): Promise<Item> {
+export async function fetchItemById(itemId: number): Promise<Item> {
   try {
     const response = await axios.get<Item>(
       `${DOMAIN}/api/consumer/items/${itemId}`
