@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         isApproved: true,
         ...(itemType ? { itemType: itemType as ItemType } : {}), // تحويل itemType إلى النوع الصحيح
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { updatedAt: 'desc'},
       select: {
         id: true,
         title: true,

@@ -1,6 +1,5 @@
 import { ItemContent } from "./ItemContent";
 import { fetchMetadata } from "@/apiCalls/consumerApiCall";
-import Head from "next/head";
 import { DOMAIN } from "@/utils/constants";
 
 interface ItemsPageProp {
@@ -18,7 +17,7 @@ export async function generateMetadata({ params }: ItemsPageProp) {
     return {
       title: `Download ${item.title} ${item.isMod && item.typeMod} ${
         item.version
-      } free on android`,
+      } android`,
       description: `Download ${item.title} ${item.isMod && item.typeMod} - ${
         item.description
       }`,
@@ -101,45 +100,6 @@ export const viewport = {
 
 export default async function ItemPage({ params }: ItemsPageProp) {
   const { slug } = await params;
-  const [idPart, ...titleParts] = slug.split("-");
-  const itemId = parseInt(idPart);
 
-  const item = await fetchMetadata(Number(itemId));
-
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": item.itemType === "GAME" ? "VideoGame" : "SoftwareApplication",
-    name: `Download ${item.title} ${item.isMod && item.typeMod} ${
-      item.version
-    } free on android`,
-    description: `Download ${item.title} ${item.isMod && item.typeMod} - ${
-      item.description
-    }`,
-    url: `${DOMAIN}/${slug}`,
-    image: item.image,
-    keywords: item.keywords?.join(", ") || "games, apps, mods",
-    developer: item.developer,
-    applicationCategory: item.categories,
-    operatingSystem: "Android",
-    softwareVersion: item.version,
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: item.averageRating,
-      ratingCount: item.ratingCount,
-    },
-  };
-
-  return (
-    <>
-      <Head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
-          }}
-        />
-      </Head>
-      <ItemContent itemId={itemId} />
-    </>
-  );
+  return <ItemContent slug={slug} />;
 }

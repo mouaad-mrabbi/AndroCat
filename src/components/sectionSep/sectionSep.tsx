@@ -5,14 +5,14 @@ interface SectionTitle {
 }
 export default function SectionSep({ sectionTitle }: SectionTitle) {
   return (
-    <div className="flex flex-col gap-4 my-16 mx-8 ">
+    <div className="flex flex-col gap-4 my-16 max-[500px]:px-0 px-8 mx-2 ">
       <div className="uppercase text-2xl leading-relaxed font-bold">
         <h2>list {sectionTitle}</h2>
       </div>
       <CarouselApps sectionTitle={sectionTitle} />
       <Link
         href={`/${sectionTitle.toLowerCase()}s`}
-        title={`Explore all ${sectionTitle} on Androcat`}
+        title={`all ${sectionTitle} on Androcat`}
         className="uppercase bg-green-500 leading-relaxed font-bold w-max py-1.5 px-6 rounded-full shadow-xl shadow-green-500/20"
       >
         <span>all {sectionTitle}</span>

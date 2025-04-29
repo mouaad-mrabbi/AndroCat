@@ -18,12 +18,12 @@ const SwiperCarousel = () => {
         className="default-carousel"
       >
         <SwiperSlide>
-          <div className="  h-80 flex items-center ">
+          <div className="h-80 flex items-center ">
             <Image
               src="/images/imageGames.png"
               width={500}
               height={500}
-              alt="Picture of the author"
+              alt="ALL MOD Games AndroCat"
               className="h-full w-full object-cover brightness-[0.35]"
             />
             <div
@@ -39,7 +39,7 @@ const SwiperCarousel = () => {
                 </p>
                 <Link
                   href="/games"
-                  title="Explore all modded games on Androcat"
+                  title="all modded games on Androcat"
                   className="p-2.5 rounded-full font-bold w-max bg-green-500"
                 >
                   <span>ALL MOD Games</span>
@@ -54,7 +54,7 @@ const SwiperCarousel = () => {
               src="/images/imagePrograms.jpeg"
               width={500}
               height={500}
-              alt="Picture of the author"
+              alt="ALL programs AndroCat"
               className="h-full w-full object-cover brightness-50"
             />
             <div
@@ -70,7 +70,7 @@ const SwiperCarousel = () => {
                 </p>
                 <Link
                   href="/programs"
-                  title="Explore all Android programs on Androcat"
+                  title="all Android programs on Androcat"
                   className="p-2.5 rounded-full font-bold w-max bg-green-500"
                 >
                   <span>ALL programs</span>

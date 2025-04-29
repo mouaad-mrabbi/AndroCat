@@ -47,8 +47,9 @@ export default function LandCard({ item, url, index }: Props) {
             height={90}
             alt={`${item.title} ${item.isMod ? item.typeMod : ""}`}
             className="h-full w-full rounded-2xl object-cover"
-            priority={index < 3} // أول 3 صور يتم تحميلها بالأولوية
+/*          priority={index < 3} // أول 3 صور يتم تحميلها بالأولوية */
             draggable="false"
+            loading="lazy"
           />
           {item.isMod && (
             <div className="absolute bottom-1 right-1 px-2 py-1 font-bold text-sm bg-black/20 rounded-xl">

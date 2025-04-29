@@ -91,7 +91,7 @@ const Home = () => {
         <SectionSep sectionTitle={"PROGRAM"} />
         <div className="zig-zag-line"></div>
 
-        <div className="max-[500px]:px-0 px-8">
+        <div className="max-[500px]:px-0 px-8 mx-2">
           <div className="mt-10 text-[#898a8b] max-w-[57.5rem]">
             <h2 className="text-xl mb-4 font-bold max-[770px]:text-base max-[770px]:mb-2">
               Download free games for Android

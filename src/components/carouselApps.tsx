@@ -44,7 +44,7 @@ export default function Carousel({sectionTitle}:{sectionTitle:"GAME" | "PROGRAM"
         loop={true}
         spaceBetween={20} // المسافة بين العناصر
         slidesPerView={1} // عدد العناصر المعروضة بشكل افتراضي
-        navigation // إضافة أسهم التنقل
+        /* navigation // إضافة أسهم التنقل */
         observer={true} // يراقب التغييرات في DOM
         observeParents={true} // يراقب التغييرات في العناصر الأم
         breakpoints={{
@@ -54,9 +54,9 @@ export default function Carousel({sectionTitle}:{sectionTitle:"GAME" | "PROGRAM"
           650: { slidesPerView: 3, spaceBetween: 0, slidesPerGroup: 2 },
           450: { slidesPerView: 2, spaceBetween: 0, slidesPerGroup: 1 },
           385: { slidesPerView: 1.8, spaceBetween: 0, slidesPerGroup: 1 },
-          350: { slidesPerView: 1.6, spaceBetween: 0, slidesPerGroup: 1 },
-          315: { slidesPerView: 1.4, spaceBetween: 0, slidesPerGroup: 1 },
-          280: { slidesPerView: 1.2, spaceBetween: 0, slidesPerGroup: 1 },
+          350: { slidesPerView: 1.8, spaceBetween: 0, slidesPerGroup: 1 },
+          315: { slidesPerView: 1.6, spaceBetween: 0, slidesPerGroup: 1 },
+          280: { slidesPerView: 1.4, spaceBetween: 0, slidesPerGroup: 1 },
           0: { slidesPerView: 1, spaceBetween: 0, slidesPerGroup: 1 },
         }}
       >
