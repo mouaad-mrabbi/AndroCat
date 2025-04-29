@@ -4,7 +4,7 @@ import Head from "next/head";
 import { DOMAIN } from "@/utils/constants";
 
 interface ItemsPageProp {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: ItemsPageProp) {
