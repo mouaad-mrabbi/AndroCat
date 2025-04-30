@@ -5,6 +5,7 @@ import {
   ListObjectsV2Command,
   DeleteObjectCommand,
   CopyObjectCommand,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -32,6 +33,12 @@ const S3 = new S3Client({
 
 export async function renameFile(oldKey: string, newKey: string) {
   try {
+    const headCommand = new HeadObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: oldKey,
+    });
+    await S3.send(headCommand);
+    
     const copyCommand = new CopyObjectCommand({
       Bucket: R2_BUCKET,
       CopySource: `/${R2_BUCKET}/${oldKey}`,

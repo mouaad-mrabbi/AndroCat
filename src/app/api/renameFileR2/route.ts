@@ -12,8 +12,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await renameFile(oldKey, newKey); // <-- ضروري
-
+    await renameFile(oldKey, newKey);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Rename file error:", error);

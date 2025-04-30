@@ -4,6 +4,7 @@ import { verifyToken } from "@/utils/verifyToken";
 import { createItemSchema } from "@/utils/validationSchemas";
 import { CreateItemDto } from "@/utils/dtos";
 import { renameFile } from "@/lib/r2";
+import { DOMAINCDN } from "@/utils/constants";
 
 interface Props {
   params: Promise<{ pendingItemId: string }>;
@@ -188,6 +189,7 @@ export async function POST(request: NextRequest, { params }: Props) {
     });
 
     await prisma.pendingItem.delete({ where: { id: pendingItemId } });
+
     await renameFile(
       new URL(newItem.image).pathname.slice(1),
       `posts/${newItem.id}/${newItem.image.split("/").pop()}`
@@ -196,18 +198,50 @@ export async function POST(request: NextRequest, { params }: Props) {
       new URL(newItem.linkAPK).pathname.slice(1),
       `apks/${newItem.id}/${newItem.linkAPK.split("/").pop()}`
     );
+    await prisma.item.update({
+      where: { id: newItem.id },
+      data: {
+        image: `${DOMAINCDN}/posts/${newItem.id}/${newItem.image
+          .split("/")
+          .pop()}`,
+        linkAPK: `${DOMAINCDN}/apks/${newItem.id}/${newItem.linkAPK
+          .split("/")
+          .pop()}`,
+      },
+      select: { id: true, image: true, linkAPK: true },
+    });
+
     if (newItem.OBB && newItem.linkOBB) {
       await renameFile(
         new URL(newItem.linkOBB).pathname.slice(1),
         `obbs/${newItem.id}/${newItem.linkOBB.split("/").pop()}`
       );
+      await prisma.item.update({
+        where: { id: newItem.id },
+        data: {
+          linkOBB: `${DOMAINCDN}/obbs/${newItem.id}/${newItem.linkOBB
+            .split("/")
+            .pop()}`,
+        },
+        select: { id: true, linkOBB: true },
+      });
     }
     if (newItem.Script && newItem.linkScript) {
       await renameFile(
         new URL(newItem.linkScript).pathname.slice(1),
         `scripts/${newItem.id}/${newItem.linkScript.split("/").pop()}`
       );
+      await prisma.item.update({
+        where: { id: newItem.id },
+        data: {
+          linkScript: `${DOMAINCDN}/scripts/${newItem.id}/${newItem.linkScript
+            .split("/")
+            .pop()}`,
+        },
+        select: { id: true, linkScript: true },
+      });
     }
+    
     await Promise.all(
       newItem.appScreens.map((screen) =>
         renameFile(
@@ -216,6 +250,16 @@ export async function POST(request: NextRequest, { params }: Props) {
         )
       )
     );
+    const updatedScreens = newItem.appScreens.map((screen) => {
+      const fileName = screen.split("/").pop();
+      return `${DOMAINCDN}/screenshots/${newItem.id}/${fileName}`;
+    });
+    await prisma.item.update({
+      where: { id: newItem.id },
+      data: {
+        appScreens: updatedScreens,
+      },
+    });
 
     return NextResponse.json(
       { id: newItem.id, message: "New items added" },

@@ -14,7 +14,7 @@ interface ItemsPageProp {
   params: Promise<{ pageId: string }>;
 }
 
-export async function generateMetadata({ params }: ItemsPageProp){
+export async function generateMetadata({ params }: ItemsPageProp) {
   const { pageId } = await params;
   const page = Number(pageId);
 
@@ -22,9 +22,11 @@ export async function generateMetadata({ params }: ItemsPageProp){
   const nextPage = `${DOMAIN}/games/${page + 1}`;
 
   return {
-    title: "Download modded games on android",
+    title: "Download Free Modded Android Games APK – Latest Versions",
     description:
-      "In this section, you can download the latest cool and popular games. We also have daily updates of selected games mod for Android.",
+      "Download the latest modded Android games APK for free. Enjoy daily updates with the most popular, top-rated, and exclusive games available for Android devices.",
+    keywords:
+      "Modded Android Games, Free APK Download, Latest Modded APK, Free Android Games, Android APK Download, Popular Modded Games, APK Games for Android, Daily Game Updates, Best Modded Android Games, Free Modded Games APK",
     alternates: {
       canonical: `${DOMAIN}/games`,
       types: {
@@ -64,7 +66,7 @@ export default async function GamesPage({ params }: ItemsPageProp) {
       name: "Download modded games on android",
       description:
         "In this section, you can download the latest cool and popular games. We also have daily updates of selected games mod for Android.",
-      url: `${DOMAIN}/${pageId}`,
+      url: `${DOMAIN}/games`,
       keywords:
         "mod, modded games for free, play free of viruses, hack, modded applications",
     };
