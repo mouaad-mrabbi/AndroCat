@@ -4,6 +4,7 @@ import {
   GetObjectCommand,
   ListObjectsV2Command,
   DeleteObjectCommand,
+  CopyObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -28,6 +29,26 @@ const S3 = new S3Client({
     secretAccessKey: R2_SECRET_ACCESS_KEY,
   },
 });
+
+export async function renameFile(oldKey: string, newKey: string) {
+  try {
+    const copyCommand = new CopyObjectCommand({
+      Bucket: R2_BUCKET,
+      CopySource: `/${R2_BUCKET}/${oldKey}`,
+      Key: newKey,
+    });
+    await S3.send(copyCommand);
+
+    const deleteCommand = new DeleteObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: oldKey,
+    });
+    await S3.send(deleteCommand);
+  } catch (error) {
+    console.error("Error move file:", error);
+    throw error;
+  }
+}
 
 export async function uploadFile(file: Buffer, key: string) {
   const command = new PutObjectCommand({
@@ -110,12 +131,3 @@ export async function deleteFile(key: string) {
 }
 
 
-export async function getPublicUrl(key: string) {
-  try {
-    const publicUrl = `https://${R2_BUCKET}.${R2_ACCOUNT_ID}.r2.cloudflarestorage.com/${key}`;
-    return publicUrl;
-  } catch (error) {
-    console.error("Error generating public URL:", error);
-    throw error;
-  }
-}

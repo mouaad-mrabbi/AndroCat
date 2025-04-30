@@ -17,7 +17,8 @@ export default function Card({ item }: { item: allItem }) {
             width={90}
             height={90}
             alt={item.title}
-            className="aspect-square w-full rounded-2xl object-cover"
+            className="aspect-square w-full rounded-2xl object-cover "
+            draggable={false}
           />
           {item.isMod && (
             <div className="absolute bottom-1 right-1 px-2 py-1 font-bold text-sm bg-black/20 rounded-xl">

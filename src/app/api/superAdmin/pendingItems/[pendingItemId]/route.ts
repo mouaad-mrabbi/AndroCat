@@ -3,6 +3,7 @@ import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
 import { createItemSchema } from "@/utils/validationSchemas";
 import { CreateItemDto } from "@/utils/dtos";
+import { renameFile } from "@/lib/r2";
 
 interface Props {
   params: Promise<{ pendingItemId: string }>;
@@ -187,6 +188,34 @@ export async function POST(request: NextRequest, { params }: Props) {
     });
 
     await prisma.pendingItem.delete({ where: { id: pendingItemId } });
+    await renameFile(
+      new URL(newItem.image).pathname.slice(1),
+      `posts/${newItem.id}/${newItem.image.split("/").pop()}`
+    );
+    await renameFile(
+      new URL(newItem.linkAPK).pathname.slice(1),
+      `apks/${newItem.id}/${newItem.linkAPK.split("/").pop()}`
+    );
+    if (newItem.OBB && newItem.linkOBB) {
+      await renameFile(
+        new URL(newItem.linkOBB).pathname.slice(1),
+        `obbs/${newItem.id}/${newItem.linkOBB.split("/").pop()}`
+      );
+    }
+    if (newItem.Script && newItem.linkScript) {
+      await renameFile(
+        new URL(newItem.linkScript).pathname.slice(1),
+        `scripts/${newItem.id}/${newItem.linkScript.split("/").pop()}`
+      );
+    }
+    await Promise.all(
+      newItem.appScreens.map((screen) =>
+        renameFile(
+          new URL(screen).pathname.slice(1),
+          `screenshots/${newItem.id}/${screen.split("/").pop()}`
+        )
+      )
+    );
 
     return NextResponse.json(
       { id: newItem.id, message: "New items added" },
