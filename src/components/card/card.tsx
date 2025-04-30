@@ -10,7 +10,7 @@ export default function Card({ item }: { item: allItem }) {
       href={`/${item.id}-${slugify(item.title, { lower: true })}${item.isMod?"-mod":""}`}
       title={`Download ${item.title} ${item.isMod && item.typeMod} free on android in Androcat`}
     >
-      <div className="flex flex-col bg-[#1b1d1f] hover:bg-[#212325] w-48 max-[450px]:w-44 h-80 p-4 select-none ">
+      <div className="flex flex-col bg-[#1b1d1f] hover:bg-[#212325] w-48 max-[450px]:w-44 h-80 p-4 select-none ml-4">
         <div className="relative">
           <Image
             src={item.image}
