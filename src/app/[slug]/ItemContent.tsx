@@ -344,6 +344,27 @@ export async function ItemContent({ slug }: { slug: string }) {
                 </div>
               </Link>
             )}
+            {/* OriginalAPK link */}
+            {item.OriginalAPK && item.linkOriginalAPK && (
+              <Link
+                href={`/download/${item.id}/script`}
+                title={`Download Script ${item.title} Updated to version ${item.version}`}
+                className="flex items-center justify-between max-[1000px]:flex-col 
+          box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
+          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20 "
+              >
+                <div>
+                  <p>
+                    Download Original APK {item.title}{" "}
+                    <span> Updated to version {item.version}</span>
+                  </p>
+                </div>
+                <div className="max-[1000px]:font-medium flex items-center gap-2">
+                  <RiDownloadFill />
+                  <p>{item.sizeFileScript}</p>
+                </div>
+              </Link>
+            )}
           </div>
 
           {/* Additional Information */}

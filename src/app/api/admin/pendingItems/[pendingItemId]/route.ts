@@ -93,6 +93,24 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
     const pendingItem = await prisma.pendingItem.findUnique({
       where: { id: pendingItemId, createdById: userFromToken.id },
+      select: {
+        id: true,
+        createdById: true,
+        
+        OBB: true,
+        Script: true,
+        OriginalAPK: true ,
+
+        linkOBB: true,
+        linkScript: true,
+        linkOriginalAPK: true,
+        sizeFileOBB: true,
+        sizeFileScript: true,
+        sizeFileOriginalAPK: true,
+
+        isMod: true ,
+        typeMod: true ,
+      },
     });
     if (!pendingItem) {
       return NextResponse.json(
@@ -130,17 +148,22 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
         OBB: body.OBB ?? pendingItem.OBB,
         Script: body.Script ?? pendingItem.Script, // احتفظ بالقيمة القديمة إذا لم يتم إرسال Script
+        OriginalAPK: body.OriginalAPK ?? pendingItem.OriginalAPK,
 
         linkAPK: body.linkAPK,
         linkOBB:
           body.OBB ?? pendingItem.OBB
             ? body.linkOBB ?? pendingItem.linkOBB
             : null,
-        linkVideo: body.linkVideo,
         linkScript:
           body.Script ?? pendingItem.Script
             ? body.linkScript ?? pendingItem.linkScript
             : null, // لا تغير linkScript إلا إذا كان Script = false بشكل صريح
+        linkOriginalAPK:
+          body.OriginalAPK ?? pendingItem.OriginalAPK
+            ? body.linkOriginalAPK ?? pendingItem.linkOriginalAPK
+            : null,
+        linkVideo: body.linkVideo,
 
         sizeFileAPK: body.sizeFileAPK,
         sizeFileOBB:
@@ -151,6 +174,10 @@ export async function PUT(request: NextRequest, { params }: Props) {
           body.Script ?? pendingItem.Script
             ? body.sizeFileScript ?? pendingItem.sizeFileScript
             : null, // احتفظ بالقيمة القديمة
+        sizeFileOriginalAPK:
+          body.OriginalAPK ?? pendingItem.OriginalAPK
+            ? body.sizeFileOriginalAPK ?? pendingItem.sizeFileOriginalAPK
+            : null,
 
         appScreens: body.appScreens,
         keywords: body.keywords,
@@ -201,6 +228,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
 
     const pendingItem = await prisma.pendingItem.findUnique({
       where: { id: pendingItemId, createdById: userFromToken.id },
+      select: { id: true, createdById: true },
     });
     if (!pendingItem) {
       return NextResponse.json(

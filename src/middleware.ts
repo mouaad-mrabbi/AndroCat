@@ -29,8 +29,6 @@ export const config = {
 }; */
 
 import { NextRequest, NextResponse } from "next/server";
-import { verifyToken } from "./utils/verifyToken";
-import prisma from "@/utils/db";
 
 export function middleware(request: NextRequest) {
   const jwtToken = request.cookies.get("jwtToken");

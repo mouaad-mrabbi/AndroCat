@@ -3,6 +3,7 @@ import { createItemSchema } from "@/utils/validationSchemas";
 import { CreateItemDto } from "@/utils/dtos";
 import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
+import { deleteFile } from "@/lib/r2";
 
 interface Props {
   params: Promise<{ pendingItemId: string }>;
@@ -17,7 +18,6 @@ interface Props {
 export async function PUT(request: NextRequest, { params }: Props) {
   try {
     const pendingItemId = Number((await params).pendingItemId);
-
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -54,6 +54,21 @@ export async function PUT(request: NextRequest, { params }: Props) {
       );
     }
 
+    const item = await prisma.item.findUnique({
+      where: { id: pendingItem.itemId },
+      select: {
+        image: true,
+        linkAPK: true,
+        linkOBB: true,
+        linkScript: true,
+        linkOriginalAPK:true,
+        appScreens: true,
+      },
+    });
+    if (!item) {
+      return NextResponse.json({ message: "Item not found" }, { status: 404 });
+    }
+
     const newItem = await prisma.item.update({
       where: { id: pendingItem.itemId },
       select: {
@@ -66,15 +81,22 @@ export async function PUT(request: NextRequest, { params }: Props) {
         androidVer: true,
         itemType: true,
         categories: true,
+
         OBB: true,
         Script: true,
+        OriginalAPK: true,
+
         linkAPK: true,
         linkOBB: true,
-        linkVideo: true,
         linkScript: true,
+        linkVideo: true,
+        linkOriginalAPK: true,
+
         sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
+        sizeFileOriginalAPK: true,
+
         appScreens: true,
         keywords: true,
         isMod: true,
@@ -99,15 +121,18 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
         OBB: pendingItem.OBB,
         Script: pendingItem.Script,
+        OriginalAPK:pendingItem.OriginalAPK,
 
         linkAPK: pendingItem.linkAPK,
         linkOBB: pendingItem.OBB ? pendingItem.linkOBB : null,
-        linkVideo: pendingItem.linkVideo,
         linkScript: pendingItem.Script ? pendingItem.linkScript : null,
+        linkOriginalAPK: pendingItem.OriginalAPK ? pendingItem.linkOriginalAPK : null,
+        linkVideo: pendingItem.linkVideo,
 
         sizeFileAPK: pendingItem.sizeFileAPK,
         sizeFileOBB: pendingItem.OBB ? pendingItem.sizeFileOBB : null,
         sizeFileScript: pendingItem.Script ? pendingItem.sizeFileScript : null,
+        sizeFileOriginalAPK: pendingItem.OriginalAPK ? pendingItem.sizeFileOriginalAPK : null,
 
         appScreens: pendingItem.appScreens,
         keywords: pendingItem.keywords,
@@ -128,6 +153,33 @@ export async function PUT(request: NextRequest, { params }: Props) {
         isApproved: false,
       },
     });
+
+    if (item.image !== newItem.image) {
+      await deleteFile(new URL(item.image).pathname.slice(1));
+    }
+    if (item.linkAPK !== newItem.linkAPK) {
+      await deleteFile(new URL(item.linkAPK).pathname.slice(1));
+    }
+    if (item.linkOBB !== newItem.linkOBB && item.linkOBB) {
+      await deleteFile(new URL(item.linkOBB).pathname.slice(1));
+    }
+    if (item.linkScript !== newItem.linkScript && item.linkScript) {
+      await deleteFile(new URL(item.linkScript).pathname.slice(1));
+    }   
+     if (item.linkOriginalAPK !== newItem.linkOriginalAPK && item.linkOriginalAPK) {
+      await deleteFile(new URL(item.linkOriginalAPK).pathname.slice(1));
+    }
+    await Promise.all(
+      item.appScreens.map(async (screen) => {
+        if (!newItem.appScreens.includes(screen) && screen) {
+          try {
+            await deleteFile(new URL(screen).pathname.slice(1));
+          } catch (error) {
+            console.error("Failed to delete screen:", screen, error);
+          }
+        }
+      })
+    );
 
     await prisma.pendingItem.delete({ where: { id: pendingItemId } });
 

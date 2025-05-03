@@ -1,4 +1,4 @@
-import { ItemCategories, ItemType } from "@prisma/client";
+import { ArticleType, GameCategories, ProgramCategories } from "@prisma/client";
 
 //User
 export interface RegisterUserDto {
@@ -18,35 +18,40 @@ export interface UpdateUserDto {
   password?: string;
 }
 
-//Item
-export interface CreateItemDto {
+//Article
+export interface CreateArticleDto {
   title: string;
   description: string;
   image: string;
   developer: string;
   version: string;
+  versionOriginal?: string;
   androidVer: string;
 
-  itemType: ItemType;
-  categories: ItemCategories;
+  articleType: ArticleType;
+  gameCategory?: GameCategories;
+  programCategory?: ProgramCategories;
 
   OBB: boolean;
   Script: boolean;
+  OriginalAPK: boolean;
 
   linkAPK: string;
   linkOBB?: string | null;
   linkVideo?: string | null;
   linkScript?: string | null;
+  linkOriginalAPK?: string | null;
 
   sizeFileAPK: string;
   sizeFileOBB?: string | null;
   sizeFileScript?: string | null;
+  sizeFileOriginalAPK?: string | null;
 
   appScreens: string[];
   keywords: string[];
 
   isMod: boolean;
-  typeMod?: string| null;
+  typeMod?: string | null;
 
   ratedFor: number;
   installs: string;
@@ -55,28 +60,33 @@ export interface CreateItemDto {
   createdAt?: string | Date;
 }
 
-export interface UpdateItemDto {
+export interface UpdateArticleDto {
   title?: string;
   description?: string;
   image?: string;
   developer?: string;
   version?: string;
+  versionOriginal?: string;
   androidVer?: string;
 
-  itemType?: ItemType;
-  categories?: ItemCategories;
+  articleType?: ArticleType;
+  gameCategory?: GameCategories;
+  programCategory?: ProgramCategories;
 
   OBB?: boolean;
   Script?: boolean;
+  OriginalAPK?: boolean;
 
   linkAPK?: string;
   linkOBB?: string;
   linkVideo?: string;
   linkScript?: string;
+  linkOriginalAPK?: string;
 
   sizeFileAPK?: string;
   sizeFileOBB?: string;
   sizeFileScript?: string;
+  sizeFileOriginalAPK?: string;
 
   appScreens?: string[];
   keywords?: string[];

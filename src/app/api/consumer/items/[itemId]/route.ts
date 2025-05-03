@@ -15,7 +15,6 @@ export async function GET(request: NextRequest, { params }: Props) {
   try {
     const itemId = Number((await params).itemId);
 
-
     const item = await prisma.item.findUnique({
       where: {
         id: itemId,
@@ -31,15 +30,22 @@ export async function GET(request: NextRequest, { params }: Props) {
         androidVer: true,
         itemType: true,
         categories: true,
+
         OBB: true,
         Script: true,
+        OriginalAPK:true,
+
         linkAPK: true,
         linkOBB: true,
-        linkVideo: true,
         linkScript: true,
+        linkOriginalAPK: true,
+        linkVideo: true,
+
         sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
+        sizeFileOriginalAPK: true,
+
         appScreens: true,
         keywords: true,
         isMod: true,

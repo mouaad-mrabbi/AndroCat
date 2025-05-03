@@ -84,7 +84,7 @@ export default async function GamesPage({ params }: ItemsPageProp) {
         <div>
           <div className="mb-8">
             <Toolbar local={"home"} firstLocal={"games"} />
-            <CardRow />
+            <CardRow itemType="games"/>
           </div>
 
           <div className="px-7 max-[500px]:px-0">

@@ -1,6 +1,6 @@
-export const ITEM_PER_PAGE = 14;
+export const ARTICLE_PER_PAGE = 14;
 export const user_PER_PAGE = 14;
-export const ITEM_SEARCH_PER_PAGE = 10;
+export const ARTICLE_SEARCH_PER_PAGE = 10;
 
 const PRODUCTION_DOMAIN = "https://androcat.com";
 const DEVELOPMENT_DOMAIN = "http://localhost:3000";
@@ -12,7 +12,4 @@ export const DOMAIN =
 
 export const DOMAINCDN = "http://cdn.androcat.com";
 
-export const DomainsImages = [
-  "cacbbglbdrhnfhrmztmz.supabase.co",
-  "cdn.androcat.com",
-];
+export const DomainsImages = ["cdn.androcat.com"];

@@ -8,8 +8,8 @@ interface Props {
 /**
  *  @method  GET
  *  @route   ~/api/consumer/items/:itemId/downloadItem
- *  @query   downloadType - The type of the download (apk, obb, or script).
- *  @desc    get item download details (APK, OBB, or Script).
+ *  @query   downloadType - The type of the download (apk, obb, script, or original).
+ *  @desc    get item download details (APK, OBB, Script, or Original).
  *  @access  public
  */
 export async function GET(request: NextRequest, { params }: Props) {
@@ -17,7 +17,7 @@ export async function GET(request: NextRequest, { params }: Props) {
     const downloadType = (
       request.nextUrl.searchParams.get("downloadType") || ""
     ).toLowerCase();
-    const validTypes = ["apk", "obb", "script"];
+    const validTypes = ["apk", "obb", "script", "originalapk"];
     if (!validTypes.includes(downloadType)) {
       return NextResponse.json(
         {
@@ -28,7 +28,6 @@ export async function GET(request: NextRequest, { params }: Props) {
     }
 
     const itemId = Number((await params).itemId);
-
     if (!itemId) {
       return NextResponse.json(
         { message: "Item ID is required" },
@@ -86,6 +85,26 @@ export async function GET(request: NextRequest, { params }: Props) {
           androidVer: true,
           linkScript: true,
           sizeFileScript: true,
+        },
+      });
+      if (!item) {
+        return NextResponse.json(
+          { message: "item not found" },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(item, { status: 200 });
+    } else if (downloadType === "originalapk") {
+      const item = await prisma.item.findUnique({
+        where: { id: itemId, isApproved: true, OriginalAPK: true },
+        select: {
+          id: true,
+          title: true,
+          image: true,
+          androidVer: true,
+          linkOriginalAPK: true,
+          sizeFileOriginalAPK: true,
         },
       });
       if (!item) {

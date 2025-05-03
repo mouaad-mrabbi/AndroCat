@@ -32,12 +32,12 @@ model User {
   resetPasswordExpires DateTime?
 
   // Relations
-  createdItems   Item[] @relation(name: "CreatedBy")
-  validatedItems Item[] @relation(name: "ValidatedBy")
+  createdArticles   Article[] @relation(name: "CreatedBy")
+  validatedArticles Article[] @relation(name: "ValidatedBy")
 
-  pendingItems PendingItem[]
+  pendingArticles PendingArticle[]
 
-  rejectedPendingItems RejectedPendingItem[] @relation("RejectedBy")
+  rejectedPendingArticles RejectedPendingArticle[] @relation("RejectedBy")
 }
 
 enum Role {
@@ -47,13 +47,13 @@ enum Role {
   OWNER // System owner with full control
 }
 
-//Item
-enum ItemType {
+//article
+enum ArticleType {
   GAME
   PROGRAM
 }
 
-enum ItemCategories {
+enum GameCategories {
   ACTION
   CARDS
   ARCADE
@@ -73,45 +73,54 @@ enum ItemCategories {
   PUZZLE
 }
 
-model ItemRating {
-  id        Int    @id @default(autoincrement())
-  ipAddress String
-  rate      Float
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  itemId Int
-  item   Item @relation(fields: [itemId], references: [id])
-
-  @@unique([itemId, ipAddress]) // منع نفس الـ IP من تقييم نفس العنصر أكثر من مرة
-  @@index([itemId]) // فهرس لتحسين الأداء
+enum ProgramCategories {
+  BUSINESS_FINANCE
+  HEALTH_SPORT
+  INTERNET
+  SOCIAL
+  MUSIC_VIDEO
+  PERSONALIZATION
+  EDUCATION
+  OFFICE
+  WEATHER
+  TRAVEL
+  CAMERA
+  PHOTOGRAPHY
+  FILE_MANAGERS
+  TRANSLATORS
+  LINK
+  TOOLS
 }
 
-model Item {
-  id          Int          @id @default(autoincrement())
-  title       String
-  description String
-  image       String
-  developer   String
-  version     String
-  androidVer  String
-  ratings     ItemRating[]
+model Article {
+  id              Int             @id @default(autoincrement())
+  title           String
+  description     String
+  image           String
+  developer       String
+  version         String
+  versionOriginal String?
+  androidVer      String
+  ratings         ArticleRating[]
 
-  itemType   ItemType
-  categories ItemCategories
+  articleType     ArticleType
+  gameCategory    GameCategories?
+  programCategory ProgramCategories?
 
-  OBB    Boolean @default(false)
-  Script Boolean @default(false)
+  OBB         Boolean @default(false)
+  Script      Boolean @default(false)
+  OriginalAPK Boolean @default(false)
 
-  linkAPK    String
-  linkOBB    String?
-  linkVideo  String?
-  linkScript String?
+  linkAPK         String
+  linkOBB         String?
+  linkVideo       String?
+  linkScript      String?
+  linkOriginalAPK String?
 
-  sizeFileAPK    String
-  sizeFileOBB    String?
-  sizeFileScript String?
+  sizeFileAPK         String
+  sizeFileOBB         String?
+  sizeFileScript      String?
+  sizeFileOriginalAPK String?
 
   appScreens String[]
   keywords   String[]
@@ -140,42 +149,62 @@ model Item {
   createdBy   User @relation(name: "CreatedBy", fields: [createdById], references: [id])
   validatedBy User @relation(name: "ValidatedBy", fields: [validatedById], references: [id])
 
-  pendingItem PendingItem?
+  pendingArticle PendingArticle?
 }
 
-//Pending Item
+model ArticleRating {
+  id        Int    @id @default(autoincrement())
+  ipAddress String
+  rate      Float
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  articleId Int
+  article   Article @relation(fields: [articleId], references: [id])
+
+  @@unique([articleId, ipAddress]) // منع نفس الـ IP من تقييم نفس العنصر أكثر من مرة
+  @@index([articleId]) // فهرس لتحسين الأداء
+}
+
+//Pending article
 enum ActionType {
   CREATE
   UPDATE
   DELETE
 }
 
-model PendingItem {
+model PendingArticle {
   id       Int        @id @default(autoincrement())
   status   ActionType
   checking Boolean    @default(false)
 
-  title       String
-  description String
-  image       String
-  developer   String
-  version     String
-  androidVer  String
+  title           String
+  description     String
+  image           String
+  developer       String
+  version         String
+  versionOriginal String?
+  androidVer      String
 
-  itemType   ItemType
-  categories ItemCategories
+  articleType     ArticleType
+  gameCategory    GameCategories?
+  programCategory ProgramCategories?
 
-  OBB    Boolean @default(false)
-  Script Boolean @default(false)
+  OBB         Boolean @default(false)
+  Script      Boolean @default(false)
+  OriginalAPK Boolean @default(false)
 
-  linkAPK    String
-  linkOBB    String?
-  linkVideo  String?
-  linkScript String?
+  linkAPK         String
+  linkOBB         String?
+  linkVideo       String?
+  linkScript      String?
+  linkOriginalAPK String?
 
-  sizeFileAPK    String
-  sizeFileOBB    String?
-  sizeFileScript String?
+  sizeFileAPK         String
+  sizeFileOBB         String?
+  sizeFileScript      String?
+  sizeFileOriginalAPK String?
 
   appScreens String[]
   keywords   String[]
@@ -192,17 +221,17 @@ model PendingItem {
   createdById Int
   createdBy   User @relation(fields: [createdById], references: [id])
 
-  itemId Int?  @unique
-  item   Item? @relation(fields: [itemId], references: [id])
+  articleId Int?     @unique
+  article   Article? @relation(fields: [articleId], references: [id])
 
-  rejected RejectedPendingItem?
+  rejected RejectedPendingArticle?
 }
 
-model RejectedPendingItem {
+model RejectedPendingArticle {
   id Int @id @default(autoincrement())
 
-  pendingItemId Int         @unique
-  pendingItem   PendingItem @relation(fields: [pendingItemId], references: [id], onDelete: Cascade)
+  pendingArticleId Int            @unique
+  pendingArticle   PendingArticle @relation(fields: [pendingArticleId], references: [id], onDelete: Cascade)
 
   rejectedAt   DateTime @default(now())
   rejectedById Int

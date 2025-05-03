@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
+import { deleteFile } from "@/lib/r2";
 
 interface Props {
   params: Promise<{ itemId: string }>;
@@ -15,7 +16,6 @@ interface Props {
 export async function GET(request: NextRequest, { params }: Props) {
   try {
     const itemId = Number((await params).itemId);
-
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -33,6 +33,7 @@ export async function GET(request: NextRequest, { params }: Props) {
 
     const user = await prisma.user.findUnique({
       where: { id: userFromToken.id },
+      select: { id: true },
     });
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -56,13 +57,18 @@ export async function GET(request: NextRequest, { params }: Props) {
 
         OBB: true,
         Script: true,
+        OriginalAPK: true,
+
         linkAPK: true,
         linkOBB: true,
-        linkVideo: true,
         linkScript: true,
+        linkOriginalAPK: true,
+        linkVideo: true,
+
         sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
+        sizeFileOriginalAPK: true,
 
         appScreens: true,
         keywords: true,
@@ -84,10 +90,10 @@ export async function GET(request: NextRequest, { params }: Props) {
 
         createdAt: true,
         updatedAt: true,
-        createdBy: {select:{profile:true,username:true}},
+        createdBy: { select: { profile: true, username: true } },
 
         validatedAt: true,
-        validatedBy: {select:{profile:true,username:true}},
+        validatedBy: { select: { profile: true, username: true } },
 
         pendingItem: true,
       },
@@ -114,6 +120,9 @@ export async function GET(request: NextRequest, { params }: Props) {
 export async function DELETE(request: NextRequest, { params }: Props) {
   try {
     const itemId = Number((await params).itemId);
+    if (isNaN(itemId)) {
+      return NextResponse.json({ message: "Invalid item ID" }, { status: 400 });
+    }
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -129,12 +138,42 @@ export async function DELETE(request: NextRequest, { params }: Props) {
       );
     }
 
-    const pendingItem = await prisma.item.findUnique({
-      where: { id: itemId ,validatedById: userFromToken.id,},
+    const item = await prisma.item.findUnique({
+      where: { id: itemId, validatedById: userFromToken.id },
+      select: {
+        id: true,
+        image: true,
+        linkAPK: true,
+        linkOBB: true,
+        linkScript: true,
+        linkOriginalAPK:true,
+        appScreens: true,
+      },
     });
-    if (!pendingItem) {
+    if (!item) {
       return NextResponse.json({ message: "Item not found" }, { status: 404 });
     }
+
+    const filesToDelete = [
+      item.image,
+      item.linkAPK,
+      item.linkOBB,
+      item.linkScript,
+      item.linkOriginalAPK,
+      ...(item.appScreens || []),
+    ].filter(
+      (url): url is string => typeof url === "string" && url.trim() !== ""
+    );
+
+    await Promise.all(
+      filesToDelete.map(async (url) => {
+        try {
+          await deleteFile(new URL(url).pathname.slice(1));
+        } catch (err) {
+          console.warn("Failed to delete file:", url, err);
+        }
+      })
+    );
 
     await prisma.item.delete({ where: { id: itemId } });
 

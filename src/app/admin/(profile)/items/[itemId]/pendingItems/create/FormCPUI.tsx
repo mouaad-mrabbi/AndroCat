@@ -4,24 +4,20 @@ import { CreateItemDto } from "@/utils/dtos";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
 import { ItemCategories, ItemType } from "@prisma/client";
-import { supabase } from "@/lib/supabaseClient";
-import { fileTypeFromBuffer } from "file-type";
 import {
   createPendingUpdateItem,
   getItemCreateBy,
-  getMyPendingItem,
-  updateMyPendingItem,
 } from "@/apiCalls/adminApiCall";
 import { useRouter } from "next/navigation";
+import UploadFile from "@/components/uploadFile";
+import { ModalFormCPUI } from "./ModalFormCPUI";
 
 interface pageProps {
   itemId: number;
 }
 
-const BUCKET_NAME_IMAGES = "images";
-const BUCKET_NAME_FILES = "files";
-
-export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
+//FormCreatePendingUpdateItem (FormCPUI)
+export default function FormCPUI({ itemId }: pageProps) {
   const [formData, setFormData] = useState<CreateItemDto>({
     title: "",
     description: "",
@@ -48,6 +44,35 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
     installs: "",
     createdById: 0,
   });
+  const [formDataOrigin, setFormDataOrigin] = useState<CreateItemDto>({
+    title: "",
+    description: "",
+    image: "",
+    developer: "",
+    version: "",
+    androidVer: "",
+    itemType: ItemType.GAME,
+    categories: ItemCategories.ACTION,
+    OBB: false,
+    Script: false,
+    linkAPK: "",
+    linkOBB: null,
+    linkVideo: null,
+    linkScript: null,
+    sizeFileAPK: "",
+    sizeFileOBB: null,
+    sizeFileScript: null,
+    appScreens: [],
+    keywords: [],
+    isMod: false,
+    typeMod: null,
+    ratedFor: 0,
+    installs: "",
+    createdById: 0,
+  });
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUrlModal, setSelectedUrlModal] = useState<string | null>(null);
 
   const [newKeyword, setNewKeyword] = useState("");
   const [newAppScreen, setNewAppScreen] = useState("");
@@ -64,6 +89,7 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
       try {
         const item = await getItemCreateBy(itemId);
         setFormData(item);
+        setFormDataOrigin(item);
       } catch (error: any) {
         toast.error(error.message || "Failed to load item data");
       } finally {
@@ -141,25 +167,6 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
     }
   };
 
-  /* App Screenshots */
-  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-  const ALLOWED_TYPES_IMAGE = [
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "image/webp",
-  ];
-
-  const [file, setFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState<boolean>(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(0);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [uploadedSize, setUploadedSize] = useState<number>(0);
-  const [totalSize, setTotalSize] = useState<number>(0);
-  const [imageSize, setImageSize] = useState<string | null>(null); // width x height
-  const [uploadSpeed, setUploadSpeed] = useState<number>(0); // Upload speed in MB/s
-  const [remainingTime, setRemainingTime] = useState<string>(""); // الوقت المتبقي
-
   const addAppScreen = async (newScreenUrl: any) => {
     if (
       newScreenUrl.trim() &&
@@ -179,126 +186,6 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
         (screen) => screen !== screenToRemove
       ),
     });
-  };
-
-  const uploadFileScreen = async () => {
-    if (!file) return;
-
-    setUploading(true);
-
-    try {
-      const fileName = `screenshots/${Date.now()}-${file.name}`;
-      const { data: signedUrlData, error: signedUrlError } =
-        await supabase.storage
-          .from(BUCKET_NAME_IMAGES)
-          .createSignedUploadUrl(fileName);
-
-      if (signedUrlError) {
-        toast.error(signedUrlError.message || "Error generating signed URL");
-        throw new Error(signedUrlError.message || "Unknown Supabase error");
-      }
-
-      const { signedUrl } = signedUrlData;
-
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.open("PUT", signedUrl, true);
-        xhr.setRequestHeader("Content-Type", file.type);
-
-        let lastUploadedSize = 0;
-        let lastTime = Date.now();
-
-        xhr.upload.onprogress = (event) => {
-          if (event.lengthComputable) {
-            const progress = Math.round((event.loaded / event.total) * 100);
-            setUploadProgress(progress);
-            setUploadedSize(event.loaded);
-
-            {
-              /* Download speed calculator */
-            }
-            const currentTime = Date.now();
-            const timeDiff = (currentTime - lastTime) / 1000; // الفرق بالثواني
-            const uploadedDiff = event.loaded - lastUploadedSize; // الفرق بالبايت
-            const speed = uploadedDiff / timeDiff; // السرعة بالبايت/الثانية
-            setUploadSpeed(speed);
-
-            // حساب الوقت المتبقي
-            const remainingSize = totalSize - event.loaded;
-            const remainingTimeInSeconds = remainingSize / speed;
-            setRemainingTime(formatTime(remainingTimeInSeconds));
-
-            lastUploadedSize = event.loaded;
-            lastTime = currentTime;
-          }
-        };
-
-        xhr.onload = async () => {
-          if (xhr.status === 200) {
-            resolve();
-          } else {
-            // ✅ حاول تحويل الرد إلى JSON واستخراج `message`
-            const errorResponse = JSON.parse(xhr.responseText);
-            const errorMessage = errorResponse.message || "Upload failed";
-
-            toast.error(errorMessage);
-            reject(new Error(errorMessage));
-          }
-        };
-
-        xhr.onerror = () => reject(new Error("Upload error"));
-
-        xhr.send(file);
-      });
-
-      const { data: publicUrlData } = supabase.storage
-        .from(BUCKET_NAME_IMAGES)
-        .getPublicUrl(fileName);
-
-      setImageUrl(publicUrlData.publicUrl);
-
-      await new Promise<void>((resolve) => {
-        const img = new Image();
-        img.src = publicUrlData.publicUrl;
-        img.onload = () => {
-          setImageSize(`${img.width}x${img.height}`);
-          resolve();
-        };
-      });
-
-      // تحديث newAppScreen والانتظار حتى يتم التحديث
-      await setNewAppScreen(publicUrlData.publicUrl);
-
-      // استدعاء addAppScreen مع القيمة الجديدة
-      await addAppScreen(publicUrlData.publicUrl);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleScreenChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-
-    if (selectedFile) {
-      // التحقق من نوع الملف باستخدام file-type بعد تحميله
-      const fileBuffer = await selectedFile.arrayBuffer();
-      const { mime } = (await fileTypeFromBuffer(fileBuffer)) || {};
-
-      if (!mime || !ALLOWED_TYPES_IMAGE.includes(mime)) {
-        toast.error("Only images (PNG, JPG, JPEG, WEBP) are allowed.");
-        return;
-      }
-
-      if (selectedFile.size > MAX_FILE_SIZE) {
-        toast.error("File size must be less than 5MB.");
-        return;
-      }
-
-      setFile(selectedFile);
-      setTotalSize(selectedFile.size);
-    }
   };
 
   const formatTime = (seconds: number) => {
@@ -334,142 +221,93 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
       });
   };
 
-  /* APK */
-  const handleFileAPKChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFormUploadDataAPK = async (data: { publicURL: string }) => {
+    const response = await fetch(data.publicURL, { method: "HEAD" });
+    const size = response.headers.get("content-length");
+    formatSize(Number(size));
 
-    try {
-      // تحميل الملف إلى Supabase Storage
-      const filePath = `apks/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .upload(filePath, file);
-
-      if (error) {
-        toast.error("Failed to upload APK");
-        return;
-      }
-
-      // الحصول على رابط الملف
-      const { data: urlData } = supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .getPublicUrl(filePath);
-
-      // تحديث الحقول في النموذج
-      setFormData({
-        ...formData,
-        linkAPK: urlData.publicUrl,
-        sizeFileAPK: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      });
-    } catch {
-      toast.error("Failed to upload file");
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      sizeFileAPK: formatSize(Number(size)),
+      linkAPK: data.publicURL,
+    }));
   };
 
-  /* OBB */
-  const handleFileOBBUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFormUploadDataScreenshots = async (data: {
+    publicURL: string;
+  }) => {
+    const response = await fetch(data.publicURL, { method: "HEAD" });
+    const size = response.headers.get("content-length");
+    formatSize(Number(size));
 
-    try {
-      const filePath = `OBB/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .upload(filePath, file);
-
-      if (error) {
-        toast.error("Failed to upload OBB");
-        return;
-      }
-
-      const { data: urlData } = supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .getPublicUrl(filePath);
-
-      setFormData({
-        ...formData,
-        linkOBB: urlData.publicUrl,
-        sizeFileOBB: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      });
-    } catch {
-      toast.error("Failed to upload OBB");
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      appScreens: [...prevData.appScreens, data.publicURL],
+    }));
   };
 
-  /* Script */
-  const handleFileScriptUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFormUploadDataOBB = async (data: { publicURL: string }) => {
+    const response = await fetch(data.publicURL, { method: "HEAD" });
+    const size = response.headers.get("content-length");
+    formatSize(Number(size));
 
-    try {
-      const filePath = `scripts/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .upload(filePath, file);
-
-      if (error) {
-        toast.error("Failed to upload Script");
-        return;
-      }
-
-      const { data: fileData } = supabase.storage
-        .from(BUCKET_NAME_FILES)
-        .getPublicUrl(filePath);
-
-      setFormData({
-        ...formData,
-        linkScript: fileData.publicUrl,
-        sizeFileScript: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-      });
-
-      toast.success("File uploaded successfully!");
-    } catch {
-      toast.error("Failed to upload Script");
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      sizeFileOBB: formatSize(Number(size)),
+      linkOBB: data.publicURL,
+    }));
   };
 
-  /* image */
-  const handleFileImageUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleFormUploadDataScript = async (data: { publicURL: string }) => {
+    const response = await fetch(data.publicURL, { method: "HEAD" });
+    const size = response.headers.get("content-length");
+    formatSize(Number(size));
 
-    try {
-      const filePath = `image/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage
-        .from(BUCKET_NAME_IMAGES)
-        .upload(filePath, file);
+    setFormData((prevData) => ({
+      ...prevData,
+      sizeFileScript: formatSize(Number(size)),
+      linkScript: data.publicURL,
+    }));
+  };
 
-      if (error) {
-        toast.error("Failed to upload Image");
-        return;
-      }
+  const handleFormUploadDataImage = async (data: { publicURL: string }) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      image: data.publicURL,
+    }));
+  };
 
-      const { data: urlData } = supabase.storage
-        .from(BUCKET_NAME_IMAGES)
-        .getPublicUrl(filePath);
+  const handleCheckorigin = (): boolean => {
+    const { linkAPK, linkOBB, linkScript, image, appScreens } = formDataOrigin;
 
-      setFormData({
-        ...formData,
-        image: urlData.publicUrl,
-      });
-    } catch {
-      toast.error("Failed to upload image");
-    }
+    const allLinks = [
+      linkAPK,
+      linkOBB,
+      linkScript,
+      image,
+      ...(appScreens || []), // في حال كانت undefined
+    ].filter(Boolean); // لإزالة null أو undefined
+
+    return allLinks.includes(selectedUrlModal);
   };
 
   return (
     <div className="min-h-screen   py-8">
       <div className="max-w-2xl mx-auto  p-6 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Create New Item</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          Create New Pending Item
+        </h1>
+
+        <div className="mb-6 ">
+          <label className="text-lg font-semibold">Random Text</label>
+          <input
+            type="text"
+            disabled
+            value={`${itemId}`}
+            className="w-full p-2 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+          />
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Title */}
           <div>
@@ -506,19 +344,16 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
             />
           </div>
 
-          {/* File image Upload */}
+          {/* image posts Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Upload Image:
+              image posts :
             </label>
-            <input
-              type="file"
-              onChange={handleFileImageUpload}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-              focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-              dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-              dark:focus:border-indigo-500"
-              /* required */
+            <UploadFile
+              title={formData.title}
+              randomText={`${itemId}`}
+              fileType={"posts"}
+              onChangeData={handleFormUploadDataImage}
             />
           </div>
 
@@ -527,6 +362,30 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Image URL:
             </label>
+            {formData.image && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedUrlModal(formData.image); // هنا نقوم بتحديث `selectedScreen`
+                    setShowModal(true);
+                  }}
+                  className="flex  gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
+                     dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                >
+                  <div className="w-32">
+                    <img
+                      src={formData.image}
+                      alt=""
+                      className=" h-14 rounded-lg w-32 object-cover"
+                    />
+                  </div>
+                  <p className="flex flex-grow  w-full break-words overflow-hidden whitespace-nowrap">
+                    {formData.image}
+                  </p>
+                </button>
+              </div>
+            )}
             <input
               type="text"
               name="image"
@@ -679,19 +538,13 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
           {/* Upload OBB File */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Upload OBB File:
+              OBB :
             </label>
-            <input
-              type="file"
-              onChange={handleFileOBBUpload}
-              disabled={!formData.OBB}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
-      dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-      dark:focus:border-indigo-500
-      ${
-        !formData.OBB ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed" : ""
-      }`}
+            <UploadFile
+              title={formData.title}
+              randomText={`${itemId}`}
+              fileType={"obbs"}
+              onChangeData={handleFormUploadDataOBB}
             />
           </div>
 
@@ -700,6 +553,22 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Link OBB:
             </label>
+            {formData.linkOBB && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedUrlModal(formData.linkOBB ?? null); // <-- التعديل هنا
+                    setShowModal(true);
+                  }}
+                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                >
+                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                    {formData.linkOBB}
+                  </p>
+                </button>
+              </div>
+            )}
             <input
               type="text"
               name="linkOBB"
@@ -754,21 +623,29 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
           {/* File Script Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Upload Script File:
+              Script :
             </label>
-            <input
-              type="file"
-              onChange={handleFileScriptUpload}
-              disabled={!formData.Script}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
-      dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-      dark:focus:border-indigo-500
-      ${
-        !formData.Script
-          ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
-          : ""
-      }`}
+            {formData.linkScript && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedUrlModal(formData.linkScript ?? null);
+                    setShowModal(true);
+                  }}
+                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                >
+                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                    {formData.linkScript}
+                  </p>
+                </button>
+              </div>
+            )}
+            <UploadFile
+              title={formData.title}
+              randomText={`${itemId}`}
+              fileType={"scripts"}
+              onChangeData={handleFormUploadDataScript}
             />
           </div>
 
@@ -821,16 +698,13 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
           {/* Upload APK File */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Upload APK File:
+              APK :
             </label>
-            <input
-              type="file"
-              onChange={handleFileAPKChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-              focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-              dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-              dark:focus:border-indigo-500"
-              /* required */
+            <UploadFile
+              title={formData.title}
+              randomText={`${itemId}`}
+              fileType={"apks"}
+              onChangeData={handleFormUploadDataAPK}
             />
           </div>
 
@@ -839,6 +713,24 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Link APK:
             </label>
+            {formData.linkAPK && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedUrlModal(formData.linkAPK);
+                    setShowModal(true);
+                  }}
+                  className="flex  gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
+                     dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                >
+                  <p className="flex flex-grow  w-full break-words overflow-hidden whitespace-nowrap">
+                    {formData.linkAPK}
+                  </p>
+                </button>
+              </div>
+            )}
+
             <input
               type="text"
               name="linkAPK"
@@ -892,115 +784,40 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               App Screenshots (URLs):
             </label>
-            <div className="flex flex-wrap gap-2 mt-1">
+            <div className="flex flex-col gap-2 my-2 ">
               {formData.appScreens.map((screen, index) => (
-                <div
-                  key={index}
-                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
-                  dark:bg-blue-900 dark:text-blue-200   w-full break-words overflow-hidden whitespace-nowrap  "
-                >
-                  <div className="w-32">
-                    <img
-                      src={screen}
-                      alt=""
-                      className=" h-14 rounded-lg w-32 object-cover"
-                    />
-                  </div>
-
-                  <a
-                    href={screen}
-                    target="_blank"
-                    className="flex w-full break-words overflow-hidden whitespace-nowrap"
-                  >
-                    {screen}
-                  </a>
-
+                <div key={index}>
                   <button
                     type="button"
-                    onClick={() => removeAppScreen(screen)}
-                    className="text-lg text-blue-500 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-100"
+                    onClick={() => {
+                      setSelectedUrlModal(screen); // هنا نقوم بتحديث `selectedScreen`
+                      setShowModal(true);
+                    }}
+                    className="flex  gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
+                     dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
                   >
-                    &times;
+                    <div className="w-32">
+                      <img
+                        src={screen}
+                        alt=""
+                        className=" h-14 rounded-lg w-32 object-cover"
+                      />
+                    </div>
+
+                    <p className="flex flex-grow  w-full break-words overflow-hidden whitespace-nowrap">
+                      {screen}
+                    </p>
                   </button>
                 </div>
               ))}
             </div>
-            <div className="flex gap-2 mt-2">
-              <input
-                type="file"
-                onChange={handleScreenChange}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none
-                focus:ring-indigo-500 focus:border-indigo-500
-                dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-                dark:focus:border-indigo-500"
-              />
-              <button
-                type="button"
-                onClick={uploadFileScreen}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 
-                focus:outline-none focus:ring-2 focus:ring-indigo-500
-                dark:bg-indigo-700 dark:hover:bg-indigo-600"
-              >
-                Add
-              </button>
-            </div>
+            <UploadFile
+              title={formData.title}
+              randomText={`${itemId}`}
+              fileType={"screenshots"}
+              onChangeData={handleFormUploadDataScreenshots}
+            />
           </div>
-          {uploading && (
-            <div className="mt-6 space-y-3">
-              <div className="w-full bg-gray-200 rounded-full overflow-hidden">
-                <div
-                  className="h-2 bg-blue-500 rounded-full transition-all"
-                  style={{ width: `${uploadProgress}%` }}
-                ></div>
-              </div>
-              <p className="text-sm text-gray-200">
-                {uploadProgress}% Complete ({formatSize(uploadedSize)} /{" "}
-                {formatSize(totalSize)})
-              </p>
-              <p className="text-sm text-gray-200">
-                Remaining: {formatSize(totalSize - uploadedSize)}
-              </p>
-              <p className="text-sm text-gray-200">
-                Estimated time remaining: {remainingTime}
-              </p>
-            </div>
-          )}
-          {imageUrl && (
-            <div className="mt-6">
-              <div className="flex flex-col items-center justify-center">
-                <a
-                  href={imageUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300 block text-center mt-2 w-full break-words overflow-hidden whitespace-nowrap "
-                >
-                  {imageUrl}
-                </a>
-                <button
-                  onClick={() => copyToClipboard(imageUrl)}
-                  className="w-full p-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-300 mt-2"
-                  aria-label="Copy URL to clipboard"
-                >
-                  Copy URL
-                </button>
-              </div>
-              <img
-                src={imageUrl}
-                alt="Uploaded"
-                className="mt-4 mx-auto rounded-lg shadow-lg max-w-full h-auto"
-              />
-              {imageSize && (
-                <p className="mt-4 text-center text-gray-300">
-                  Image dimensions: {imageSize}
-                </p>
-              )}
-              {/*               {fileSize && (
-                <p className="mt-2 text-center text-gray-300">
-                  File size: {fileSize}
-                </p>
-              )} */}
-            </div>
-          )}
 
           {/* Keywords */}
           <div>
@@ -1140,6 +957,44 @@ export default function FormCreatePendingUpdateItem({ itemId }: pageProps) {
           </div>
         </form>
       </div>
+      <ModalFormCPUI
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        url={selectedUrlModal}
+        origin={handleCheckorigin()}
+        onDelete={(deletedUrl) => {
+          setFormData((prev) => {
+            const newData = { ...prev };
+
+            // حذف من appScreens إذا كان موجودًا فيها
+            if (newData.appScreens.includes(deletedUrl)) {
+              newData.appScreens = newData.appScreens.filter(
+                (url) => url !== deletedUrl
+              );
+            }
+
+            if (newData.image === deletedUrl) newData.image = "";
+
+            // مقارنة وإزالة من الروابط الأخرى
+            if (newData.linkAPK === deletedUrl) {
+              newData.linkAPK = "";
+              newData.sizeFileAPK = "";
+            }
+            if (newData.linkOBB === deletedUrl) {
+              newData.linkOBB = null;
+              newData.sizeFileOBB = null;
+            }
+            if (newData.linkScript === deletedUrl) {
+              newData.linkScript = null;
+              newData.sizeFileScript = null;
+            }
+
+            return newData;
+          });
+
+          setShowModal(false);
+        }}
+      />
     </div>
   );
 }

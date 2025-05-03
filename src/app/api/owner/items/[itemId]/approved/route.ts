@@ -25,7 +25,6 @@ export async function PUT(request: NextRequest, { params }: Props) {
     }
 
     const itemId = Number((await params).itemId);
-    
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -54,7 +53,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
     const updatedItem = await prisma.item.update({
       where: { id: itemId },
-      select: { id: true,isApproved:true },
+      select: { id: true, isApproved: true },
       data: { isApproved: approved === "true" },
     });
     if (!updatedItem) {
@@ -62,9 +61,9 @@ export async function PUT(request: NextRequest, { params }: Props) {
     }
 
     return NextResponse.json(
-      { 
-        updatedItem, 
-        message: approved === "true" ? "Approves item" : "Disapproves item" 
+      {
+        updatedItem,
+        message: approved === "true" ? "Approves item" : "Disapproves item",
       },
       { status: 200 }
     );

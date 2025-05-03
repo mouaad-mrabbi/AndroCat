@@ -1,4 +1,4 @@
-import FormCreatePendingUpdateItem from "./FormCreatePendingUpdateItem";
+import FormCPUI from "./FormCPUI";
 
 interface paramsProps {
     params: Promise<{ itemId: string }>;
@@ -9,7 +9,7 @@ export default async function createPendingUpdateItem({ params }: paramsProps) {
 
   return (
     <div>
-      <FormCreatePendingUpdateItem itemId={itemId}/>
+      <FormCPUI itemId={itemId}/>
     </div>
   );
 }

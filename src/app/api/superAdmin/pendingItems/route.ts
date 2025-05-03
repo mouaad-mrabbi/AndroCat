@@ -38,12 +38,14 @@ export async function GET(request: NextRequest) {
     const pendingItems = await prisma.pendingItem.findMany({
       skip: ITEM_PER_PAGE * (pageNumber - 1),
       take: ITEM_PER_PAGE,
-      orderBy: { createdAt: "desc" },
+      orderBy: { updatedAt: "desc" },
       select: {
         id: true,
         title: true,
         image: true,
         developer: true,
+        isMod:true,
+        typeMod:true
       },
     });
 

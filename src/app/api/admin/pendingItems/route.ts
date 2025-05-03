@@ -50,6 +50,8 @@ export async function GET(request: NextRequest) {
             title: true,
             image: true,
             developer: true,
+            isMod:true,
+            typeMod:true
           },
         },
       },
@@ -125,16 +127,19 @@ export async function POST(request: NextRequest) {
 
         OBB: body.OBB,
         Script: body.Script,
+        OriginalAPK:body.OriginalAPK,
 
         linkAPK: body.linkAPK,
         linkOBB: body.OBB ? body.linkOBB : null,
-        linkVideo: body.linkVideo,
         linkScript: body.Script ? body.linkScript : null,
+        linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
+        linkVideo: body.linkVideo,
 
         sizeFileAPK: body.sizeFileAPK,
         sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
         sizeFileScript: body.Script ? body.sizeFileScript : null,
-
+        sizeFileOriginalAPK: body.OriginalAPK ? body.sizeFileOriginalAPK : null,
+        
         appScreens: body.appScreens,
         keywords: body.keywords,
 

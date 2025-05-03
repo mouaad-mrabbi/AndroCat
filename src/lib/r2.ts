@@ -38,7 +38,7 @@ export async function renameFile(oldKey: string, newKey: string) {
       Key: oldKey,
     });
     await S3.send(headCommand);
-    
+
     const copyCommand = new CopyObjectCommand({
       Bucket: R2_BUCKET,
       CopySource: `/${R2_BUCKET}/${oldKey}`,
@@ -136,5 +136,3 @@ export async function deleteFile(key: string) {
     throw error;
   }
 }
-
-

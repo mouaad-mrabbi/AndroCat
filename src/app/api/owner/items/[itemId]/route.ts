@@ -45,13 +45,18 @@ export async function GET(request: NextRequest, { params }: Props) {
 
         OBB: true,
         Script: true,
+        OriginalAPK: true,
+
         linkAPK: true,
         linkOBB: true,
-        linkVideo: true,
         linkScript: true,
+        linkOriginalAPK: true,
+        linkVideo: true,
+
         sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
+        sizeFileOriginalAPK: true,
 
         appScreens: true,
         keywords: true,
@@ -78,7 +83,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         validatedAt: true,
         validatedBy: { select: { profile: true, username: true } },
 
-        pendingItem: { select: { id: true} },
+        pendingItem: { select: { id: true } },
       },
     });
     if (!item) {

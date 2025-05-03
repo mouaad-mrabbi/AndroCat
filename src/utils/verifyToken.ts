@@ -7,19 +7,10 @@ export function verifyToken(request: NextRequest): JWTPayload | null {
   try {
     const jwtToken = request.cookies.get("jwtToken");
     const token = jwtToken?.value as string;
-    if (!token) {
-      console.log("🚨 No token found!");
-      return null;
-    }
 
     const privateKey = process.env.JWT_SECRET as string;
-    if (!privateKey) {
-      console.log("🚨 JWT_SECRET is not defined!");
-      return null;
-    }
 
     const userPayload = jwt.verify(token, privateKey) as JWTPayload;
-    console.log("✅ Token verified:", userPayload);
 
     return userPayload;
   } catch (error) {

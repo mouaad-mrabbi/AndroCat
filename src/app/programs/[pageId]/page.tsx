@@ -6,6 +6,7 @@ import NotFoundPage from "@/app/not-found";
 import { redirect } from "next/navigation";
 import { fetchItems, fetchItemsCount } from "@/apiCalls/consumerApiCall";
 import Head from "next/head";
+import CardRow from "@/components/cardRow";
 
 interface ItemsPageProp {
   params: Promise<{ pageId: string }>;
@@ -80,10 +81,10 @@ export default async function ProgramsPage({ params }: ItemsPageProp) {
         </Head>
 
         <div>
-          <Toolbar local="home" firstLocal={"programs"} />
-          <h1 className="text-white w-full font-bold uppercase text-[2.75rem] max-[500px]:text-[2rem] px-7 mb-4 mt-8">
-            Programs
-          </h1>
+          <div className="mb-8">
+            <Toolbar local="home" firstLocal={"programs"} />
+            <CardRow itemType="programs" />
+          </div>
 
           <div className="px-7 max-[500px]:px-0">
             <AppList url={"program"} items={items} />

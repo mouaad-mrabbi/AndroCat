@@ -3,18 +3,18 @@ import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
 
 interface Props {
-  params: Promise<{ itemId: string }>;
+  params: Promise<{ articleId: string }>;
 }
 
 /**
  *  @method  GET
- *  @route   ~/api/admin/items/:itemId
- *  @desc    Get single item created by user.
- *  @access  private (only user himself can get his item | OWNER can return any users data)
+ *  @route   ~/api/admin/articles/:articleId
+ *  @desc    Get single article created by user.
+ *  @access  private (only user himself can get his article | OWNER can return any users data)
  */
 export async function GET(request: NextRequest, { params }: Props) {
   try {
-    const itemId = Number((await params).itemId);
+    const articleId = Number((await params).articleId);
 
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         { status: 403 }
       );
     }
-    if (!["ADMIN","SUPER_ADMIN", "OWNER"].includes(userFromToken.role)) {
+    if (!["ADMIN", "SUPER_ADMIN", "OWNER"].includes(userFromToken.role)) {
       return NextResponse.json(
         { message: "Access denied, only admins allowed" },
         { status: 403 }
@@ -32,15 +32,16 @@ export async function GET(request: NextRequest, { params }: Props) {
 
     const user = await prisma.user.findUnique({
       where: { id: userFromToken.id },
+      select: { id: true },
     });
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
     }
 
-    const item = await prisma.item.findUnique({
+    const article = await prisma.article.findUnique({
       where: {
-        id: itemId,
-        createdById:userFromToken.id, // تأكد أن العنصر يخص هذا المستخدم
+        id: articleId,
+        createdById: userFromToken.id, // تأكد أن العنصر يخص هذا المستخدم
       },
       select: {
         id: true,
@@ -49,19 +50,26 @@ export async function GET(request: NextRequest, { params }: Props) {
         image: true,
         developer: true,
         version: true,
+        versionOriginal:true,
         androidVer: true,
-        itemType: true,
-        categories: true,
+        articleType: true,
+        gameCategory: true,
+        programCategory: true,
 
         OBB: true,
         Script: true,
+        OriginalAPK: true,
+
         linkAPK: true,
         linkOBB: true,
         linkVideo: true,
         linkScript: true,
+        linkOriginalAPK: true,
+
         sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
+        sizeFileOriginalAPK: true,
 
         appScreens: true,
         keywords: true,
@@ -83,19 +91,19 @@ export async function GET(request: NextRequest, { params }: Props) {
 
         createdAt: true,
         updatedAt: true,
-        createdBy: {select:{profile:true,username:true}},
+        createdBy: { select: { profile: true, username: true } },
 
         validatedAt: true,
-        validatedBy: {select:{profile:true,username:true}},
+        validatedBy: { select: { profile: true, username: true } },
 
-        pendingItem: true,
+        pendingArticle: true,
       },
     });
-    if (!item) {
-      return NextResponse.json({ message: "item not found" }, { status: 404 });
+    if (!article) {
+      return NextResponse.json({ message: "article not found" }, { status: 404 });
     }
 
-    return NextResponse.json(item, { status: 200 });
+    return NextResponse.json(article, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },

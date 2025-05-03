@@ -1,4 +1,4 @@
-import { ItemCategories, ItemType } from "@prisma/client";
+import { ArticleType, GameCategories, ProgramCategories } from "@prisma/client";
 import { z } from "zod";
 
 // Register Schema
@@ -21,30 +21,39 @@ export const updateUserSchema = z.object({
   password: z.string().min(6).optional(),
 });
 
-// Create pending Item Schema
-export const createItemSchema = z
+// Create pending article Schema
+export const createArticleSchema = z
   .object({
     title: z.string().min(2).max(50),
     description: z.string().min(10).max(500),
     image: z.string().url().max(500),
     developer: z.string().min(2).max(50),
     version: z.string().min(1).max(50),
+    versionOriginal: z.string().min(1).max(50).optional(),
     androidVer: z.string().min(1).max(20),
 
-    itemType: z.nativeEnum(ItemType),
-    categories: z.nativeEnum(ItemCategories, { message: "category" }),
+    articleType: z.nativeEnum(ArticleType),
+    gameCategory: z
+      .nativeEnum(GameCategories, { message: "Game Categories" })
+      .optional(),
+    programCategory: z
+      .nativeEnum(ProgramCategories, { message: "Program Categories" })
+      .optional(),
 
     OBB: z.boolean().default(false),
     Script: z.boolean().default(false),
+    OriginalAPK: z.boolean().default(false),
 
     linkAPK: z.string().url().max(500),
     linkOBB: z.string().url().max(500).nullable().optional(),
     linkVideo: z.string().url().max(500).nullable().optional(),
     linkScript: z.string().url().max(500).nullable().optional(),
+    linkOriginalAPK: z.string().url().max(500).nullable().optional(),
 
     sizeFileAPK: z.string().min(1).max(20),
     sizeFileOBB: z.string().min(1).max(20).nullable().optional(),
     sizeFileScript: z.string().min(1).max(20).nullable().optional(),
+    sizeFileOriginalAPK: z.string().min(1).max(20).nullable().optional(),
 
     appScreens: z.array(z.string().url().max(500)).nonempty().min(1),
     keywords: z.array(z.string().min(1).max(50)).nonempty().min(1),
@@ -122,48 +131,143 @@ export const createItemSchema = z
       }
     }
 
-    if (data.isMod && !data.typeMod) {
-      ctx.addIssue({
-        code: "custom",
-        message: "type Mod is required when isMod is true",
-        path: ["typeMod"],
-      });
+    // Original
+    if (data.OriginalAPK) {
+      if (!data.linkOriginalAPK) {
+        ctx.addIssue({
+          code: "custom",
+          message: "linkOriginalAPK is required when OriginalAPK is true",
+          path: ["linkOriginalAPK"],
+        });
+      }
+      if (!data.sizeFileOriginalAPK) {
+        ctx.addIssue({
+          code: "custom",
+          message: "sizeFileOriginalAPK is required when OriginalAPK is true",
+          path: ["sizeFileOriginalAPK"],
+        });
+      }
+      if (!data.versionOriginal) {
+        ctx.addIssue({
+          code: "custom",
+          message: "versionOriginal is required when OriginalAPK is true",
+          path: ["versionOriginal"],
+        });
+      }
+    } else {
+      if (data.linkOriginalAPK) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "linkOriginalAPK should not be provided when OriginalAPK is false",
+          path: ["linkOriginalAPK"],
+        });
+      }
+      if (data.sizeFileOriginalAPK) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "sizeFileOriginalAPK should not be provided when OriginalAPK is false",
+          path: ["sizeFileOriginalAPK"],
+        });
+      }
+      if (data.versionOriginal) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "versionOriginal should not be provided when OriginalAPK is false",
+          path: ["versionOriginal"],
+        });
+      }
     }
 
-    if (!data.isMod && data.typeMod) {
-      ctx.addIssue({
-        code: "custom",
-        message: "type Mod should not be provided when isMod is false",
-        path: ["typeMod"],
-      });
+    //isMod
+    if (data.isMod) {
+      if (!data.typeMod) {
+        ctx.addIssue({
+          code: "custom",
+          message: "type Mod is required when isMod is true",
+          path: ["typeMod"],
+        });
+      }
+    } else {
+      if (data.typeMod) {
+        ctx.addIssue({
+          code: "custom",
+          message: "type Mod should not be provided when isMod is false",
+          path: ["typeMod"],
+        });
+      }
+    }
+
+    // category validation based on articleType
+    if (data.articleType === "GAME") {
+      if (!data.gameCategory) {
+        ctx.addIssue({
+          code: "custom",
+          message: "gameCategory is required when articleType is GAME",
+          path: ["gameCategory"],
+        });
+      }
+      if (data.programCategory) {
+        ctx.addIssue({
+          code: "custom",
+          message: "programCategory must not be provided when articleType is GAME",
+          path: ["programCategory"],
+        });
+      }
+    }
+
+    if (data.articleType === "PROGRAM") {
+      if (!data.programCategory) {
+        ctx.addIssue({
+          code: "custom",
+          message: "programCategory is required when articleType is PROGRAM",
+          path: ["programCategory"],
+        });
+      }
+      if (data.gameCategory) {
+        ctx.addIssue({
+          code: "custom",
+          message: "gameCategory must not be provided when articleType is PROGRAM",
+          path: ["gameCategory"],
+        });
+      }
     }
   });
 
-export const updateItemSchema = z
+export const updateArticleSchema = z
   .object({
     title: z.string().min(2).max(50).optional(),
     description: z.string().min(10).max(500).optional(),
     image: z.string().url().max(500).optional(),
     developer: z.string().min(2).max(50).optional(),
     version: z.string().min(1).max(50).optional(),
+    versionOriginal: z.string().min(1).max(50).optional(),
     androidVer: z.string().min(1).max(20).optional(),
 
-    itemType: z.nativeEnum(ItemType).optional(),
-    categories: z
-      .nativeEnum(ItemCategories, { message: "Invalid category" })
+    articleType: z.nativeEnum(ArticleType).optional(),
+    gameCategory: z
+      .nativeEnum(GameCategories, { message: "Game Categories" })
+      .optional(),
+    programCategory: z
+      .nativeEnum(ProgramCategories, { message: "Program Categories" })
       .optional(),
 
     OBB: z.boolean().optional(),
     Script: z.boolean().optional(),
+    OriginalAPK: z.boolean().optional(),
 
     linkAPK: z.string().url().max(500).optional(),
     linkOBB: z.string().url().max(500).nullable().optional(),
     linkVideo: z.string().url().max(500).optional(),
     linkScript: z.string().url().max(500).nullable().optional(),
+    linkOriginalAPK: z.string().url().max(500).nullable().optional(),
 
     sizeFileAPK: z.string().min(1).max(20).optional(),
     sizeFileOBB: z.string().min(1).max(20).nullable().optional(),
     sizeFileScript: z.string().min(1).max(20).nullable().optional(),
+    sizeFileOriginalAPK: z.string().min(1).max(20).nullable().optional(),
 
     appScreens: z.array(z.string().url().max(500)).min(1).optional(),
     keywords: z.array(z.string().min(1).max(50)).min(1).optional(),
@@ -175,7 +279,7 @@ export const updateItemSchema = z
     installs: z.string().min(1).max(20).optional(),
   })
   .superRefine((data, ctx) => {
-    // تحقق من OBB
+    // OBB
     if (data.OBB) {
       if (!data.linkOBB) {
         ctx.addIssue({
@@ -208,7 +312,7 @@ export const updateItemSchema = z
       }
     }
 
-    // تحقق من Script
+    // Script
     if (data.Script) {
       if (!data.linkScript) {
         ctx.addIssue({
@@ -241,7 +345,57 @@ export const updateItemSchema = z
       }
     }
 
-    // تحقق من isMod
+    // Original
+    if (data.OriginalAPK) {
+      if (!data.linkOriginalAPK) {
+        ctx.addIssue({
+          code: "custom",
+          message: "linkOriginalAPK is required when OriginalAPK is true",
+          path: ["linkOriginalAPK"],
+        });
+      }
+      if (!data.sizeFileOriginalAPK) {
+        ctx.addIssue({
+          code: "custom",
+          message: "sizeFileOriginalAPK is required when OriginalAPK is true",
+          path: ["sizeFileOriginalAPK"],
+        });
+      }
+      if (!data.versionOriginal) {
+        ctx.addIssue({
+          code: "custom",
+          message: "versionOriginal is required when OriginalAPK is true",
+          path: ["versionOriginal"],
+        });
+      }
+    } else if (data.OriginalAPK === false) {
+      if (data.linkOriginalAPK) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "linkOriginalAPK should not be provided when OriginalAPK is false",
+          path: ["linkOriginalAPK"],
+        });
+      }
+      if (data.sizeFileOriginalAPK) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "sizeFileOriginalAPK should not be provided when OriginalAPK is false",
+          path: ["sizeFileOriginalAPK"],
+        });
+      }
+      if (data.versionOriginal) {
+        ctx.addIssue({
+          code: "custom",
+          message:
+            "versionOriginal should not be provided when OriginalAPK is false",
+          path: ["versionOriginal"],
+        });
+      }
+    }
+
+    // isMod
     if (data.isMod && !data.typeMod) {
       ctx.addIssue({
         code: "custom",
@@ -256,5 +410,40 @@ export const updateItemSchema = z
         message: "typeMod should not be provided when isMod is false",
         path: ["typeMod"],
       });
+    }
+
+    // category validation based on articleType
+    if (data.articleType === "GAME") {
+      if (!data.gameCategory) {
+        ctx.addIssue({
+          code: "custom",
+          message: "gameCategory is required when articleType is GAME",
+          path: ["gameCategory"],
+        });
+      }
+      if (data.programCategory) {
+        ctx.addIssue({
+          code: "custom",
+          message: "programCategory must not be provided when articleType is GAME",
+          path: ["programCategory"],
+        });
+      }
+    }
+
+    if (data.articleType === "PROGRAM") {
+      if (!data.programCategory) {
+        ctx.addIssue({
+          code: "custom",
+          message: "programCategory is required when articleType is PROGRAM",
+          path: ["programCategory"],
+        });
+      }
+      if (data.gameCategory) {
+        ctx.addIssue({
+          code: "custom",
+          message: "gameCategory must not be provided when articleType is PROGRAM",
+          path: ["gameCategory"],
+        });
+      }
     }
   });

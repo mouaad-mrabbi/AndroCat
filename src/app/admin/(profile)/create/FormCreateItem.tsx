@@ -6,6 +6,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { ItemCategories, ItemType } from "@prisma/client";
 import { createPendingItems } from "@/apiCalls/adminApiCall";
 import UploadFile from "@/components/uploadFile";
+import { ModalForm } from "@/components/modalForm";
 
 const FormCreateItem = () => {
   const [formData, setFormData] = useState<CreateItemDto>({
@@ -40,6 +41,9 @@ const FormCreateItem = () => {
   const [newAppScreen, setNewAppScreen] = useState("");
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [randomText, setRandomText] = useState<string>("");
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedUrlModal, setSelectedUrlModal] = useState<string | null>(null); 
 
   const generateRandomText = () => {
     const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -241,7 +245,7 @@ const FormCreateItem = () => {
       linkOBB: data.publicURL,
     }));
   };
-  
+
   const handleFormUploadDataScript = async (data: { publicURL: string }) => {
     const response = await fetch(data.publicURL, { method: "HEAD" });
     const size = response.headers.get("content-length");
@@ -332,6 +336,30 @@ const FormCreateItem = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Image URL:
             </label>
+            {formData.image && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedUrlModal(formData.image); // هنا نقوم بتحديث `selectedScreen`
+                    setShowModal(true);
+                  }}
+                  className="flex  gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
+                     dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                >
+                  <div className="w-32">
+                    <img
+                      src={formData.image}
+                      alt=""
+                      className=" h-14 rounded-lg w-32 object-cover"
+                    />
+                  </div>
+                  <p className="flex flex-grow  w-full break-words overflow-hidden whitespace-nowrap">
+                    {formData.image}
+                  </p>
+                </button>
+              </div>
+            )}
             <input
               type="text"
               name="image"
@@ -486,6 +514,22 @@ const FormCreateItem = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               OBB :
             </label>
+            {formData.linkOBB && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedUrlModal(formData.linkOBB ?? null); // <-- التعديل هنا
+                    setShowModal(true);
+                  }}
+                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                >
+                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                    {formData.linkOBB}
+                  </p>
+                </button>
+              </div>
+            )}
             <UploadFile
               title={formData.title}
               randomText={randomText}
@@ -555,6 +599,22 @@ const FormCreateItem = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Script :
             </label>
+            {formData.linkScript && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedUrlModal(formData.linkScript ?? null); // <-- التعديل هنا
+                    setShowModal(true);
+                  }}
+                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                >
+                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                    {formData.linkScript}
+                  </p>
+                </button>
+              </div>
+            )}
             <UploadFile
               title={formData.title}
               randomText={randomText}
@@ -627,6 +687,24 @@ const FormCreateItem = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Link APK:
             </label>
+            {formData.linkAPK && (
+              <div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedUrlModal(formData.linkAPK);
+                    setShowModal(true);
+                  }}
+                  className="flex  gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
+                     dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                >
+                  <p className="flex flex-grow  w-full break-words overflow-hidden whitespace-nowrap">
+                    {formData.linkAPK}
+                  </p>
+                </button>
+              </div>
+            )}
+
             <input
               type="text"
               name="linkAPK"
@@ -680,35 +758,29 @@ const FormCreateItem = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               App Screenshots (URLs):
             </label>
-            <div className="flex flex-wrap gap-2 mt-1">
+            <div className="flex flex-col gap-2 my-2 ">
               {formData.appScreens.map((screen, index) => (
-                <div
-                  key={index}
-                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
-                  dark:bg-blue-900 dark:text-blue-200   w-full break-words overflow-hidden whitespace-nowrap  "
-                >
-                  <div className="w-32">
-                    <img
-                      src={screen}
-                      alt=""
-                      className=" h-14 rounded-lg w-32 object-cover"
-                    />
-                  </div>
-
-                  <a
-                    href={screen}
-                    target="_blank"
-                    className="flex w-full break-words overflow-hidden whitespace-nowrap"
-                  >
-                    {screen}
-                  </a>
-
+                <div key={index}>
                   <button
                     type="button"
-                    onClick={() => removeAppScreen(screen)}
-                    className="text-lg text-blue-500 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-100"
+                    onClick={() => {
+                      setSelectedUrlModal(screen); // هنا نقوم بتحديث `selectedScreen`
+                      setShowModal(true);
+                    }}
+                    className="flex  gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
+                     dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
                   >
-                    &times;
+                    <div className="w-32">
+                      <img
+                        src={screen}
+                        alt=""
+                        className=" h-14 rounded-lg w-32 object-cover"
+                      />
+                    </div>
+
+                    <p className="flex flex-grow  w-full break-words overflow-hidden whitespace-nowrap">
+                      {screen}
+                    </p>
                   </button>
                 </div>
               ))}
@@ -859,6 +931,44 @@ const FormCreateItem = () => {
           </div>
         </form>
       </div>
+
+      <ModalForm
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        url={selectedUrlModal}
+        onDelete={(deletedUrl) => {
+          setFormData((prev) => {
+            const newData = { ...prev };
+
+            // حذف من appScreens إذا كان موجودًا فيها
+            if (newData.appScreens.includes(deletedUrl)) {
+              newData.appScreens = newData.appScreens.filter(
+                (url) => url !== deletedUrl
+              );
+            }
+
+            if (newData.image === deletedUrl) newData.image = "";
+
+            // مقارنة وإزالة من الروابط الأخرى
+            if (newData.linkAPK === deletedUrl) {
+              newData.linkAPK = "";
+              newData.sizeFileAPK = "";
+            }
+            if (newData.linkOBB === deletedUrl) {
+              newData.linkOBB = null;
+              newData.sizeFileOBB = null;
+            }
+            if (newData.linkScript === deletedUrl) {
+              newData.linkScript = null;
+              newData.sizeFileScript = null;
+            }
+
+            return newData;
+          });
+
+          setShowModal(false); // إغلاق المودال بعد الحذف
+        }}
+      />
     </div>
   );
 };

@@ -6,7 +6,7 @@ export type JWTPayload = {
   role: string;
 };
 
-export type allItem = {
+export type allArticle = {
   id: number;
   image: string;
   title: string;
@@ -16,29 +16,39 @@ export type allItem = {
   typeMod: string | null;
 };
 
-export type ItemAndObjects = Prisma.ItemGetPayload<{
+export type ArticleAndObjects = Prisma.ArticleGetPayload<{
   select: {
     createdBy: { select: { profile: true; username: true } };
     validatedBy: { select: { profile: true; username: true } };
-    pendingItem: { select: { id: true } };
+    pendingArticle: { select: { id: true } };
     id: true;
     title: true;
     description: true;
     image: true;
     developer: true;
     version: true;
+    versionOriginal: true;
     androidVer: true;
-    itemType: true;
-    categories: true;
+
+    articleType: true;
+    gameCategory: true;
+    programCategory: true;
+
     OBB: true;
     Script: true;
+    OriginalAPK: true;
+
     linkAPK: true;
     linkOBB: true;
     linkVideo: true;
     linkScript: true;
+    linkOriginalAPK: true;
+
     sizeFileAPK: true;
     sizeFileOBB: true;
     sizeFileScript: true;
+    sizeFileOriginalAPK: true;
+
     appScreens: true;
     keywords: true;
     isMod: true;
@@ -49,6 +59,7 @@ export type ItemAndObjects = Prisma.ItemGetPayload<{
     averageRating: true;
     views: true;
     downloadCount: true;
+
     isApproved: true;
     createdById: true;
     validatedById: true;

@@ -16,7 +16,6 @@ export async function GET(request: NextRequest) {
     );
     const itemType = request.nextUrl.searchParams.get("itemType");
 
-    // التحقق من صحة pageNumber
     if (isNaN(pageNumber) || pageNumber < 1) {
       return NextResponse.json(
         { message: "Invalid page number" },
@@ -24,7 +23,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // التحقق من صحة itemType (يجب أن يكون "GAME" أو "PROGRAM" فقط)
     if (itemType && itemType !== "GAME" && itemType !== "PROGRAM") {
       return NextResponse.json(
         { message: "Invalid itemType. Must be 'GAME' or 'PROGRAM'." },
@@ -51,7 +49,6 @@ export async function GET(request: NextRequest) {
       },
     });
 
-    // تحقق إذا كانت items فارغة
     if (!items || items.length === 0) {
       return NextResponse.json({ message: "No items found" }, { status: 404 });
     }

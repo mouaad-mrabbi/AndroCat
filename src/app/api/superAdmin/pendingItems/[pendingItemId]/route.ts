@@ -36,6 +36,7 @@ export async function GET(request: NextRequest, { params }: Props) {
 
     const user = await prisma.user.findUnique({
       where: { id: userFromToken.id },
+      select: { id: true },
     });
     if (!user) {
       return NextResponse.json({ message: "User not found" }, { status: 404 });
@@ -125,21 +126,29 @@ export async function POST(request: NextRequest, { params }: Props) {
         androidVer: true,
         itemType: true,
         categories: true,
+
         OBB: true,
         Script: true,
+        OriginalAPK: true,
+
         linkAPK: true,
         linkOBB: true,
         linkVideo: true,
         linkScript: true,
+        linkOriginalAPK: true,
+
         sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
+        sizeFileOriginalAPK: true,
+
         appScreens: true,
         keywords: true,
         isMod: true,
         typeMod: true,
         ratedFor: true,
         installs: true,
+
         validatedById: true,
         createdById: true,
         createdAt: true,
@@ -158,15 +167,18 @@ export async function POST(request: NextRequest, { params }: Props) {
 
         OBB: pendingItem.OBB,
         Script: pendingItem.Script,
+        OriginalAPK:pendingItem.OriginalAPK,
 
         linkAPK: pendingItem.linkAPK,
         linkOBB: pendingItem.OBB ? pendingItem.linkOBB : null,
         linkVideo: pendingItem.linkVideo,
         linkScript: pendingItem.Script ? pendingItem.linkScript : null,
+        linkOriginalAPK: pendingItem.OriginalAPK ? pendingItem.linkOriginalAPK : null,
 
         sizeFileAPK: pendingItem.sizeFileAPK,
         sizeFileOBB: pendingItem.OBB ? pendingItem.sizeFileOBB : null,
         sizeFileScript: pendingItem.Script ? pendingItem.sizeFileScript : null,
+        sizeFileOriginalAPK: pendingItem.OriginalAPK ? pendingItem.sizeFileOriginalAPK : null,
 
         appScreens: pendingItem.appScreens,
         keywords: pendingItem.keywords,
@@ -241,7 +253,22 @@ export async function POST(request: NextRequest, { params }: Props) {
         select: { id: true, linkScript: true },
       });
     }
-    
+    if (newItem.OriginalAPK && newItem.linkOriginalAPK) {
+      await renameFile(
+        new URL(newItem.linkOriginalAPK).pathname.slice(1),
+        `original-apks/${newItem.id}/${newItem.linkOriginalAPK.split("/").pop()}`
+      );
+      await prisma.item.update({
+        where: { id: newItem.id },
+        data: {
+          linkScript: `${DOMAINCDN}/original-apks/${newItem.id}/${newItem.linkOriginalAPK
+            .split("/")
+            .pop()}`,
+        },
+        select: { id: true, linkScript: true },
+      });
+    }
+
     await Promise.all(
       newItem.appScreens.map((screen) =>
         renameFile(

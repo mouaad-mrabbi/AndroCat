@@ -15,10 +15,7 @@ const redirects = async () => [
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      "cacbbglbdrhnfhrmztmz.supabase.co",
-      "cdn.androcat.com",
-    ],
+    domains: ["cdn.androcat.com"],
   },
   redirects,
 };
