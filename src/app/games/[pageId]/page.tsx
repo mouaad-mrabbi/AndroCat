@@ -1,20 +1,20 @@
-export const dynamic = "force-dynamic"; // 👈 أضف هذا السطر
+export const dynamic = "force-dynamic";
 
 import Toolbar from "@/components/toolbar";
 import AppList from "@/components/list/appList";
 import Pagination from "@/components/pagination";
-import { DOMAIN, ITEM_PER_PAGE } from "@/utils/constants";
+import { DOMAIN, ARTICLE_PER_PAGE } from "@/utils/constants";
 import NotFoundPage from "@/app/not-found";
 import { redirect } from "next/navigation";
-import { fetchItems, fetchItemsCount } from "@/apiCalls/consumerApiCall";
+import { fetchArticles, fetchArticlesCount } from "@/apiCalls/consumerApiCall";
 import CardRow from "@/components/cardRow";
 import Head from "next/head";
 
-interface ItemsPageProp {
+interface ArticlesPageProp {
   params: Promise<{ pageId: string }>;
 }
 
-export async function generateMetadata({ params }: ItemsPageProp) {
+export async function generateMetadata({ params }: ArticlesPageProp) {
   const { pageId } = await params;
   const page = Number(pageId);
 
@@ -49,17 +49,17 @@ export async function generateMetadata({ params }: ItemsPageProp) {
   };
 }
 
-export default async function GamesPage({ params }: ItemsPageProp) {
+export default async function GamesPage({ params }: ArticlesPageProp) {
   const { pageId } = await params;
 
   if (isNaN(Number(pageId)) || Number(pageId) < 1) {
     return redirect("/games/1");
   }
   try {
-    const items = await fetchItems(Number(pageId), "GAME");
-    const count = await fetchItemsCount("GAME");
+    const articles = await fetchArticles(Number(pageId), "GAME");
+    const count = await fetchArticlesCount("GAME");
 
-    const pages = Math.ceil(Number(count) / ITEM_PER_PAGE);
+    const pages = Math.ceil(Number(count) / ARTICLE_PER_PAGE);
 
     const structuredData = {
       "@context": "https://schema.org",
@@ -84,11 +84,11 @@ export default async function GamesPage({ params }: ItemsPageProp) {
         <div>
           <div className="mb-8">
             <Toolbar local={"home"} firstLocal={"games"} />
-            <CardRow itemType="games"/>
+            <CardRow articleType="games"/>
           </div>
 
           <div className="px-7 max-[500px]:px-0">
-            <AppList url={"home"} items={items} />
+            <AppList url={"home"} articles={articles} />
             <Pagination
               pages={pages}
               pageSelect={Number(pageId)}

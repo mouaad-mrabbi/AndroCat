@@ -35,16 +35,16 @@ export async function GET(request: NextRequest, { params }: Props) {
     const user = await prisma.user.findUnique({
       where: { id: userFromToken.id },
       include: {
-        createdItems: {
+        createdArticles: {
           select: { id: true },
         },
-        validatedItems: {
+        validatedArticles: {
           select: { id: true },
         },
-        pendingItems: {
+        pendingArticles: {
           select: { id: true },
         },
-        rejectedPendingItems: {
+        rejectedPendingArticles: {
           select: { id: true },
         },
       },

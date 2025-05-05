@@ -1,32 +1,32 @@
 import { DOMAIN } from "@/utils/constants";
-import { Item } from "@prisma/client";
+import { Article } from "@prisma/client";
 import prisma from "@/utils/db";
 import axios from "axios";
-import { allItem } from "@/utils/types";
+import { allArticle } from "@/utils/types";
 
-export async function fetchItems(
-  pageNumber: number = 1,
-  itemType?: "GAME" | "PROGRAM"
+export async function fetchArticles(
+  pageNumber: number,
+  articleType?: "GAME" | "PROGRAM"
 ) {
   try {
-    const response = await axios.get(`${DOMAIN}/api/consumer/items`, {
-      params: { pageNumber, itemType }, // 👈
+    const response = await axios.get(`${DOMAIN}/api/consumer/articles`, {
+      params: { pageNumber, articleType },
     });
 
     return response.data && Array.isArray(response.data) ? response.data : [];
   } catch /* (error: any) */ {
     throw new Error(
-      /* error.response?.data?.message || */ "Failed to fetch items"
+      /* error.response?.data?.message || */ "Failed to fetch articles"
     );
   }
 }
 
-export async function fetchItemsCount(itemType?: "GAME" | "PROGRAM") {
+export async function fetchArticlesCount(articleType?: "GAME" | "PROGRAM") {
   try {
     const response = await axios.get<{ count: number }>(
-      `${DOMAIN}/api/consumer/items/count`,
+      `${DOMAIN}/api/consumer/articles/count`,
       {
-        params: { itemType },
+        params: { articleType },
       }
     );
 
@@ -38,35 +38,36 @@ export async function fetchItemsCount(itemType?: "GAME" | "PROGRAM") {
   }
 }
 
-export async function fetchItemById(itemId: number): Promise<Item> {
+export async function fetchArticleById(articleId: number): Promise<Article> {
   try {
-    const response = await axios.get<Item>(
-      `${DOMAIN}/api/consumer/items/${itemId}`
+    const response = await axios.get<Article>(
+      `${DOMAIN}/api/consumer/articles/${articleId}`
     );
     return response.data;
   } catch /* (error: any)  */ {
     throw new Error(
-      /* error.response?.data?.message || */ "Failed to fetch item by id"
+      /* error.response?.data?.message || */ "Failed to fetch Article by id"
     );
   }
 }
 
-export async function fetchMetadata(itemId: number) {
-  if (!itemId) {
+export async function fetchMetadata(articleId: number) {
+  if (!articleId) {
     throw { status: 400, message: "ID is required." };
   }
 
   try {
-    const item = await prisma.item.findUnique({
-      where: { id: itemId, isApproved: true },
+    const article = await prisma.article.findUnique({
+      where: { id: articleId, isApproved: true },
       select: {
         id: true,
         title: true,
         description: true,
         keywords: true,
         image: true,
-        itemType: true,
-        categories: true,
+        articleType: true,
+        gameCategory:true,
+        programCategory:true,
         developer: true,
         version: true,
         averageRating: true,
@@ -75,11 +76,11 @@ export async function fetchMetadata(itemId: number) {
         typeMod:true
       },
     });
-    if (!item) {
-      throw { status: 404, message: `Item not found.` };
+    if (!article) {
+      throw { status: 404, message: `article not found.` };
     }
 
-    return item;
+    return article;
   } catch (error: any) {
     throw {
       status: 500,
@@ -98,12 +99,12 @@ async function getIPAddress() {
   }
 }
 
-export async function sendRatingToAPI(value: number, itemId: number) {
+export async function sendRatingToAPI(value: number, articleId: number) {
   try {
     const ipAddress = await getIPAddress();
 
     const response = await axios.post(
-      `${DOMAIN}/api/consumer/rating?itemId=${itemId}&rate=${value}`,
+      `${DOMAIN}/api/consumer/rating?articleId=${articleId}&rate=${value}`,
       {},
       {
         headers: {
@@ -114,18 +115,18 @@ export async function sendRatingToAPI(value: number, itemId: number) {
 
     return response;
   } catch (error: any) {
-    throw error.response?.data?.message || "Failed to Approved item";
+    throw error.response?.data?.message || "Failed to Approved article";
   }
 }
 
 //Download Details
 export async function getDownloadData(
-  itemId: string,
-  downloadType: "apk" | "obb" | "script"
+  articleId: string,
+  downloadType: "apk" | "obb" | "script"|"original-apk"
 ) {
   try {
     const response = await axios.get(
-      `${DOMAIN}/api/consumer/items/${itemId}/downloadItem`,
+      `${DOMAIN}/api/consumer/articles/${articleId}/downloadArticle`,
       {
         params: { downloadType },
       }
@@ -133,23 +134,24 @@ export async function getDownloadData(
 
     return response.data;
   } catch {
-    throw "Failed to get item data Download";
+    throw "Failed to get article data Download";
   }
 }
 
-//get top items
-export async function getTopItems(
-  itemType: "GAME" | "PROGRAM"
-): Promise<allItem[]> {
+//get top articles
+export async function getTopArticles(
+  articleType: "GAME" | "PROGRAM"
+): Promise<allArticle[]> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/consumer/items/topItems`, {
-      params: { itemType },
+    console.log(DOMAIN)
+    const response = await axios.get(`${DOMAIN}/api/consumer/articles/topArticles`, {
+      params: { articleType },
     });
 
     return response.data;
   } catch /* (error: any) */ {
     throw new Error(
-      /* error.response?.data?.message || */ "Failed to fetch items"
+      /* error.response?.data?.message || */ "Failed to fetch articles"
     );
   }
 }

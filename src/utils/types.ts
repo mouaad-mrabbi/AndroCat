@@ -68,3 +68,50 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
     validatedAt: true;
   };
 }>;
+
+
+export type PendingArticleAndObjects = Prisma.PendingArticleGetPayload<{
+  select: {
+    createdBy: { select: { profile: true; username: true } };
+    id: true;
+    status:true;
+    title: true;
+    description: true;
+    image: true;
+    developer: true;
+    version: true;
+    versionOriginal: true;
+    androidVer: true;
+
+    articleType: true;
+    gameCategory: true;
+    programCategory: true;
+
+    OBB: true;
+    Script: true;
+    OriginalAPK: true;
+
+    linkAPK: true;
+    linkOBB: true;
+    linkVideo: true;
+    linkScript: true;
+    linkOriginalAPK: true;
+
+    sizeFileAPK: true;
+    sizeFileOBB: true;
+    sizeFileScript: true;
+    sizeFileOriginalAPK: true;
+
+    appScreens: true;
+    keywords: true;
+    isMod: true;
+    typeMod: true;
+    ratedFor: true;
+    installs: true;
+
+    createdById: true;
+    createdAt: true;
+    updatedAt: true;
+    articleId:true
+  };
+}>;

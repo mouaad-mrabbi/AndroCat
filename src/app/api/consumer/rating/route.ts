@@ -11,20 +11,20 @@ const rateLimit = new LRUCache({
 
 /**
  *  @method POST
- *  @route  ~/api/consumer/rating?itemId=itemId&rate=rate
- *  @query  itemId (string) - The ID of the item.
+ *  @route  ~/api/consumer/rating?articleId=articleId&rate=rate
+ *  @query  articleId (string) - The ID of the article.
  *          rate   (number) - The rating value.
- *  @desc   Creates or updates an item rating.
+ *  @desc   Creates or updates an article rating.
  *  @access public (IP-based rate limiting applied)
  */
 export async function POST(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const itemId = Number(searchParams.get("itemId")) ;
+    const articleId = Number(searchParams.get("articleId")) ;
     const rate = parseFloat(searchParams.get("rate") || "");
 
-    if (!itemId) {
-      return NextResponse.json({ error: "Invalid item ID" }, { status: 400 });
+    if (!articleId) {
+      return NextResponse.json({ error: "Invalid article ID" }, { status: 400 });
     }
 
     if (isNaN(rate) || rate < 1 || rate > 5) {
@@ -53,21 +53,21 @@ export async function POST(req: NextRequest) {
     // زيادة عدد الطلبات لهذا المستخدم
     rateLimit.set(key, requestCount + 1);
 
-    // Check if item is approved
-    const item = await prisma.item.findUnique({
-      where: { id: itemId },
+    // Check if article is approved
+    const article = await prisma.article.findUnique({
+      where: { id: articleId },
       select: { isApproved: true },
     });
-    if (!item || !item.isApproved) {
+    if (!article || !article.isApproved) {
       return NextResponse.json(
-        { message: "Item is not approved for rating" },
+        { message: "article is not approved for rating" },
         { status: 400 }
       );
     }
 
     // البحث عن التقييم الحالي لنفس المستخدم على نفس العنصر
-    const existingRating = await prisma.itemRating.findUnique({
-      where: { itemId_ipAddress: { itemId, ipAddress } },
+    const existingRating = await prisma.articleRating.findUnique({
+      where: { articleId_ipAddress: { articleId, ipAddress } },
       select: { rate: true, id: true },
     });
 
@@ -81,26 +81,26 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
-      const updatedRating = await prisma.itemRating.update({
+      const updatedRating = await prisma.articleRating.update({
         where: { id: existingRating.id },
         data: { rate, updatedAt: new Date() },
       });
 
-      // Update rating accounts on the Item
-      const ratingStats = await prisma.itemRating.aggregate({
-        _count: { itemId: true },
+      // Update rating accounts on the article
+      const ratingStats = await prisma.articleRating.aggregate({
+        _count: { articleId: true },
         _avg: { rate: true },
-        where: { itemId },
+        where: { articleId },
       });
 
-      const ratingCount = ratingStats._count.itemId;
+      const ratingCount = ratingStats._count.articleId;
       const averageRating = ratingStats._avg.rate
         ? Number(ratingStats._avg.rate.toFixed(1))
         : 0;
 
       // تحديث العنصر بعد التحقق من القيم
-      await prisma.item.update({
-        where: { id: itemId },
+      await prisma.article.update({
+        where: { id: articleId },
         select: { ratingCount: true, averageRating: true },
         data: { ratingCount, averageRating },
       });
@@ -112,28 +112,28 @@ export async function POST(req: NextRequest) {
     }
 
     // Create a new rating if none exists
-    const newRating = await prisma.itemRating.create({
-      data: { itemId, ipAddress, rate },
+    const newRating = await prisma.articleRating.create({
+      data: { articleId, ipAddress, rate },
     });
 
-    // Update rating accounts on the Item
-    const ratingStats = await prisma.itemRating.aggregate({
+    // Update rating accounts on the article
+    const ratingStats = await prisma.articleRating.aggregate({
       _count: {
-        itemId: true, // هذا يعطيك عدد التقييمات
+        articleId: true, // هذا يعطيك عدد التقييمات
       },
       _avg: {
         rate: true, // هذا يحسب المتوسط
       },
-      where: { itemId },
+      where: { articleId },
     });
 
-    const ratingCount = ratingStats._count.itemId;
+    const ratingCount = ratingStats._count.articleId;
     const averageRating = ratingStats._avg.rate
       ? Number(ratingStats._avg.rate.toFixed(1))
       : 0;
 
-    await prisma.item.update({
-      where: { id: itemId },
+    await prisma.article.update({
+      where: { id: articleId },
       select: { ratingCount: true, averageRating: true },
       data: { ratingCount, averageRating },
     });

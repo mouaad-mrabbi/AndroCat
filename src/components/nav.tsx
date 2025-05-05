@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 
-type NavigationItem = {
+type NavigationArticle = {
   name: string;
   href: string;
   current: boolean;
@@ -22,7 +22,7 @@ function classNames(...classes: string[]): string {
 const Example: React.FC = () => {
   const pathname = usePathname();
   const firstSegment = pathname.split("/")[1];
-  const navigation: NavigationItem[] = [
+  const navigation: NavigationArticle[] = [
     { name: "Home", href: "/", current: firstSegment === "" },
     { name: "Games", href: "/games", current: firstSegment === "games" },
     {
@@ -79,20 +79,20 @@ const Example: React.FC = () => {
             </div>
             <div className="hidden sm:ml-6 sm:block my-auto">
               <div className="flex gap-4">
-                {navigation.map((item) => (
+                {navigation.map((article) => (
                   <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={item.current ? "page" : undefined}
-                    title={item.name}
+                    key={article.href}
+                    href={article.href}
+                    aria-current={article.current ? "page" : undefined}
+                    title={article.name}
                     className={classNames(
-                      item.current
+                      article.current
                         ? "text-green-500"
                         : "text-white hover:text-gray-400",
                       "px-3 py-2 font-bold text-xl"
                     )}
                   >
-                    {item.name}
+                    {article.name}
                   </Link>
                 ))}
               </div>
@@ -103,21 +103,21 @@ const Example: React.FC = () => {
 
       <DisclosurePanel className="sm:hidden" id="mobile-menu">
         <div className="space-y-1 px-2 pt-2 pb-3">
-          {navigation.map((item) => (
+          {navigation.map((article) => (
             <DisclosureButton
-              key={item.href}
+              key={article.href}
               as={Link}
-              href={item.href}
-              aria-current={item.current ? "page" : undefined}
-              title={item.name}
+              href={article.href}
+              aria-current={article.current ? "page" : undefined}
+              title={article.name}
               className={classNames(
-                item.current
+                article.current
                   ? "text-green-500"
                   : "text-white hover:text-gray-400",
                 "block rounded-md px-3 py-2 text-base font-bold"
               )}
             >
-              {item.name}
+              {article.name}
             </DisclosureButton>
           ))}
         </div>

@@ -339,16 +339,16 @@ export default function UploadImage() {
         <div className="pt-8">
           <h1 className="text-3xl font-bold mb-6 text-center">Upload store</h1>
           <div className="max-w-md mx-auto bg-gray-800 p-6 rounded-lg shadow-lg mt-8  flex flex-col gap-6">
-            {store?.map((item, index) => (
+            {store?.map((article, index) => (
               <div key={index} className="flex gap-4">
                 <div className="flex">
                   <Link
-                    href={item.imageUrl}
+                    href={article.imageUrl}
                     className="w-24 h-16 object-cover rounded-lg"
                     target="_blank"
                   >
                     <img
-                      src={item.imageUrl}
+                      src={article.imageUrl}
                       alt="Image"
                       className="w-full h-full object-cover rounded-lg "
                     />
@@ -357,12 +357,12 @@ export default function UploadImage() {
 
                 <div className=" flex-1 overflow-hidden">
                   <p className="w-full break-words overflow-hidden whitespace-nowrap text-sm text-gray-300">
-                    {item.fileName}
+                    {article.fileName}
                   </p>
                   <p className="text-gray-300 text-sm">
-                    File Size: {item.fileSize}
+                    File Size: {article.fileSize}
                   </p>
-                  <button onClick={() => copyToClipboard(item.imageUrl)}>
+                  <button onClick={() => copyToClipboard(article.imageUrl)}>
                     Copy URL
                   </button>
                 </div>

@@ -13,6 +13,7 @@ export const metadata = {
   },
   openGraph: {
     siteName: "AndroCat",
+    site_name: "androcat",
   },
   twitter: {
     site: "@androcat",

@@ -36,12 +36,12 @@ export default function UploadFile({
         extension = "webp";
       } else if (file.type === "image/jpeg" || file.type === "image/jpg") {
         extension = "jpg";
-      } else if (fileType === "apks") {
+      } else if (fileType === "apks"||fileType === "original-apks") {
         extension = "apk";
       } else if (fileType === "obbs") {
-        extension = "obb";
+        extension = "zip";
       }else if (fileType === "scripts") {
-        extension = "scripts";
+        extension = "zip";
       } else {
         // في حالة عدم تطابق أي نوع
         toast.error("Unsupported file type");

@@ -6,12 +6,12 @@ import { motion, AnimatePresence } from "framer-motion";
 
 interface RatingProps {
   rating: number;
-  itemId: number;
+  articleId: number;
 }
 
 export default function Rating({
   rating ,
-  itemId,
+  articleId,
 }: RatingProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [textWindow, setTextWindow] = useState("");
@@ -34,9 +34,9 @@ export default function Rating({
     setTimeout(() => {
       setIsLoading(false);
 
-      const FetchItem = async () => {
+      const FetchArticle = async () => {
         try {
-          const response = await sendRatingToAPI(value, itemId);
+          const response = await sendRatingToAPI(value, articleId);
           setTextWindow(response.data.message);
           setIsOpen(true);
         } catch (error: any) {
@@ -46,7 +46,7 @@ export default function Rating({
         }
       };
 
-      FetchItem();
+      FetchArticle();
     }, 1000); // تحميل يظهر لمدة ثانية
   }
 

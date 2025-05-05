@@ -7,8 +7,8 @@ const redirects = async () => [
     permanent: true,
   },
   {
-    source: "/admin/items",
-    destination: "/admin/items/1",
+    source: "/admin/articles",
+    destination: "/admin/articles/1",
     permanent: true,
   },
 ];

@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     });
 
     if (!users || users.length === 0) {
-      return NextResponse.json({ message: "No items found" }, { status: 404 });
+      return NextResponse.json({ message: "No users found" }, { status: 404 });
     }
 
     return NextResponse.json(users, { status: 200 });

@@ -6,11 +6,11 @@ export default function NotFoundPage() {
         <p className="text-[7.5em] font-bold max-[770px]:text-center">404</p>
       </div>
       <div>
-        <p className="text-[2em] font-bold">UH OH! You're lost.</p>
+        <p className="text-[2em] font-bold ">UH OH! You're lost.</p>
         <p>
           The page you are looking for does not exist. How you got here is a
           mystery. But you can click the button below to go back to the
-          homepage.
+          home.
         </p>
         <div className="flex max-[770px]:justify-center mt-4 ">
           <Link

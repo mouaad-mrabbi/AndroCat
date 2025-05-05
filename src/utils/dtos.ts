@@ -25,12 +25,12 @@ export interface CreateArticleDto {
   image: string;
   developer: string;
   version: string;
-  versionOriginal?: string;
+  versionOriginal?: string | null;
   androidVer: string;
 
   articleType: ArticleType;
-  gameCategory?: GameCategories;
-  programCategory?: ProgramCategories;
+  gameCategory?: GameCategories | null;
+  programCategory?: ProgramCategories | null;
 
   OBB: boolean;
   Script: boolean;
@@ -100,3 +100,4 @@ export interface UpdateArticleDto {
   createdById?: number;
   createdAt?: string | Date;
 }
+

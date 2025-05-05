@@ -1,49 +1,13 @@
 import { DOMAIN } from "@/utils/constants";
-import { allItem, ItemAndObjects } from "@/utils/types";
-import { Item } from "@prisma/client";
+import { allArticle, ArticleAndObjects, PendingArticleAndObjects } from "@/utils/types";
 import axios from "axios";
-import { ActionType, ItemCategories, ItemType, User } from "@prisma/client";
+import { ActionType, ArticleType, GameCategories, PendingArticle, ProgramCategories, User } from "@prisma/client";
 
-interface PendingItem {
-  id: string;
-  status: ActionType;
-  checking: boolean;
-  title: string;
-  description: string;
-  image: string;
-  developer: string;
-  version: string;
-  androidVer: string;
 
-  itemType: ItemType;
-  categories: ItemCategories;
-
-  OBB: boolean;
-  Script: boolean;
-  linkAPK: string;
-  linkOBB?: string;
-  linkVideo?: string;
-  linkScript?: string;
-  sizeFileAPK: string;
-  sizeFileOBB?: string;
-  sizeFileScript?: string;
-  appScreens: string[];
-  keywords: string[];
-  isMod: boolean;
-  typeMod?: string;
-  ratedFor: number;
-  installs: string;
-  createdAt: Date;
-  updatedAt: Date;
-  createdById: string;
-  createdBy: User;
-  itemId?: string | null;
-}
-
-// Get my all items for user   app/admin/[id]/items/page.tsx
-export async function fetchItems(pageNumber: number): Promise<allItem[]> {
+// Get my all Articles for user
+export async function fetchArticles(pageNumber: number): Promise<allArticle[]> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/superAdmin/items`, {
+    const response = await axios.get(`${DOMAIN}/api/superAdmin/articles`, {
       params: { pageNumber },
       withCredentials: true,
     });
@@ -61,10 +25,10 @@ export async function fetchItems(pageNumber: number): Promise<allItem[]> {
   }
 }
 
-// Get my Count items for user
-export async function fetchItemsCount(): Promise<number> {
+// Get my Count Articles for user
+export async function fetchArticlesCount(): Promise<number> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/superAdmin/items/count`, {
+    const response = await axios.get(`${DOMAIN}/api/superAdmin/articles/count`, {
       headers: { "Cache-Control": "no-store" },
     });
 
@@ -75,11 +39,11 @@ export async function fetchItemsCount(): Promise<number> {
   }
 }
 
-// Get my single item for user   app/admin/[id]/items/page.tsx
-export async function fetchItem(itemId: string): Promise<ItemAndObjects> {
+// Get my single Article for user
+export async function fetchArticle(articleId: string): Promise<ArticleAndObjects> {
   try {
     const response = await axios.get(
-      `${DOMAIN}/api/superAdmin/items/${itemId}`,
+      `${DOMAIN}/api/superAdmin/articles/${articleId}`,
       {
         withCredentials: true,
       }
@@ -87,16 +51,16 @@ export async function fetchItem(itemId: string): Promise<ItemAndObjects> {
 
     return response.data;
   } catch {
-    throw new Error("Failed to fetch item");
+    throw new Error("Failed to fetch Article");
   }
 }
 
-// Get all Pending Items
-export async function fetchPendingItems(
+// Get all Pending Articles
+export async function fetchPendingArticles(
   pageNumber: number
-): Promise<allItem[]> {
+): Promise<allArticle[]> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/superAdmin/pendingItems`, {
+    const response = await axios.get(`${DOMAIN}/api/superAdmin/pendingArticles`, {
       params: { pageNumber },
       withCredentials: true,
     });
@@ -114,11 +78,11 @@ export async function fetchPendingItems(
   }
 }
 
-// Get Count Pending items
-export async function fetchPendingItemsCount(): Promise<number> {
+// Get Count Pending Articles
+export async function fetchPendingArticlesCount(): Promise<number> {
   try {
     const response = await axios.get(
-      `${DOMAIN}/api/superAdmin/pendingItems/count`,
+      `${DOMAIN}/api/superAdmin/pendingArticles/count`,
       {
         headers: { "Cache-Control": "no-store" },
       }
@@ -131,13 +95,13 @@ export async function fetchPendingItemsCount(): Promise<number> {
   }
 }
 
-// Get single Pending item for user
-export async function fetchPendingItem(
-  pendingItemId: string
-): Promise<PendingItem> {
+// Get single Pending Article for user
+export async function fetchPendingArticle(
+  pendingArticleId: string
+): Promise<PendingArticleAndObjects> {
   try {
     const response = await axios.get(
-      `${DOMAIN}/api/superAdmin/pendingItems/${pendingItemId}`,
+      `${DOMAIN}/api/superAdmin/pendingArticles/${pendingArticleId}`,
       {
         withCredentials: true,
       }
@@ -145,15 +109,15 @@ export async function fetchPendingItem(
 
     return response.data;
   } catch {
-    throw new Error("Failed to fetch Pending item");
+    throw new Error("Failed to fetch Pending Article");
   }
 }
 
-//creat new item (move Pending item to item)
-export async function creatItem(pendingItemId: string) {
+//creat new Article (move Pending Article to Article)
+export async function creatArticle(pendingArticleId: number) {
   try {
     const response = await axios.post(
-      `${DOMAIN}/api/superAdmin/pendingItems/${pendingItemId}`,
+      `${DOMAIN}/api/superAdmin/pendingArticles/${pendingArticleId}`,
       {
         withCredentials: true,
       }
@@ -165,11 +129,11 @@ export async function creatItem(pendingItemId: string) {
 }
 
 
-//update new item (move Pending item to item)
-export async function updateItem(pendingItemId: string) {
+//update new Article (move Pending Article to Article)
+export async function updateArticle(pendingArticleId: number) {
   try {
     const response = await axios.put(
-      `${DOMAIN}/api/superAdmin/items/pendingItems/${pendingItemId}`,
+      `${DOMAIN}/api/superAdmin/articles/pendingArticles/${pendingArticleId}`,
       {
         withCredentials: true,
       }

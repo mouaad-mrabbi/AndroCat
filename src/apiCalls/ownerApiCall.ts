@@ -1,52 +1,52 @@
 import { DOMAIN } from "@/utils/constants";
-import { allItem, ItemAndObjects } from "@/utils/types";
+import { allArticle, ArticleAndObjects } from "@/utils/types";
 import axios from "axios";
 
-//get all items
-export async function fetchItems(pageNumber: number): Promise<allItem[]> {
+//get all Articles
+export async function fetchArticles(pageNumber: number): Promise<allArticle[]> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/owner/items`, {
+    const response = await axios.get(`${DOMAIN}/api/owner/articles`, {
       params: { pageNumber },
       withCredentials: true,
     });
 
     return response.data;
   } catch (error: any) {
-    throw new Error(error || "Failed to get all items");
+    throw new Error(error || "Failed to get all Articles");
   }
 }
 
-// Get Count items
-export async function fetchItemsCount(): Promise<number> {
+// Get Count Articles
+export async function fetchArticlesCount(): Promise<number> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/owner/items/count`, {
+    const response = await axios.get(`${DOMAIN}/api/owner/articles/count`, {
       headers: { "Cache-Control": "no-store" },
     });
 
     return response.data;
   } catch (error: any) {
-    throw new Error(error || "Failed to get items count");
+    throw new Error(error || "Failed to get Articles count");
   }
 }
 
-// Get single item
-export async function fetchItem(itemId: string): Promise<ItemAndObjects> {
+// Get single Article
+export async function fetchArticle(articleId: string): Promise<ArticleAndObjects> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/owner/items/${itemId}`, {
+    const response = await axios.get(`${DOMAIN}/api/owner/articles/${articleId}`, {
       withCredentials: true,
     });
 
     return response.data;
   } catch (error: any) {
-    throw new Error(error || "Failed to get all items");
+    throw new Error(error || "Failed to get all articles");
   }
 }
 
-// Approved item
-export async function approvedItem(itemId: number, approved: string) {
+// Approved article
+export async function approvedArticle(articleId: number, approved: string) {
   try {
     const response = await axios.put(
-      `${DOMAIN}/api/owner/items/${itemId}/approved`,
+      `${DOMAIN}/api/owner/articles/${articleId}/approved`,
       {},
       {
         params: { approved },
@@ -56,6 +56,6 @@ export async function approvedItem(itemId: number, approved: string) {
 
     return response;
   } catch (error: any) {
-    throw (error || "Failed to Approved item");
+    throw (error || "Failed to Approved article");
   }
 }

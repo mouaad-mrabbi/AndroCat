@@ -3,8 +3,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ITEM_SEARCH_PER_PAGE } from "@/utils/constants";
-import { allItem } from "@/utils/types";
+import { ARTICLE_SEARCH_PER_PAGE } from "@/utils/constants";
+import { allArticle } from "@/utils/types";
 import AppList from "@/components/list/appList";
 import { FaSearch } from "react-icons/fa";
 import { BsArrowRight, BsArrowLeft } from "react-icons/bs";
@@ -18,7 +18,7 @@ export default function SearchPageContent() {
   const qParam = searchParams.get("q") || "";
 
   const [searchText, setSearchText] = useState(qParam);
-  const [results, setResults] = useState<allItem[]>([]);
+  const [results, setResults] = useState<allArticle[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [pageSelect, setPageSelect] = useState(1);
@@ -36,7 +36,7 @@ export default function SearchPageContent() {
     }
 
     try {
-      const { data } = await axios.get("/api/consumer/items/search", {
+      const { data } = await axios.get("/api/consumer/articles/search", {
         params: { searchText: keyword, pageNumber },
       });
 
@@ -58,7 +58,7 @@ export default function SearchPageContent() {
   }, [qParam]);
 
   useEffect(() => {
-    setPages(Math.ceil(totalCount / ITEM_SEARCH_PER_PAGE));
+    setPages(Math.ceil(totalCount / ARTICLE_SEARCH_PER_PAGE));
   }, [totalCount]);
 
   const handleQueryUpdate = () => {
@@ -138,7 +138,7 @@ export default function SearchPageContent() {
 
           {loading && <Loading />}
 
-          <AppList items={results} url={"home"} />
+          <AppList articles={results} url={"home"} />
         </div>
 
         {/* Pagination Search */}

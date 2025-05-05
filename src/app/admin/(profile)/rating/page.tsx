@@ -4,8 +4,8 @@ import { useState } from "react";
 import axios from "axios";
 import { DOMAIN } from "@/utils/constants";
 
-export default function FakeRatingsPage() {
-  const [itemId, setItemId] = useState(0);
+export default function OwnerRatingsPage() {
+  const [articleId, setArticleId] = useState(0);
   const [count, setCount] = useState(10);
   const [minRate, setMinRate] = useState(3);
   const [maxRate, setMaxRate] = useState(5);
@@ -19,9 +19,8 @@ export default function FakeRatingsPage() {
     setError("");
 
     try {
-
       const response = await axios.post(`${DOMAIN}/api/owner/rating`, {
-        itemId,
+        articleId,
         count,
         minRate,
         maxRate,
@@ -29,7 +28,6 @@ export default function FakeRatingsPage() {
 
       setMessage(response.data.message);
     } catch (err: any) {
-/*         console.log */
       setError(err.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -37,18 +35,20 @@ export default function FakeRatingsPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-lg space-y-6 text-black dark:text-white
-     transition-colors duration-300 mt-8">
+    <div
+      className="max-w-md mx-auto p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-lg space-y-6 text-black dark:text-white
+     transition-colors duration-300 mt-8"
+    >
       <h1 className="text-2xl font-extrabold text-center">Generate Ratings</h1>
-  
+
       <div className="space-y-4">
         <input
           type="number"
-          placeholder="Item ID"
+          placeholder="article ID"
           className="w-full border border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3 rounded-md focus:outline-none
            focus:ring-2 focus:ring-blue-500 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-          value={itemId}
-          onChange={(e) => setItemId(Number(e.target.value))}
+          value={articleId}
+          onChange={(e) => setArticleId(Number(e.target.value))}
         />
         <input
           type="number"
@@ -76,7 +76,7 @@ export default function FakeRatingsPage() {
             onChange={(e) => setMaxRate(Number(e.target.value))}
           />
         </div>
-  
+
         <button
           onClick={handleSubmit}
           disabled={loading}
@@ -84,7 +84,7 @@ export default function FakeRatingsPage() {
         >
           {loading ? "Generating..." : "Submit"}
         </button>
-  
+
         {message && (
           <p className="text-green-600 dark:text-green-400 text-sm font-medium text-center">
             ✅ {message}
@@ -98,5 +98,4 @@ export default function FakeRatingsPage() {
       </div>
     </div>
   );
-  
 }

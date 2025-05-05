@@ -3,16 +3,16 @@ import Star from "../card/star";
 import Image from "next/image";
 import Link from "next/link";
 import { DomainsImages } from "@/utils/constants";
-import { allItem } from "@/utils/types";
+import { allArticle } from "@/utils/types";
 import slugify from "slugify";
 
 type Props = {
-  item: allItem;
+  article: allArticle;
   url: string;
   index: number;
 };
 
-export default function LandCard({ item, url, index }: Props) {
+export default function LandCard({ article, url, index }: Props) {
   const defaultImage = "/images/defaultSquareImage.png"; // صورة بديلة
 
   // دالة للتحقق من الدومين
@@ -22,19 +22,19 @@ export default function LandCard({ item, url, index }: Props) {
   };
 
   // التحقق من الدومين للصورة الرئيسية
-  const imageSrc = isValidDomain(item.image) ? item.image : defaultImage;
+  const imageSrc = isValidDomain(article.image) ? article.image : defaultImage;
 
   return (
     <Suspense fallback={LoadingLandCard()}>
       <Link
-        title={`${item.title} ${item.isMod ? `(${item.typeMod})` : ""}`}
+        title={`${article.title} ${article.isMod ? `(${article.typeMod})` : ""}`}
         href={
           url === "home"
-            ? `/${item.id}-${slugify(item.title, { lower: true })}${
-                item.isMod ? "-mod" : ""
+            ? `/${article.id}-${slugify(article.title, { lower: true })}${
+                article.isMod ? "-mod" : ""
               }`
-            : url === "pendingItems" || url === "items"
-            ? `/admin/${url}/${item.id}`
+            : url === "pendingArticles" || url === "articles"
+            ? `/admin/${url}/${article.id}`
             : "#"
         }
         className="flex max-[820px]:flex-col gap-4 p-6 max-[820px]:p-4 bg-[#1b1d1f] 
@@ -45,13 +45,13 @@ export default function LandCard({ item, url, index }: Props) {
             src={imageSrc}
             width={90}
             height={90}
-            alt={`${item.title} ${item.isMod ? item.typeMod : ""}`}
+            alt={`${article.title} ${article.isMod ? article.typeMod : ""}`}
             className="h-full w-full rounded-2xl object-cover"
 /*          priority={index < 3} // أول 3 صور يتم تحميلها بالأولوية */
             draggable="false"
             loading="lazy"
           />
-          {item.isMod && (
+          {article.isMod && (
             <div className="absolute bottom-1 right-1 px-2 py-1 font-bold text-sm bg-black/20 rounded-xl">
               MOD
             </div>
@@ -61,17 +61,17 @@ export default function LandCard({ item, url, index }: Props) {
         <div className="flex flex-col justify-between max-[820px]:h-28 ">
           <div>
             <p className="font-semibold line-clamp-2 max-[820px]:text-sm">
-              {item.title} {item.isMod && <span>({item.typeMod})</span>}
+              {article.title} {article.isMod && <span>({article.typeMod})</span>}
             </p>
             <p className="font-extralight text-xs max-[820px]:text-[10px] text-[#909192] line-clamp-1">
-              {item.developer}
+              {article.developer}
             </p>
           </div>
 
-          {url === "pendingItems" ? (
+          {url === "pendingArticles" ? (
             <Star rating={0} />
           ) : (
-            <Star rating={item.averageRating || 0} />
+            <Star rating={article.averageRating || 0} />
           )}
         </div>
       </Link>

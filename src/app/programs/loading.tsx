@@ -1,5 +1,5 @@
-import LoadingItems from "@/components/loadingItems";
+import LoadingArticles from "@/components/loadingArticles";
 
 export default function Loading1() {
-  return <LoadingItems />;
+  return <LoadingArticles />;
 }

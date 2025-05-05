@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabaseClient"; 
-import { ITEM_PER_PAGE } from "@/utils/constants";
+import { ARTICLE_PER_PAGE } from "@/utils/constants";
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,10 +16,10 @@ export async function GET(request: NextRequest) {
 
 /*     const supabase = createSupabaseWithToken(jwtToken); */
 
-    const { data: items, error } = await supabase
-      .from("Item")
+    const { data: articles, error } = await supabase
+      .from("Article")
       .select("*")
-      .range(ITEM_PER_PAGE * (pageNumber - 1), ITEM_PER_PAGE * pageNumber - 1)
+      .range(ARTICLE_PER_PAGE * (pageNumber - 1), ARTICLE_PER_PAGE * pageNumber - 1)
       .order("createdAt", { ascending: false });
 
     if (error) {
@@ -27,13 +27,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ message: error.message }, { status: 500 });
     }
 
-    if (!items || items.length === 0) {
-      return NextResponse.json({ message: "No items found" }, { status: 404 });
+    if (!articles || articles.length === 0) {
+      return NextResponse.json({ message: "No articles found" }, { status: 404 });
     }
 
-    return NextResponse.json(items, { status: 200 });
+    return NextResponse.json(articles, { status: 200 });
   } catch (error) {
-    console.error("Error fetching items:", error);
+    console.error("Error fetching articles:", error);
     return NextResponse.json({ message: "Internal server error" }, { status: 500 });
   }
 }

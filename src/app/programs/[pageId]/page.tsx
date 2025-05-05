@@ -1,18 +1,18 @@
 import Toolbar from "@/components/toolbar";
 import AppList from "@/components/list/appList";
 import Pagination from "@/components/pagination";
-import { DOMAIN, ITEM_PER_PAGE } from "@/utils/constants";
+import { DOMAIN, ARTICLE_PER_PAGE } from "@/utils/constants";
 import NotFoundPage from "@/app/not-found";
 import { redirect } from "next/navigation";
-import { fetchItems, fetchItemsCount } from "@/apiCalls/consumerApiCall";
+import { fetchArticles, fetchArticlesCount } from "@/apiCalls/consumerApiCall";
 import Head from "next/head";
 import CardRow from "@/components/cardRow";
 
-interface ItemsPageProp {
+interface ArticlesPageProp {
   params: Promise<{ pageId: string }>;
 }
 
-export async function generateMetadata({ params }: ItemsPageProp) {
+export async function generateMetadata({ params }: ArticlesPageProp) {
   const { pageId } = await params;
   const page = Number(pageId);
 
@@ -47,17 +47,17 @@ export async function generateMetadata({ params }: ItemsPageProp) {
   };
 }
 
-export default async function ProgramsPage({ params }: ItemsPageProp) {
+export default async function ProgramsPage({ params }: ArticlesPageProp) {
   const { pageId } = await params;
   if (isNaN(Number(pageId)) || Number(pageId) < 1) {
     return redirect("/programs/1");
   }
 
   try {
-    const items = await fetchItems(Number(pageId), "PROGRAM");
-    const count = await fetchItemsCount("PROGRAM");
+    const articles = await fetchArticles(Number(pageId), "PROGRAM");
+    const count = await fetchArticlesCount("PROGRAM");
 
-    const pages = Math.ceil(Number(count) / ITEM_PER_PAGE);
+    const pages = Math.ceil(Number(count) / ARTICLE_PER_PAGE);
 
     const structuredData = {
       "@context": "https://schema.org",
@@ -83,11 +83,11 @@ export default async function ProgramsPage({ params }: ItemsPageProp) {
         <div>
           <div className="mb-8">
             <Toolbar local="home" firstLocal={"programs"} />
-            <CardRow itemType="programs" />
+            <CardRow articleType="programs" />
           </div>
 
           <div className="px-7 max-[500px]:px-0">
-            <AppList url={"program"} items={items} />
+            <AppList url={"program"} articles={articles} />
             <Pagination
               pages={pages}
               pageSelect={Number(pageId)}

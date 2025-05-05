@@ -35,9 +35,12 @@ export const createArticleSchema = z
     articleType: z.nativeEnum(ArticleType),
     gameCategory: z
       .nativeEnum(GameCategories, { message: "Game Categories" })
+      .nullable()
       .optional(),
+      
     programCategory: z
       .nativeEnum(ProgramCategories, { message: "Program Categories" })
+      .nullable()
       .optional(),
 
     OBB: z.boolean().default(false),
@@ -249,9 +252,11 @@ export const updateArticleSchema = z
     articleType: z.nativeEnum(ArticleType).optional(),
     gameCategory: z
       .nativeEnum(GameCategories, { message: "Game Categories" })
+      .nullable()
       .optional(),
     programCategory: z
       .nativeEnum(ProgramCategories, { message: "Program Categories" })
+      .nullable()
       .optional(),
 
     OBB: z.boolean().optional(),

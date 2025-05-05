@@ -1,11 +1,9 @@
-import FormCreateItem from "./FormCreateItem";
+import FormCreatePArticle from "./FormCreatePArticle";
 
-function App() {
+export default function App() {
   return (
     <div>
-      <FormCreateItem />
+      <FormCreatePArticle />
     </div>
   );
 }
-
-export default App;

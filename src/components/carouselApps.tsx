@@ -2,24 +2,24 @@
 import React, { useEffect, useState, useRef } from "react";
 import "flickity/dist/flickity.min.css";
 import { IoArrowForward, IoArrowBackOutline } from "react-icons/io5";
-import { allItem } from "@/utils/types";
-import { getTopItems } from "@/apiCalls/consumerApiCall";
+import { allArticle } from "@/utils/types";
+import { getTopArticles } from "@/apiCalls/consumerApiCall";
 import Card from "./card/card";
 
 const Carousel = ({ sectionTitle }: { sectionTitle: "GAME" | "PROGRAM" }) => {
   const flickityRef = useRef<HTMLDivElement>(null);
   const [flickityInstance, setFlickityInstance] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [items, setItems] = useState<allItem[]>([]);
+  const [articles, setArticles] = useState<allArticle[]>([]);
 
   useEffect(() => {
-    const fetchItems = async () => {
-      const Items = await getTopItems(sectionTitle);
-      setItems(Items);
+    const fetchArticles = async () => {
+      const Articles = await getTopArticles(sectionTitle);
+      setArticles(Articles);
       setIsLoading(true);
     };
 
-    fetchItems();
+    fetchArticles();
   }, []);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const Carousel = ({ sectionTitle }: { sectionTitle: "GAME" | "PROGRAM" }) => {
         flickity.destroy();
       }
     };
-  }, [items]);
+  }, [articles]);
 
   if (!isLoading) {
     return (
@@ -74,8 +74,8 @@ const Carousel = ({ sectionTitle }: { sectionTitle: "GAME" | "PROGRAM" }) => {
   return (
     <div className="relative">
       <div className="carousel w-full" ref={flickityRef}>
-        {items.map((item, index) => {
-          return <Card item={item} key={index} />;
+        {articles.map((article, index) => {
+          return <Card article={article} key={index} />;
         })}
       </div>
       <button className="carousel-prev absolute left-2 top-1/2 text-2xl transform -translate-y-1/2 bg-[#78C257] text-white p-3 rounded-full focus:outline-none max-lg:hidden">

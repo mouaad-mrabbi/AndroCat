@@ -15,9 +15,9 @@ function getRandomRate(min: number, max: number): number {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { itemId, count, minRate, maxRate } = body;
+    const { articleId, count, minRate, maxRate } = body;
 
-    if (!itemId || !count || isNaN(minRate) || isNaN(maxRate)) {
+    if (!articleId || !count || isNaN(minRate) || isNaN(maxRate)) {
       return NextResponse.json({ error: "Invalid input" }, { status: 400 });
     }
 
@@ -42,41 +42,41 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const item = await prisma.item.findUnique({
-      where: { id: itemId },
+    const article = await prisma.article.findUnique({
+      where: { id: articleId },
       select: { isApproved: true },
     });
 
-    if (!item || !item.isApproved) {
+    if (!article || !article.isApproved) {
       return NextResponse.json(
-        { message: "Item is not approved for rating" },
+        { message: "article is not approved for rating" },
         { status: 400 }
       );
     }
 
     const fakeRatings = Array.from({ length: count }).map(() => ({
-      itemId,
+      articleId,
       ipAddress: generateRandomIP(),
       rate: getRandomRate(minRate, maxRate),
     }));
 
-    await prisma.itemRating.createMany({
+    await prisma.articleRating.createMany({
       data: fakeRatings,
     });
 
-    const ratingStats = await prisma.itemRating.aggregate({
-      _count: { itemId: true },
+    const ratingStats = await prisma.articleRating.aggregate({
+      _count: { articleId: true },
       _avg: { rate: true },
-      where: { itemId },
+      where: { articleId },
     });
 
-    const ratingCount = ratingStats._count.itemId;
+    const ratingCount = ratingStats._count.articleId;
     const averageRating = ratingStats._avg.rate
       ? Number(ratingStats._avg.rate.toFixed(1))
       : 0;
 
-    await prisma.item.update({
-      where: { id: itemId },
+    await prisma.article.update({
+      where: { id: articleId },
       data: { ratingCount, averageRating },
     });
 

@@ -1,10 +1,16 @@
 import { DOMAIN } from "@/utils/constants";
-import { CreateItemDto } from "@/utils/dtos";
-import { allItem } from "@/utils/types";
-import { ActionType, ItemCategories, ItemType, User } from "@prisma/client";
+import { CreateArticleDto } from "@/utils/dtos";
+import { allArticle } from "@/utils/types";
+import {
+  ActionType,
+  ArticleType,
+  GameCategories,
+  ProgramCategories,
+  User,
+} from "@prisma/client";
 import axios from "axios";
 
-interface PendingItem {
+interface PendingArticle {
   id: number;
   status: ActionType;
   checking: boolean;
@@ -13,20 +19,26 @@ interface PendingItem {
   image: string;
   developer: string;
   version: string;
+  versionOriginal: string;
   androidVer: string;
 
-  itemType: ItemType;
-  categories: ItemCategories;
+  articleType: ArticleType;
+  gameCategory: GameCategories;
+  programCategory: ProgramCategories;
 
   OBB: boolean;
   Script: boolean;
+  OriginalAPK: boolean;
+
   linkAPK: string;
   linkOBB?: string;
   linkVideo?: string;
   linkScript?: string;
+  linkOriginalAPK?: string;
   sizeFileAPK: string;
   sizeFileOBB?: string;
   sizeFileScript?: string;
+  sizeFileOriginalAPK?: string;
   appScreens: string[];
   keywords: string[];
   isMod: boolean;
@@ -37,13 +49,13 @@ interface PendingItem {
   updatedAt: Date;
   createdById: number;
   createdBy: User;
-  itemId?: number | null;
+  atricleId?: number | null;
 }
 
-//create pending item (CREATE)
-export async function createPendingItems(formData: CreateItemDto) {
+//create pending Article (CREATE)
+export async function createPendingArticles(formData: CreateArticleDto) {
   const response = await axios.post(
-    `${DOMAIN}/api/admin/pendingItems`,
+    `${DOMAIN}/api/admin/pendingArticles`,
     formData,
     {
       headers: {
@@ -55,42 +67,43 @@ export async function createPendingItems(formData: CreateItemDto) {
   return response.status;
 }
 
-// Get all Pending items for user
-export async function getMyPendingItems(
+// Get all Pending Articles for user
+export async function getMyPendingArticles(
   pageNumber: number
-): Promise<allItem[]> {
+): Promise<allArticle[]> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/admin/pendingItems`, {
+    const response = await axios.get(`${DOMAIN}/api/admin/pendingArticles`, {
       params: { pageNumber },
       withCredentials: true,
     });
 
     return response.data;
   } catch {
-    throw new Error("Failed to fetch count Pending items");
+    throw new Error("Failed to fetch count Pending Articles");
   }
 }
 
-// Get Count Pending items for user
-export async function getMyPendingItemsCount(): Promise<number> {
+// Get Count Pending Articles for user
+export async function getMyPendingArticlesCount(): Promise<number> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/admin/pendingItems/count`, {
-      headers: { "Cache-Control": "no-store" },
-    });
+    const response = await axios.get(
+      `${DOMAIN}/api/admin/pendingArticles/count`,
+      {
+        headers: { "Cache-Control": "no-store" },
+      }
+    );
 
     return response.data;
   } catch {
-    throw new Error("Failed to fetch count Pending items");
+    throw new Error("Failed to fetch count Pending Articles");
   }
 }
 
-// Get single Pending items for user
-export async function getMyPendingItem(
-  pendingItemId: string
-): Promise<PendingItem> {
+// Get single Pending Articles for user
+export async function getMyPendingArticle(pendingArticleId: number) {
   try {
     const response = await axios.get(
-      `${DOMAIN}/api/admin/pendingItems/${pendingItemId}`,
+      `${DOMAIN}/api/admin/pendingArticles/${pendingArticleId}`,
       {
         withCredentials: true,
       }
@@ -101,19 +114,19 @@ export async function getMyPendingItem(
     const errorMessage =
       error.response?.data?.message ||
       error.message ||
-      "Failed to fetch Pending item";
+      "Failed to fetch Pending Article";
 
     throw new Error(errorMessage);
   }
 }
 
 //
-export async function updateMyPendingItem(
-  pendingItemId: string,
-  formData: CreateItemDto
+export async function updateMyPendingArticle(
+  pendingArticleId: number,
+  formData: CreateArticleDto
 ) {
   const response = await axios.put(
-    `${DOMAIN}/api/admin/pendingItems/${pendingItemId}`,
+    `${DOMAIN}/api/admin/pendingArticles/${pendingArticleId}`,
     formData,
     {
       headers: {
@@ -125,14 +138,14 @@ export async function updateMyPendingItem(
   return response.status;
 }
 
-//create pending item (UPDATE)
-export async function createPendingUpdateItem(
-  itemId:number,
-  formData: CreateItemDto,
+//create pending Article (UPDATE)
+export async function createPendingUpdateArticle(
+  articleId: number,
+  formData: CreateArticleDto,
   statusType: "UPDATE" | "DELETE"
 ) {
   const response = await axios.post(
-    `${DOMAIN}/api/admin/pendingItems/items/${itemId}`,
+    `${DOMAIN}/api/admin/pendingArticles/articles/${articleId}`,
     formData,
     {
       headers: {
@@ -145,19 +158,24 @@ export async function createPendingUpdateItem(
   return response;
 }
 
-//Get single item created by user.
-export async function getItemCreateBy(itemId: number): Promise<PendingItem> {
+//Get single Article created by user.
+export async function getArticleCreateBy(
+  articleId: number
+): Promise<PendingArticle> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/admin/items/${itemId}`, {
-      withCredentials: true,
-    });
+    const response = await axios.get(
+      `${DOMAIN}/api/admin/articles/${articleId}`,
+      {
+        withCredentials: true,
+      }
+    );
 
     return response.data;
   } catch (error: any) {
     const errorMessage =
       error.response?.data?.message ||
       error.message ||
-      "Failed to fetch Pending item";
+      "Failed to fetch Pending Article";
 
     throw new Error(errorMessage);
   }
