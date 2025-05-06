@@ -365,8 +365,8 @@ export async function ArticleContent({ slug }: { slug: string }) {
                 href={`/download/${article.id}/original-apk`}
                 title={`Download Script ${article.title} Updated to version ${article.version}`}
                 className="flex items-center justify-between max-[1000px]:flex-col 
-          box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
-          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20 "
+          box-border py-4 px-8 max-sm:px-4 uppercase bg-[#3f4244] leading-relaxed 
+          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-[#3f4244]/20 "
               >
                 <div>
                   <p>
