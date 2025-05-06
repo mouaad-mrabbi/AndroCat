@@ -143,7 +143,6 @@ export async function getTopArticles(
   articleType: "GAME" | "PROGRAM"
 ): Promise<allArticle[]> {
   try {
-    console.log(DOMAIN)
     const response = await axios.get(`${DOMAIN}/api/consumer/articles/topArticles`, {
       params: { articleType },
     });

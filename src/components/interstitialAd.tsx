@@ -16,5 +16,5 @@ export default function InterstitialAd() {
     };
   }, []);
 
-  return null; // لا حاجة لعرض شيء بصري
+  return null;
 }

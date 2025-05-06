@@ -3,7 +3,7 @@
 
 export const metadata = {
   icons: {
-    icon: `${DOMAIN}/images/logo.png`,
+    icon: `${DOMAIN}/images/AndroCat-icon.png`,
     shortcut: "/favicon.ico",
     apple: "/apple-touch-icon.png",
   },
@@ -30,7 +30,6 @@ import "./globals.css";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
 import { ToastContainer } from "react-toastify";
-import "@/components/clientLogger";
 import Head from "next/head";
 import { DOMAIN } from "@/utils/constants";
 
@@ -49,7 +48,7 @@ export default function RootLayout({
               "@type": "Organization",
               name: "AndroCat",
               url: DOMAIN,
-              logo: `${DOMAIN}/images/logo.png`,
+              logo: `${DOMAIN}/images/AndroCat-icon.png`,
               sameAs: [
                 "https://twitter.com/androcat",
                 "https://facebook.com/androcat",
@@ -76,7 +75,7 @@ export default function RootLayout({
                 name: "AndroCat",
                 logo: {
                   "@type": "ImageObject",
-                  url: `${DOMAIN}/images/logo.png`,
+                  url: `${DOMAIN}/images/AndroCat-icon.png`,
                 },
               },
             }),

@@ -52,11 +52,17 @@ const Example: React.FC = () => {
                 aria-expanded="false"
               >
                 <span className="sr-only">Open main menu</span>
-                <Bars3Icon className="block h-6 w-6 group-data-open:hidden" aria-hidden="true" />
-                <XMarkIcon className="hidden h-6 w-6 group-data-open:block" aria-hidden="true" />
+                <Bars3Icon
+                  className="block h-6 w-6 group-data-open:hidden"
+                  aria-hidden="true"
+                />
+                <XMarkIcon
+                  className="hidden h-6 w-6 group-data-open:block"
+                  aria-hidden="true"
+                />
               </DisclosureButton>
             </div>
-  
+
             {/* الشعار والتنقل */}
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex shrink-0 items-center relative">
@@ -71,10 +77,11 @@ const Example: React.FC = () => {
                 )}
                 <Link href="/" title="AndroCat">
                   <Image
-                    src="/images/andro.png"
+                    src="/images/AndroCat-logo.png"
                     alt="AndroCat Logo"
-                    width={160}
-                    height={40}
+                    className="w-44"
+                    width={1573}
+                    height={421}
                     priority
                   />
                 </Link>
@@ -88,7 +95,9 @@ const Example: React.FC = () => {
                       aria-current={article.current ? "page" : undefined}
                       title={article.name}
                       className={classNames(
-                        article.current ? "text-green-500" : "text-white hover:text-gray-400",
+                        article.current
+                          ? "text-green-500"
+                          : "text-white hover:text-gray-400",
                         "px-3 py-2 font-bold text-xl"
                       )}
                     >
@@ -98,17 +107,17 @@ const Example: React.FC = () => {
                 </div>
               </div>
             </div>
-  
+
             {/* زر فتح البحث */}
             <button
-              className=" text-2xl rounded-full text-white p-2"
+              className="absolute  right-0 top-1/2 -translate-y-1/2 text-2xl rounded-full text-white p-2 h-max"
               onClick={() => setShowSearch((prev) => !prev)}
             >
               <IoMdSearch />
             </button>
           </div>
         </div>
-  
+
         {/* قائمة الجوال */}
         <DisclosurePanel className="sm:hidden" id="mobile-menu">
           <div className="space-y-1 px-2 pt-2 pb-3">
@@ -120,7 +129,9 @@ const Example: React.FC = () => {
                 aria-current={article.current ? "page" : undefined}
                 title={article.name}
                 className={classNames(
-                  article.current ? "text-green-500" : "text-white hover:text-gray-400",
+                  article.current
+                    ? "text-green-500"
+                    : "text-white hover:text-gray-400",
                   "block rounded-md px-3 py-2 text-base font-bold"
                 )}
               >
@@ -130,7 +141,7 @@ const Example: React.FC = () => {
           </div>
         </DisclosurePanel>
       </Disclosure>
-  
+
       {/* شريط البحث المتحرك */}
       <div
         className={classNames(
@@ -142,7 +153,9 @@ const Example: React.FC = () => {
           onSubmit={(e) => {
             e.preventDefault();
             if (searchQuery.trim()) {
-              router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+              router.push(
+                `/search?q=${encodeURIComponent(searchQuery.trim())}`
+              );
               setShowSearch(false);
             }
           }}
@@ -159,7 +172,6 @@ const Example: React.FC = () => {
             <button
               type="submit"
               className="absolute right-4 top-1/2 -translate-y-1/2 text-2xl text-white  hover:text-green-500"
-
             >
               <IoMdSearch className="text-xl" />
             </button>

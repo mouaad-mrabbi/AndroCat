@@ -51,7 +51,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
       image: article.image,
       keywords: article.keywords?.join(", ") || "games, apps, mods",
       developer: article.developer,
-      applicationCategory:category,
+      applicationCategory: category,
       operatingSystem: "Android",
       softwareVersion: article.version,
       aggregateRating: {
@@ -317,6 +317,27 @@ export async function ArticleContent({ slug }: { slug: string }) {
                 <p>{article.sizeFileAPK}</p>
               </div>
             </Link>
+            {/* OriginalAPK link */}
+            {article.OriginalAPK && article.linkOriginalAPK && (
+              <Link
+                href={`/download/${article.id}/original-apk`}
+                title={`Download Script ${article.title} Updated to version ${article.version}`}
+                className="flex items-center justify-between max-[1000px]:flex-col 
+          box-border py-4 px-8 max-sm:px-4 uppercase bg-[#3f4244] leading-relaxed 
+          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-[#3f4244]/20 "
+              >
+                <div>
+                  <p>
+                    Download Original APK {article.title}{" "}
+                    <span> Updated to version {article.version}</span>
+                  </p>
+                </div>
+                <div className="max-[1000px]:font-medium flex items-center gap-2">
+                  <RiDownloadFill />
+                  <p>{article.sizeFileScript}</p>
+                </div>
+              </Link>
+            )}
             {/* OBB link */}
             {article.OBB && article.linkOBB && (
               <Link
@@ -359,53 +380,47 @@ export async function ArticleContent({ slug }: { slug: string }) {
                 </div>
               </Link>
             )}
-            {/* OriginalAPK link */}
-            {article.OriginalAPK && article.linkOriginalAPK && (
-              <Link
-                href={`/download/${article.id}/original-apk`}
-                title={`Download Script ${article.title} Updated to version ${article.version}`}
-                className="flex items-center justify-between max-[1000px]:flex-col 
-          box-border py-4 px-8 max-sm:px-4 uppercase bg-[#3f4244] leading-relaxed 
-          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-[#3f4244]/20 "
-              >
-                <div>
-                  <p>
-                    Download Original APK {article.title}{" "}
-                    <span> Updated to version {article.version}</span>
-                  </p>
-                </div>
-                <div className="max-[1000px]:font-medium flex items-center gap-2">
-                  <RiDownloadFill />
-                  <p>{article.sizeFileScript}</p>
-                </div>
-              </Link>
-            )}
           </div>
 
+          {/* ////////////////////////////////////// */}
           {/* Additional Information */}
-          <div className="flex flex-col gap-8 bg-[#1b1d1f] p-8 mx-7 max-[770px]:mx-0 ">
-            <p className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center ">
-              Additional Information:
-            </p>
-            <div className="grid grid-cols-4 gap-4 max-[700px]:grid-cols-2">
-              <div>
-                <p className="font-bold">Categories</p>
-                <p>{category}</p>
+          <div className="grid grid-cols-2 max-[1000px]:grid-cols-1 gap-8 bg-[#1b1d1f] p-8 mx-7 max-[770px]:mx-0 ">
+            <div>
+              <p className="mb-2  font-bold  max-[770px]:text-xl max-[500px]:text-center">
+                Additional Information:
+              </p>
+              <div className="grid grid-cols-4 gap-4 max-[700px]:grid-cols-2">
+                <div>
+                  <p className="font-bold">Categories</p>
+                  <p>{category}</p>
+                </div>
+                <div>
+                  <p className="font-bold">Type</p>
+                  <p>{capitalize(article.articleType)}</p>
+                </div>
+                <div>
+                  <p className="font-bold">Installs</p>
+                  <p>{article.installs}</p>
+                </div>
+                <div>
+                  <p className="font-bold">Rated for</p>
+                  <p>
+                    {article.ratedFor} <span>+ years</span>
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="font-bold">Type</p>
-                <p>{capitalize(article.articleType)}</p>
-              </div>
-              <div>
-                <p className="font-bold">Installs</p>
-                <p>{article.installs}</p>
-              </div>
-              <div>
-                <p className="font-bold">Rated for</p>
-                <p>
-                  {article.ratedFor} <span>+ years</span>
-                </p>
-              </div>
+            </div>
+
+            <div>
+              <p className="mb-2 font-bold  max-[770px]:text-xl max-[500px]:text-center ">
+                Fast and secure, no worries:
+              </p>
+
+              <p>
+                Download the latest version of {article.title} ({article.isMod&& article.typeMod +"/"}{article.articleType}).apk quickly
+                and easily — it's fast, free, secure, and requires no
+                registration
+              </p>
             </div>
           </div>
 
