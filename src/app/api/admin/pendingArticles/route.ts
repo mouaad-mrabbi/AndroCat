@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
         image: body.image,
         developer: body.developer,
         version: body.version,
-        versionOriginal: body.versionOriginal,
+        versionOriginal: body.OriginalAPK ? body.versionOriginal : null,
         androidVer: body.androidVer,
 
         articleType: body.articleType,

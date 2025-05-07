@@ -64,193 +64,208 @@ export async function POST(request: NextRequest, { params }: Props) {
     });
     if (pendingArticle) {
       if (statusType === "UPDATE") {
-        const newPendingArticle: PendingArticle = await prisma.pendingArticle.update({
-          where: { articleId: articleId },
-          data: {
-            status: "UPDATE",
-            title: body.title,
-            description: body.description,
-            image: body.image,
-            developer: body.developer,
-            version: body.version,
-            versionOriginal:body.versionOriginal,
-            androidVer: body.androidVer,
+        const newPendingArticle: PendingArticle =
+          await prisma.pendingArticle.update({
+            where: { articleId: articleId },
+            data: {
+              status: "UPDATE",
+              title: body.title,
+              description: body.description,
+              image: body.image,
+              developer: body.developer,
+              version: body.version,
+              versionOriginal: body.OriginalAPK ? body.versionOriginal : null,
+              androidVer: body.androidVer,
 
-            articleType: body.articleType,
-            gameCategory:body.gameCategory,
-            programCategory:body.programCategory,
+              articleType: body.articleType,
+              gameCategory:
+                body.articleType === "GAME" ? body.gameCategory : null,
+              programCategory:
+                body.articleType === "PROGRAM" ? body.programCategory : null,
 
-            OBB: body.OBB,
-            Script: body.Script,
-            OriginalAPK: body.OriginalAPK,
+              OBB: body.OBB,
+              Script: body.Script,
+              OriginalAPK: body.OriginalAPK,
 
-            linkAPK: body.linkAPK,
-            linkOBB: body.OBB ? body.linkOBB : null,
-            linkScript: body.Script ? body.linkScript : null,
-            linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
-            linkVideo: body.linkVideo,
+              linkAPK: body.linkAPK,
+              linkOBB: body.OBB ? body.linkOBB : null,
+              linkScript: body.Script ? body.linkScript : null,
+              linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
+              linkVideo: body.linkVideo,
 
-            sizeFileAPK: body.sizeFileAPK,
-            sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
-            sizeFileScript: body.Script ? body.sizeFileScript : null,
-            sizeFileOriginalAPK: body.OriginalAPK
-              ? body.sizeFileOriginalAPK
-              : null,
+              sizeFileAPK: body.sizeFileAPK,
+              sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
+              sizeFileScript: body.Script ? body.sizeFileScript : null,
+              sizeFileOriginalAPK: body.OriginalAPK
+                ? body.sizeFileOriginalAPK
+                : null,
 
-            appScreens: body.appScreens,
-            keywords: body.keywords,
+              appScreens: body.appScreens,
+              keywords: body.keywords,
 
-            isMod: body.isMod,
-            typeMod: body.isMod ? body.typeMod : null,
+              isMod: body.isMod,
+              typeMod: body.isMod ? body.typeMod : null,
 
-            ratedFor: body.ratedFor,
-            installs: body.installs,
+              ratedFor: body.ratedFor,
+              installs: body.installs,
 
-            createdById: userFromToken.id,
-            articleId: articleId,
-          },
-        });
+              createdById: userFromToken.id,
+              articleId: articleId,
+            },
+          });
         return NextResponse.json(newPendingArticle.id, { status: 200 });
       } else if (statusType === "DELETE") {
-        const newPendingArticle: PendingArticle = await prisma.pendingArticle.update({
-          where: { articleId: articleId },
-          data: {
-            status: "DELETE",
-            title: body.title,
-            description: body.description,
-            image: body.image,
-            developer: body.developer,
-            version: body.version,
-            versionOriginal:body.versionOriginal,
-            androidVer: body.androidVer,
+        const newPendingArticle: PendingArticle =
+          await prisma.pendingArticle.update({
+            where: { articleId: articleId },
+            data: {
+              status: "DELETE",
+              title: body.title,
+              description: body.description,
+              image: body.image,
+              developer: body.developer,
+              version: body.version,
+              versionOriginal: body.OriginalAPK ? body.versionOriginal : null,
+              androidVer: body.androidVer,
 
-            articleType: body.articleType,
-            gameCategory:body.gameCategory,
-            programCategory:body.programCategory,
+              articleType: body.articleType,
+              gameCategory:
+                body.articleType === "GAME" ? body.gameCategory : null,
+              programCategory:
+                body.articleType === "PROGRAM" ? body.programCategory : null,
 
-            OBB: body.OBB,
-            Script: body.Script,
-            OriginalAPK: body.OriginalAPK,
+              OBB: body.OBB,
+              Script: body.Script,
+              OriginalAPK: body.OriginalAPK,
 
-            linkAPK: body.linkAPK,
-            linkOBB: body.OBB ? body.linkOBB : null,
-            linkScript: body.Script ? body.linkScript : null,
-            linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
-            linkVideo: body.linkVideo,
+              linkAPK: body.linkAPK,
+              linkOBB: body.OBB ? body.linkOBB : null,
+              linkScript: body.Script ? body.linkScript : null,
+              linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
+              linkVideo: body.linkVideo,
 
-            sizeFileAPK: body.sizeFileAPK,
-            sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
-            sizeFileScript: body.Script ? body.sizeFileScript : null,
-            sizeFileOriginalAPK: body.OriginalAPK
-              ? body.sizeFileOriginalAPK
-              : null,
+              sizeFileAPK: body.sizeFileAPK,
+              sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
+              sizeFileScript: body.Script ? body.sizeFileScript : null,
+              sizeFileOriginalAPK: body.OriginalAPK
+                ? body.sizeFileOriginalAPK
+                : null,
 
-            appScreens: body.appScreens,
-            keywords: body.keywords,
+              appScreens: body.appScreens,
+              keywords: body.keywords,
 
-            isMod: body.isMod,
-            typeMod: body.isMod ? body.typeMod : null,
+              isMod: body.isMod,
+              typeMod: body.isMod ? body.typeMod : null,
 
-            ratedFor: body.ratedFor,
-            installs: body.installs,
+              ratedFor: body.ratedFor,
+              installs: body.installs,
 
-            createdById: userFromToken.id,
-            articleId: articleId,
-          },
-        });
+              createdById: userFromToken.id,
+              articleId: articleId,
+            },
+          });
         return NextResponse.json(newPendingArticle.id, { status: 200 });
       }
     } else {
       if (statusType === "UPDATE") {
-        const newPendingArticle: PendingArticle = await prisma.pendingArticle.create({
-          data: {
-            status: "UPDATE",
-            title: body.title,
-            description: body.description,
-            image: body.image,
-            developer: body.developer,
-            version: body.version,
-            versionOriginal:body.versionOriginal,
-            androidVer: body.androidVer,
+        const newPendingArticle: PendingArticle =
+          await prisma.pendingArticle.create({
+            data: {
+              status: "UPDATE",
+              title: body.title,
+              description: body.description,
+              image: body.image,
+              developer: body.developer,
+              version: body.version,
+              versionOriginal: body.OriginalAPK ? body.versionOriginal : null,
+              androidVer: body.androidVer,
 
-            articleType: body.articleType,
-            gameCategory:body.gameCategory,
-            programCategory:body.programCategory,
+              articleType: body.articleType,
+              gameCategory:
+                body.articleType === "GAME" ? body.gameCategory : null,
+              programCategory:
+                body.articleType === "PROGRAM" ? body.programCategory : null,
 
-            OBB: body.OBB,
-            Script: body.Script,
-            OriginalAPK:body.OriginalAPK,
+              OBB: body.OBB,
+              Script: body.Script,
+              OriginalAPK: body.OriginalAPK,
 
-            linkAPK: body.linkAPK,
-            linkOBB: body.OBB ? body.linkOBB : null,
-            linkScript: body.Script ? body.linkScript : null,
-            linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
-            linkVideo: body.linkVideo,
+              linkAPK: body.linkAPK,
+              linkOBB: body.OBB ? body.linkOBB : null,
+              linkScript: body.Script ? body.linkScript : null,
+              linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
+              linkVideo: body.linkVideo,
 
-            sizeFileAPK: body.sizeFileAPK,
-            sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
-            sizeFileScript: body.Script ? body.sizeFileScript : null,
-            sizeFileOriginalAPK: body.OriginalAPK ? body.sizeFileOriginalAPK : null,
+              sizeFileAPK: body.sizeFileAPK,
+              sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
+              sizeFileScript: body.Script ? body.sizeFileScript : null,
+              sizeFileOriginalAPK: body.OriginalAPK
+                ? body.sizeFileOriginalAPK
+                : null,
 
-            appScreens: body.appScreens,
-            keywords: body.keywords,
+              appScreens: body.appScreens,
+              keywords: body.keywords,
 
-            isMod: body.isMod,
-            typeMod: body.isMod ? body.typeMod : null,
+              isMod: body.isMod,
+              typeMod: body.isMod ? body.typeMod : null,
 
-            ratedFor: body.ratedFor,
-            installs: body.installs,
+              ratedFor: body.ratedFor,
+              installs: body.installs,
 
-            createdById: userFromToken.id,
-            articleId: articleId,
-          },
-        });
+              createdById: userFromToken.id,
+              articleId: articleId,
+            },
+          });
         return NextResponse.json(newPendingArticle.id, { status: 201 });
       } else if (statusType === "DELETE") {
-        const newPendingArticle: PendingArticle= await prisma.pendingArticle.create({
-          data: {
-            status: "DELETE",
-            title: body.title,
-            description: body.description,
-            image: body.image,
-            developer: body.developer,
-            version: body.version,
-            versionOriginal:body.versionOriginal,
-            androidVer: body.androidVer,
+        const newPendingArticle: PendingArticle =
+          await prisma.pendingArticle.create({
+            data: {
+              status: "DELETE",
+              title: body.title,
+              description: body.description,
+              image: body.image,
+              developer: body.developer,
+              version: body.version,
+              versionOriginal: body.OriginalAPK ? body.versionOriginal : null,
+              androidVer: body.androidVer,
 
-            articleType: body.articleType,
-            gameCategory:body.gameCategory,
-            programCategory:body.programCategory,
-            
+              articleType: body.articleType,
+              gameCategory:
+                body.articleType === "GAME" ? body.gameCategory : null,
+              programCategory:
+                body.articleType === "PROGRAM" ? body.programCategory : null,
 
-            OBB: body.OBB,
-            Script: body.Script,
-            OriginalAPK:body.OriginalAPK,
+              OBB: body.OBB,
+              Script: body.Script,
+              OriginalAPK: body.OriginalAPK,
 
-            linkAPK: body.linkAPK,
-            linkOBB: body.OBB ? body.linkOBB : null,
-            linkScript: body.Script ? body.linkScript : null,
-            linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
-            linkVideo: body.linkVideo,
+              linkAPK: body.linkAPK,
+              linkOBB: body.OBB ? body.linkOBB : null,
+              linkScript: body.Script ? body.linkScript : null,
+              linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
+              linkVideo: body.linkVideo,
 
-            sizeFileAPK: body.sizeFileAPK,
-            sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
-            sizeFileScript: body.Script ? body.sizeFileScript : null,
-            sizeFileOriginalAPK: body.OriginalAPK ? body.sizeFileOriginalAPK : null,
-            
-            appScreens: body.appScreens,
-            keywords: body.keywords,
+              sizeFileAPK: body.sizeFileAPK,
+              sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
+              sizeFileScript: body.Script ? body.sizeFileScript : null,
+              sizeFileOriginalAPK: body.OriginalAPK
+                ? body.sizeFileOriginalAPK
+                : null,
 
-            isMod: body.isMod,
-            typeMod: body.isMod ? body.typeMod : null,
+              appScreens: body.appScreens,
+              keywords: body.keywords,
 
-            ratedFor: body.ratedFor,
-            installs: body.installs,
+              isMod: body.isMod,
+              typeMod: body.isMod ? body.typeMod : null,
 
-            createdById: userFromToken.id,
-            articleId: articleId,
-          },
-        });
+              ratedFor: body.ratedFor,
+              installs: body.installs,
+
+              createdById: userFromToken.id,
+              articleId: articleId,
+            },
+          });
         return NextResponse.json(newPendingArticle.id, { status: 201 });
       }
     }

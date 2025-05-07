@@ -18,10 +18,10 @@ interface pageProps {
 }
 
 //Form Update Pending Article (FormUPA)
-export default function FormUPA({
-  pendingArticleId,
-}: pageProps) {
-  const [formData, setFormData] = useState<CreateArticleDto&{articleId:number}>({
+export default function FormUPA({ pendingArticleId }: pageProps) {
+  const [formData, setFormData] = useState<
+    CreateArticleDto & { articleId: number }
+  >({
     title: "",
     description: "",
     image: "",
@@ -52,7 +52,7 @@ export default function FormUPA({
     installs: "",
     createdById: 0,
     createdAt: new Date(),
-    articleId:0,
+    articleId: 0,
   });
   const [formDataOrigin, setFormDataOrigin] = useState<CreateArticleDto>({
     title: "",
@@ -102,7 +102,68 @@ export default function FormUPA({
     const fetchArticleData = async () => {
       try {
         const article = await getArticleCreateBy(formData.articleId);
-        setFormDataOrigin(article);
+        const {
+          title,
+          description,
+          image,
+          developer,
+          version,
+          versionOriginal,
+          androidVer,
+          articleType,
+          gameCategory,
+          programCategory,
+          OBB,
+          Script,
+          OriginalAPK,
+          linkAPK,
+          linkOBB,
+          linkVideo,
+          linkScript,
+          linkOriginalAPK,
+          sizeFileAPK,
+          sizeFileOBB,
+          sizeFileScript,
+          sizeFileOriginalAPK,
+          appScreens,
+          keywords,
+          isMod,
+          typeMod,
+          ratedFor,
+          installs,
+          createdById,
+        } = article;
+        setFormDataOrigin({
+          title,
+          description,
+          image,
+          developer,
+          version,
+          versionOriginal,
+          androidVer,
+          articleType,
+          gameCategory,
+          programCategory,
+          OBB,
+          Script,
+          OriginalAPK,
+          linkAPK,
+          linkOBB,
+          linkVideo,
+          linkScript,
+          linkOriginalAPK,
+          sizeFileAPK,
+          sizeFileOBB,
+          sizeFileScript,
+          sizeFileOriginalAPK,
+          appScreens,
+          keywords,
+          isMod,
+          typeMod,
+          ratedFor,
+          installs,
+          createdById,
+        });
       } catch (error: any) {
         toast.error(error.message || "Failed to load article data");
       } finally {
@@ -118,12 +179,10 @@ export default function FormUPA({
 
     const fetchArticleData = async () => {
       try {
-        const article = await getMyPendingArticle(pendingArticleId);
-        setFormData(article);
+        const pendingArticle = await getMyPendingArticle(pendingArticleId);
+        setFormData(pendingArticle);
       } catch (error: any) {
         toast.error(error.message || "Failed to load Article data");
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -190,6 +249,7 @@ export default function FormUPA({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true)
 
     /*     const captchaValue = recaptchaRef.current?.getValue();
     if (!captchaValue) {
@@ -206,6 +266,8 @@ export default function FormUPA({
       toast.success("Article is updated");
     } catch (error: any) {
       toast.error(error?.response?.data.message);
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -332,12 +394,14 @@ export default function FormUPA({
   };
 
   const handleCheckorigin = (): boolean => {
-    const { linkAPK, linkOBB, linkScript, image, appScreens } = formDataOrigin;
+    const { linkAPK, linkOBB, linkScript, image, appScreens, linkOriginalAPK } =
+      formDataOrigin;
 
     const allLinks = [
       linkAPK,
       linkOBB,
       linkScript,
+      linkOriginalAPK,
       image,
       ...(appScreens || []), // في حال كانت undefined
     ].filter(Boolean); // لإزالة null أو undefined
@@ -1108,6 +1172,7 @@ export default function FormUPA({
           {/* Submit Button */}
           <div>
             <button
+              disabled={isLoading}
               type="submit"
               className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 
               focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -1147,6 +1212,10 @@ export default function FormUPA({
             if (newData.linkScript === deletedUrl) {
               newData.linkScript = null;
               newData.sizeFileScript = null;
+            }
+            if (newData.linkOriginalAPK === deletedUrl) {
+              newData.linkOriginalAPK = null;
+              newData.sizeFileOriginalAPK = null;
             }
 
             return newData;

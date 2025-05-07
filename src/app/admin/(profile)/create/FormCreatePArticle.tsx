@@ -50,6 +50,9 @@ const FormCreatePArticle = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedUrlModal, setSelectedUrlModal] = useState<string | null>(null);
 
+  const [isLoading, setIsLoading] = useState(false);
+
+
   const generateRandomText = () => {
     const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
     let randomString = "";
@@ -74,12 +77,11 @@ const FormCreatePArticle = () => {
   ) => {
     const { name, value, type } = e.target;
 
-
-      setFormData((prev) => ({
-        ...prev,
-        [name]:
-          type === "number" ? (value === "" ? "" : parseFloat(value)) : value,
-      }));
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        type === "number" ? (value === "" ? "" : parseFloat(value)) : value,
+    }));
   };
 
   const handleChangeArticleType = (
@@ -128,6 +130,7 @@ const FormCreatePArticle = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true)
 
     /*     const captchaValue = recaptchaRef.current?.getValue();
     if (!captchaValue) {
@@ -180,6 +183,8 @@ const FormCreatePArticle = () => {
       toast.success("New Articles added");
     } catch (error: any) {
       toast.error(error?.response?.data.message);
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -813,7 +818,7 @@ const FormCreatePArticle = () => {
             <input
               type="text"
               name="versionOriginal"
-              value={formData.versionOriginal||""}
+              value={formData.versionOriginal || ""}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
@@ -1076,6 +1081,7 @@ const FormCreatePArticle = () => {
           {/* Submit Button */}
           <div>
             <button
+              disabled={isLoading}
               type="submit"
               className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 
               focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"

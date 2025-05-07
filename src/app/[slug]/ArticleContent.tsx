@@ -348,7 +348,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
           </div>
 
           {/* rating */}
-          <div className="flex justify-between max-[500px]:flex-col items-center gap-8 bg-[#1b1d1f] p-8 mx-7 max-[770px]:mx-0 ">
+          <div className="flex justify-between max-[500px]:flex-col items-center gap-8 bg-[#1b1d1f] p-8 mx-7 max-[770px]:mx-0">
             <Rating rating={article.averageRating} articleId={article.id} />
             <div className=" flex items-end gap-2 ">
               <p className="text-3xl font-bold max-[500px]:text-4xl">
@@ -438,4 +438,3 @@ export async function ArticleContent({ slug }: { slug: string }) {
     return <NotFoundPage />;
   }
 }
-/* ///////////////////////// */

@@ -359,7 +359,7 @@ export default function Page({ params }: PageparamsProps) {
           <Link
             className="flex justify-center items-center bg-green-500 w-1/2 rounded-3xl 
           font-bold text-xl shadow-xl shadow-green-500/20"
-            href={`/admin/${pendingArticle.id}/update`}
+            href={`/admin/pendingArticles/update/${pendingArticle.id}`}
           >
             update
           </Link>

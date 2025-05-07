@@ -141,11 +141,12 @@ export async function PUT(request: NextRequest, { params }: Props) {
         image: body.image,
         developer: body.developer,
         version: body.version,
+        versionOriginal:body.versionOriginal,
         androidVer: body.androidVer,
 
         articleType: body.articleType,
-        gameCategory: body.gameCategory,
-        programCategory: body.programCategory,
+        gameCategory:body.articleType==="GAME"? body.gameCategory:null,
+        programCategory: body.articleType==="PROGRAM"? body.programCategory:null,
 
         OBB: body.OBB ?? pendingArticle.OBB,
         Script: body.Script ?? pendingArticle.Script, // احتفظ بالقيمة القديمة إذا لم يتم إرسال Script

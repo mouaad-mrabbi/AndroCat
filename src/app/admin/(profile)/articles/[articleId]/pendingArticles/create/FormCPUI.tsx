@@ -47,8 +47,7 @@ export default function FormCPUA({ articleId }: pageProps) {
     typeMod: null,
     ratedFor: 0,
     installs: "",
-    createdById: 0,
-    createdAt: new Date(),
+    createdById: 0
   });
   const [formDataOrigin, setFormDataOrigin] = useState<CreateArticleDto>({
     title: "",
@@ -79,8 +78,7 @@ export default function FormCPUA({ articleId }: pageProps) {
     typeMod: null,
     ratedFor: 0,
     installs: "",
-    createdById: 0,
-    createdAt: new Date(),
+    createdById: 0
   });
 
   const [showModal, setShowModal] = useState(false);
@@ -100,8 +98,99 @@ export default function FormCPUA({ articleId }: pageProps) {
     const fetchArticleData = async () => {
       try {
         const article = await getArticleCreateBy(articleId);
-        setFormData(article);
-        setFormDataOrigin(article);
+        const {
+          title,
+          description,
+          image,
+          developer,
+          version,
+          versionOriginal,
+          androidVer,
+          articleType,
+          gameCategory,
+          programCategory,
+          OBB,
+          Script,
+          OriginalAPK,
+          linkAPK,
+          linkOBB,
+          linkVideo,
+          linkScript,
+          linkOriginalAPK,
+          sizeFileAPK,
+          sizeFileOBB,
+          sizeFileScript,
+          sizeFileOriginalAPK,
+          appScreens,
+          keywords,
+          isMod,
+          typeMod,
+          ratedFor,
+          installs,
+          createdById,
+        } = article;
+        setFormData({
+          title,
+          description,
+          image,
+          developer,
+          version,
+          versionOriginal,
+          androidVer,
+          articleType,
+          gameCategory,
+          programCategory,
+          OBB,
+          Script,
+          OriginalAPK,
+          linkAPK,
+          linkOBB,
+          linkVideo,
+          linkScript,
+          linkOriginalAPK,
+          sizeFileAPK,
+          sizeFileOBB,
+          sizeFileScript,
+          sizeFileOriginalAPK,
+          appScreens,
+          keywords,
+          isMod,
+          typeMod,
+          ratedFor,
+          installs,
+          createdById,
+        });
+        setFormDataOrigin({
+          title,
+          description,
+          image,
+          developer,
+          version,
+          versionOriginal,
+          androidVer,
+          articleType,
+          gameCategory,
+          programCategory,
+          OBB,
+          Script,
+          OriginalAPK,
+          linkAPK,
+          linkOBB,
+          linkVideo,
+          linkScript,
+          linkOriginalAPK,
+          sizeFileAPK,
+          sizeFileOBB,
+          sizeFileScript,
+          sizeFileOriginalAPK,
+          appScreens,
+          keywords,
+          isMod,
+          typeMod,
+          ratedFor,
+          installs,
+          createdById,
+        });
       } catch (error: any) {
         toast.error(error.message || "Failed to load article data");
       } finally {
@@ -172,6 +261,7 @@ export default function FormCPUA({ articleId }: pageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true)
 
     /*     const captchaValue = recaptchaRef.current?.getValue();
     if (!captchaValue) {
@@ -193,6 +283,8 @@ export default function FormCPUA({ articleId }: pageProps) {
       router.push(`/admin/pendingArticles/${response.data}`);
     } catch (error: any) {
       toast.error(error?.response?.data.message);
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -319,12 +411,13 @@ export default function FormCPUA({ articleId }: pageProps) {
   };
 
   const handleCheckorigin = (): boolean => {
-    const { linkAPK, linkOBB, linkScript, image, appScreens } = formDataOrigin;
+    const { linkAPK, linkOBB, linkScript, image, appScreens ,linkOriginalAPK} = formDataOrigin;
 
     const allLinks = [
       linkAPK,
       linkOBB,
       linkScript,
+      linkOriginalAPK,
       image,
       ...(appScreens || []), // في حال كانت undefined
     ].filter(Boolean); // لإزالة null أو undefined
@@ -1103,6 +1196,7 @@ export default function FormCPUA({ articleId }: pageProps) {
           {/* Submit Button */}
           <div>
             <button
+              disabled={isLoading}
               type="submit"
               className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 
               focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
@@ -1143,6 +1237,11 @@ export default function FormCPUA({ articleId }: pageProps) {
               newData.linkScript = null;
               newData.sizeFileScript = null;
             }
+            if (newData.linkOriginalAPK === deletedUrl) {
+              newData.linkOriginalAPK = null;
+              newData.sizeFileOriginalAPK = null;
+            }
+            
 
             return newData;
           });

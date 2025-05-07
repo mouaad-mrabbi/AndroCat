@@ -163,6 +163,7 @@ export async function POST(request: NextRequest, { params }: Props) {
         image: pendingArticle.image,
         developer: pendingArticle.developer,
         version: pendingArticle.version,
+        versionOriginal:pendingArticle.versionOriginal,
         androidVer: pendingArticle.androidVer,
 
         articleType: pendingArticle.articleType,
@@ -265,11 +266,11 @@ export async function POST(request: NextRequest, { params }: Props) {
       await prisma.article.update({
         where: { id: newArticle.id },
         data: {
-          linkScript: `${DOMAINCDN}/original-apks/${newArticle.id}/${newArticle.linkOriginalAPK
+          linkOriginalAPK: `${DOMAINCDN}/original-apks/${newArticle.id}/${newArticle.linkOriginalAPK
             .split("/")
             .pop()}`,
         },
-        select: { id: true, linkScript: true },
+        select: { id: true, linkOriginalAPK: true },
       });
     }
 

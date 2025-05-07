@@ -265,7 +265,7 @@ export const updateArticleSchema = z
 
     linkAPK: z.string().url().max(500).optional(),
     linkOBB: z.string().url().max(500).nullable().optional(),
-    linkVideo: z.string().url().max(500).optional(),
+    linkVideo: z.string().url().max(500).nullable().optional(),
     linkScript: z.string().url().max(500).nullable().optional(),
     linkOriginalAPK: z.string().url().max(500).nullable().optional(),
 

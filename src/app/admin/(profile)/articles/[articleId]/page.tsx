@@ -33,6 +33,13 @@ type ConfirmOpenState = {
   Approved: boolean;
   delete: boolean;
 };
+interface DownloadLink {
+  key: string;
+  label: string;
+  bgColor: string;
+  size: string | null; // Allowing null here
+  link: string | null;
+}
 
 export default function PageArticle({ params }: PageparamsProps) {
   const [article, setArticle] = useState<ArticleAndObjects>();
@@ -78,7 +85,6 @@ export default function PageArticle({ params }: PageparamsProps) {
     if (!article) return;
 
     try {
-      console.log(article.isApproved);
       const response = await approvedArticle(article.id, e);
 
       toast.success(response.data.message);
@@ -92,7 +98,6 @@ export default function PageArticle({ params }: PageparamsProps) {
   if (error) return NotFoundPage();
   if (!article) return NotFoundPage();
 
-
   const capitalize = (str: any) =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
@@ -100,6 +105,71 @@ export default function PageArticle({ params }: PageparamsProps) {
     article.articleType === "GAME"
       ? capitalize(article.gameCategory)
       : capitalize(article.programCategory);
+
+  const downloadLinks = [
+    {
+      key: "apk",
+      label: "APK",
+      bgColor: "bg-green-500",
+      size: article.sizeFileAPK,
+      link: article.linkAPK,
+    },
+    {
+      key: "original-apk",
+      label: "Original APK",
+      bgColor: "bg-[#3f4244]",
+      size: article.sizeFileScript,
+      link: article.linkOriginalAPK,
+    },
+    {
+      key: "obb",
+      label: "OBB",
+      bgColor: "bg-yellow-600",
+      size: article.sizeFileOBB,
+      link: article.linkOBB,
+    },
+    {
+      key: "script",
+      label: "Script",
+      bgColor: "bg-yellow-600",
+      size: article.sizeFileScript,
+      link: article.linkScript,
+    },
+  ];
+
+  const renderDownloadLink = ({
+    key,
+    label,
+    bgColor,
+    size,
+    link,
+  }: DownloadLink) => {
+    if (!link) return null;
+
+    return (
+      <Link
+        key={key}
+        href={link}
+        title={`Download ${label} ${article.title} Updated to version ${
+          key=== "original-apk" ? article.versionOriginal : article.version
+        }`}
+        className={`flex items-center justify-between max-[1000px]:flex-col 
+              box-border py-4 px-8 max-sm:px-4 uppercase ${bgColor} leading-relaxed 
+              font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-${bgColor}/20`}
+      >
+        <div>
+          <p>
+            Download {label} {article.title}{" "}
+            <span> Updated to version {key === "original-apk" ? article.versionOriginal : article.version}</span>
+          </p>
+        </div>
+        <div className="max-[1000px]:font-medium flex items-center gap-2">
+          <RiDownloadFill />
+          <p>{size}</p>
+        </div>
+      </Link>
+    );
+  };
   return (
     <div className="min-w-[320px]">
       <Toolbar
@@ -268,93 +338,45 @@ export default function PageArticle({ params }: PageparamsProps) {
       </div>
 
       {/* Download link */}
-      <div className="flex flex-col gap-8 bg-[#292c2f] p-8 mx-7 max-[770px]:m-0x ">
-        {/* APK link */}
-        <Link
-          href={article.linkAPK}
-          className="flex items-center justify-between max-[1000px]:flex-col 
-          box-border py-4 px-8 max-sm:px-4 uppercase bg-green-500 leading-relaxed 
-          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-green-500/20"
-        >
-          <div>
-            <p>
-              Download APK {article.title}{" "}
-              <span> Updated to version {article.version}</span>
-            </p>
-          </div>
-          <div className="max-[1000px]:font-medium flex items-center gap-2">
-            <RiDownloadFill />
-            <p>{article.sizeFileAPK}</p>
-          </div>
-        </Link>
-        {/* OBB link */}
-        {article.OBB && article.linkOBB && (
-          <Link
-            href={article.linkOBB || ""}
-            className="flex items-center justify-between max-[1000px]:flex-col 
-          box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
-          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20"
-          >
-            <div>
-              <p>
-                Download OBB {article.title}{" "}
-                <span> Updated to version {article.version}</span>
-              </p>
-            </div>
-            <div className="max-[1000px]:font-medium flex items-center gap-2">
-              <RiDownloadFill />
-              <p>{article.sizeFileOBB}</p>
-            </div>
-          </Link>
-        )}
-        {/* Script link */}
-        {article.Script && article.linkScript && (
-          <Link
-            href={article.linkScript}
-            className="flex items-center justify-between max-[1000px]:flex-col 
-          box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
-          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20 "
-          >
-            <div>
-              <p>
-                Download Script {article.title}{" "}
-                <span> Updated to version {article.version}</span>
-              </p>
-            </div>
-            <div className="max-[1000px]:font-medium flex items-center gap-2">
-              <RiDownloadFill />
-              <p>{article.sizeFileScript}</p>
-            </div>
-          </Link>
-        )}
+      <div
+        id="downloads"
+        className="flex flex-col gap-8 bg-[#292c2f] p-8 mx-7 max-[770px]:mx-0"
+      >
+        {downloadLinks.map(renderDownloadLink)}
       </div>
 
-          {/* Additional Information */}
-          <div className="flex flex-col gap-8 bg-[#1b1d1f] p-8 mx-7 max-[770px]:mx-0 ">
-            <p className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center ">
-              Additional Information:
-            </p>
-            <div className="grid grid-cols-4 gap-4 max-[700px]:grid-cols-2">
-              <div>
-                <p className="font-bold">Categories</p>
-                <p>{category}</p>
+      {/* Additional Information */}
+      <div className="grid grid-cols-2 max-[1000px]:grid-cols-1 gap-8 bg-[#1b1d1f] p-8 mx-7 max-[770px]:mx-0 ">
+        <div>
+          <p className="mb-2  font-bold  max-[770px]:text-xl max-[500px]:text-center">
+            Additional Information:
+          </p>
+          <div className="grid grid-cols-4 gap-4 max-[700px]:grid-cols-2">
+            {[
+              { label: "Categories", value: category },
+              { label: "Type", value: capitalize(article.articleType) },
+              { label: "Installs", value: article.installs },
+              { label: "Rated for", value: `${article.ratedFor} + years` },
+            ].map((item, index) => (
+              <div key={index}>
+                <p className="font-bold">{item.label}</p>
+                <p className="text-sm">{item.value}</p>
               </div>
-              <div>
-                <p className="font-bold">Type</p>
-                <p>{capitalize(article.articleType)}</p>
-              </div>
-              <div>
-                <p className="font-bold">Installs</p>
-                <p>{article.installs}</p>
-              </div>
-              <div>
-                <p className="font-bold">Rated for</p>
-                <p>
-                  {article.ratedFor} <span>+ years</span>
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
+        </div>
+
+        <div className="max-[500px]:text-center ">
+          <p className="mb-2 font-bold">Fast and secure, no worries:</p>
+
+          <p className="text-sm">
+            Download the latest version of {article.title} (
+            {article.isMod && article.typeMod + "/"}
+            {article.articleType}).apk quickly and easily — it's fast, free,
+            secure, and requires no registration
+          </p>
+        </div>
+      </div>
 
       {/* Approved */}
       <div className=" bg-[#1b1d1f] max-[770px]:bg-transparent p-8 m-7 max-[770px]:m-0 ">
@@ -510,7 +532,9 @@ export default function PageArticle({ params }: PageparamsProps) {
               ? "Are you sure you want to reject this article?"
               : "Are you sure you want to approve this article?"
           }
-          onConfirm={() => handleApproved(article.isApproved ? "false" : "true")}
+          onConfirm={() =>
+            handleApproved(article.isApproved ? "false" : "true")
+          }
           onCancel={() =>
             setIsConfirmOpen({ ...isConfirmOpen, Approved: false })
           }
@@ -520,7 +544,9 @@ export default function PageArticle({ params }: PageparamsProps) {
       {isConfirmOpen.delete && (
         <ConfirmBox
           message="Are you sure you want to delete this article?"
-          onConfirm={() => handleApproved(article.isApproved ? "false" : "true")}
+          onConfirm={() =>
+            handleApproved(article.isApproved ? "false" : "true")
+          }
           onCancel={() => setIsConfirmOpen({ ...isConfirmOpen, delete: false })}
         />
       )}

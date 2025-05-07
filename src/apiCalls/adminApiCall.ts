@@ -144,6 +144,7 @@ export async function createPendingUpdateArticle(
   formData: CreateArticleDto,
   statusType: "UPDATE" | "DELETE"
 ) {
+  console.log(formData)
   const response = await axios.post(
     `${DOMAIN}/api/admin/pendingArticles/articles/${articleId}`,
     formData,
@@ -154,7 +155,6 @@ export async function createPendingUpdateArticle(
       params: { statusType },
     }
   );
-
   return response;
 }
 
