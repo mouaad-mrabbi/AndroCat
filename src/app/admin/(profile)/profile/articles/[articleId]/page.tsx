@@ -21,14 +21,14 @@ interface PageparamsProps {
 
 export default function Page({ params }: PageparamsProps) {
   const [article, setArticle] = useState<ArticleAndObjects>();
-  const [articleId, setArticleId] = useState<string>();
+  const [articleId, setArticleId] = useState<number>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const getParams = async () => {
       const { articleId } = await params;
-      setArticleId(articleId);
+      setArticleId(Number(articleId));
     };
     getParams();
   }, [params]);

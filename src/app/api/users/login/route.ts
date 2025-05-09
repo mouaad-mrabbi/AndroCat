@@ -38,11 +38,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-/*     await prisma.user.update({
-      where: { id: user.id },
-      data: { lastLogin: new Date() },
-    }); */
-
     const cookie = setCookie({
       id: user.id,
       role: user.role,
