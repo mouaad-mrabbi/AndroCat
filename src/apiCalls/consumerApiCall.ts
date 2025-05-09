@@ -62,7 +62,7 @@ export async function fetchMetadata(articleId: number) {
       select: {
         id: true,
         title: true,
-        description: true,
+        descriptionMeta: true,
         keywords: true,
         image: true,
         articleType: true,

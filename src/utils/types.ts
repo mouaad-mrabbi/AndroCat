@@ -24,6 +24,7 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
     id: true;
     title: true;
     description: true;
+    descriptionMeta:true;
     image: true;
     developer: true;
     version: true;

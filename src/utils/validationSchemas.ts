@@ -26,6 +26,7 @@ export const createArticleSchema = z
   .object({
     title: z.string().min(2).max(50),
     description: z.string().min(10).max(500),
+    descriptionMeta: z.string().min(10).max(500),
     image: z.string().url().max(500),
     developer: z.string().min(2).max(50),
     version: z.string().min(1).max(50),
@@ -37,7 +38,7 @@ export const createArticleSchema = z
       .nativeEnum(GameCategories, { message: "Game Categories" })
       .nullable()
       .optional(),
-      
+
     programCategory: z
       .nativeEnum(ProgramCategories, { message: "Program Categories" })
       .nullable()
@@ -215,7 +216,8 @@ export const createArticleSchema = z
       if (data.programCategory) {
         ctx.addIssue({
           code: "custom",
-          message: "programCategory must not be provided when articleType is GAME",
+          message:
+            "programCategory must not be provided when articleType is GAME",
           path: ["programCategory"],
         });
       }
@@ -232,7 +234,8 @@ export const createArticleSchema = z
       if (data.gameCategory) {
         ctx.addIssue({
           code: "custom",
-          message: "gameCategory must not be provided when articleType is PROGRAM",
+          message:
+            "gameCategory must not be provided when articleType is PROGRAM",
           path: ["gameCategory"],
         });
       }
@@ -243,6 +246,7 @@ export const updateArticleSchema = z
   .object({
     title: z.string().min(2).max(50).optional(),
     description: z.string().min(10).max(500).optional(),
+    descriptionMeta: z.string().min(10).max(500).optional(),
     image: z.string().url().max(500).optional(),
     developer: z.string().min(2).max(50).optional(),
     version: z.string().min(1).max(50).optional(),
@@ -429,7 +433,8 @@ export const updateArticleSchema = z
       if (data.programCategory) {
         ctx.addIssue({
           code: "custom",
-          message: "programCategory must not be provided when articleType is GAME",
+          message:
+            "programCategory must not be provided when articleType is GAME",
           path: ["programCategory"],
         });
       }
@@ -446,7 +451,8 @@ export const updateArticleSchema = z
       if (data.gameCategory) {
         ctx.addIssue({
           code: "custom",
-          message: "gameCategory must not be provided when articleType is PROGRAM",
+          message:
+            "gameCategory must not be provided when articleType is PROGRAM",
           path: ["gameCategory"],
         });
       }

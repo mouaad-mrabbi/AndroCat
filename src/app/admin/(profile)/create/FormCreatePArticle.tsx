@@ -12,6 +12,7 @@ const FormCreatePArticle = () => {
   const [formData, setFormData] = useState<CreateArticleDto>({
     title: "",
     description: "",
+    descriptionMeta: "",
     image: "",
     developer: "",
     version: "",
@@ -51,7 +52,6 @@ const FormCreatePArticle = () => {
   const [selectedUrlModal, setSelectedUrlModal] = useState<string | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
-
 
   const generateRandomText = () => {
     const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -130,7 +130,7 @@ const FormCreatePArticle = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
 
     /*     const captchaValue = recaptchaRef.current?.getValue();
     if (!captchaValue) {
@@ -149,6 +149,7 @@ const FormCreatePArticle = () => {
         setFormData({
           title: "",
           description: "",
+          descriptionMeta: "",
           image: "",
           developer: "",
           version: "",
@@ -183,8 +184,8 @@ const FormCreatePArticle = () => {
       toast.success("New Articles added");
     } catch (error: any) {
       toast.error(error?.response?.data.message);
-    }finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -354,6 +355,23 @@ const FormCreatePArticle = () => {
             <textarea
               name="description"
               value={formData.description}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
+      dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
+      dark:focus:border-indigo-500"
+              /* required */
+            />
+          </div>
+
+          {/* descriptionMeta */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              descriptionMeta:
+            </label>
+            <textarea
+              name="descriptionMeta"
+              value={formData.descriptionMeta}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500

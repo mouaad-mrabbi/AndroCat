@@ -16,6 +16,7 @@ interface PendingArticle {
   checking: boolean;
   title: string;
   description: string;
+  descriptionMeta:string;
   image: string;
   developer: string;
   version: string;

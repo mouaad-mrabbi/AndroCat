@@ -96,6 +96,7 @@ model Article {
   id              Int             @id @default(autoincrement())
   title           String
   description     String
+  descriptionMeta String
   image           String
   developer       String
   version         String
@@ -181,6 +182,7 @@ model PendingArticle {
 
   title           String
   description     String
+  descriptionMeta String
   image           String
   developer       String
   version         String

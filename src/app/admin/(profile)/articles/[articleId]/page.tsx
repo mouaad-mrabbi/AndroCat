@@ -48,6 +48,7 @@ export default function PageArticle({ params }: PageparamsProps) {
   const [formData, setFormData] = useState<CreateArticleDto>({
     title: "",
     description: "",
+    descriptionMeta:"",
     image: "",
     developer: "",
     version: "",
@@ -106,6 +107,7 @@ export default function PageArticle({ params }: PageparamsProps) {
         const {
           title,
           description,
+          descriptionMeta,
           image,
           developer,
           version,
@@ -137,6 +139,7 @@ export default function PageArticle({ params }: PageparamsProps) {
         setFormData({
           title,
           description,
+          descriptionMeta,
           image,
           developer,
           version,

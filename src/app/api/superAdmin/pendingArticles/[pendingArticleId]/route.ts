@@ -120,6 +120,7 @@ export async function POST(request: NextRequest, { params }: Props) {
         id: true,
         title: true,
         description: true,
+        descriptionMeta:true,
         image: true,
         developer: true,
         version: true,
@@ -160,6 +161,7 @@ export async function POST(request: NextRequest, { params }: Props) {
       data: {
         title: pendingArticle.title,
         description: pendingArticle.description,
+        descriptionMeta:pendingArticle.descriptionMeta,
         image: pendingArticle.image,
         developer: pendingArticle.developer,
         version: pendingArticle.version,

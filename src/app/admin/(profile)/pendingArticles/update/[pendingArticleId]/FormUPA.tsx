@@ -24,6 +24,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
   >({
     title: "",
     description: "",
+    descriptionMeta:"",
     image: "",
     developer: "",
     version: "",
@@ -57,6 +58,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
   const [formDataOrigin, setFormDataOrigin] = useState<CreateArticleDto>({
     title: "",
     description: "",
+    descriptionMeta:"",
     image: "",
     developer: "",
     version: "",
@@ -105,6 +107,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
         const {
           title,
           description,
+          descriptionMeta,
           image,
           developer,
           version,
@@ -136,6 +139,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
         setFormDataOrigin({
           title,
           description,
+          descriptionMeta,
           image,
           developer,
           version,
@@ -442,6 +446,23 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
             <textarea
               name="description"
               value={formData.description}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
+      dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
+      dark:focus:border-indigo-500"
+              /* required */
+            />
+          </div>
+
+          {/* descriptionMeta */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              descriptionMeta:
+            </label>
+            <textarea
+              name="descriptionMeta"
+              value={formData.descriptionMeta}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500

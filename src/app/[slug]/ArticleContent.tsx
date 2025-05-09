@@ -54,7 +54,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
       } free on android`,
       description: `Download ${article.title} ${
         article.isMod && article.typeMod
-      } - ${article.description}`,
+      } - ${article.descriptionMeta}`,
       url: `${DOMAIN}/${slug}`,
       image: article.image,
       keywords: article.keywords?.join(", ") || "games, apps, mods",

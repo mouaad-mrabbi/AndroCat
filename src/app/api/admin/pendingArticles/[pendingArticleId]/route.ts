@@ -139,6 +139,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
       data: {
         title: body.title,
         description: body.description,
+        descriptionMeta:body.descriptionMeta,
         image: body.image,
         developer: body.developer,
         version: body.version,

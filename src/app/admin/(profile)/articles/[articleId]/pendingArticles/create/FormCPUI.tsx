@@ -21,6 +21,7 @@ export default function FormCPUA({ articleId }: pageProps) {
   const [formData, setFormData] = useState<CreateArticleDto>({
     title: "",
     description: "",
+    descriptionMeta: "",
     image: "",
     developer: "",
     version: "",
@@ -47,11 +48,12 @@ export default function FormCPUA({ articleId }: pageProps) {
     typeMod: null,
     ratedFor: 0,
     installs: "",
-    createdById: 0
+    createdById: 0,
   });
   const [formDataOrigin, setFormDataOrigin] = useState<CreateArticleDto>({
     title: "",
     description: "",
+    descriptionMeta: "",
     image: "",
     developer: "",
     version: "",
@@ -78,7 +80,7 @@ export default function FormCPUA({ articleId }: pageProps) {
     typeMod: null,
     ratedFor: 0,
     installs: "",
-    createdById: 0
+    createdById: 0,
   });
 
   const [showModal, setShowModal] = useState(false);
@@ -101,6 +103,7 @@ export default function FormCPUA({ articleId }: pageProps) {
         const {
           title,
           description,
+          descriptionMeta,
           image,
           developer,
           version,
@@ -132,6 +135,7 @@ export default function FormCPUA({ articleId }: pageProps) {
         setFormData({
           title,
           description,
+          descriptionMeta,
           image,
           developer,
           version,
@@ -163,6 +167,7 @@ export default function FormCPUA({ articleId }: pageProps) {
         setFormDataOrigin({
           title,
           description,
+          descriptionMeta,
           image,
           developer,
           version,
@@ -261,7 +266,7 @@ export default function FormCPUA({ articleId }: pageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
 
     /*     const captchaValue = recaptchaRef.current?.getValue();
     if (!captchaValue) {
@@ -283,8 +288,8 @@ export default function FormCPUA({ articleId }: pageProps) {
       router.push(`/admin/pendingArticles/${response.data}`);
     } catch (error: any) {
       toast.error(error?.response?.data.message);
-    }finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -411,7 +416,8 @@ export default function FormCPUA({ articleId }: pageProps) {
   };
 
   const handleCheckorigin = (): boolean => {
-    const { linkAPK, linkOBB, linkScript, image, appScreens ,linkOriginalAPK} = formDataOrigin;
+    const { linkAPK, linkOBB, linkScript, image, appScreens, linkOriginalAPK } =
+      formDataOrigin;
 
     const allLinks = [
       linkAPK,
@@ -469,6 +475,23 @@ export default function FormCPUA({ articleId }: pageProps) {
             <textarea
               name="description"
               value={formData.description}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
+      dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
+      dark:focus:border-indigo-500"
+              /* required */
+            />
+          </div>
+
+          {/* descriptionMeta */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              descriptionMeta:
+            </label>
+            <textarea
+              name="descriptionMeta"
+              value={formData.descriptionMeta}
               onChange={handleChange}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
@@ -1241,7 +1264,6 @@ export default function FormCPUA({ articleId }: pageProps) {
               newData.linkOriginalAPK = null;
               newData.sizeFileOriginalAPK = null;
             }
-            
 
             return newData;
           });

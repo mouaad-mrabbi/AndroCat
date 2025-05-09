@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: ArticlesPageProp) {
       } android`,
       description: `Download ${article.title} ${
         article.isMod && article.typeMod
-      } - ${article.description}`,
+      } - ${article.descriptionMeta}`,
       keywords: article.keywords?.join(", ") || "games, apps, mods",
       openGraph: {
         type: "article",
@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: ArticlesPageProp) {
         } free on android`,
         description: `Download ${article.title} ${
           article.isMod && article.typeMod
-        } - ${article.description}`,
+        } - ${article.descriptionMeta}`,
         images: [
           {
             url: article.image,
@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: ArticlesPageProp) {
         } free on android`,
         description: `Download ${article.title} ${
           article.isMod && article.typeMod
-        } - ${article.description}`,
+        } - ${article.descriptionMeta}`,
         image: article.image,
         creator: "@YourTwitterHandle",
         site: "@YourSiteTwitterHandle",

@@ -22,6 +22,7 @@ export interface UpdateUserDto {
 export interface CreateArticleDto {
   title: string;
   description: string;
+  descriptionMeta: string;
   image: string;
   developer: string;
   version: string;
@@ -63,6 +64,7 @@ export interface CreateArticleDto {
 export interface UpdateArticleDto {
   title?: string;
   description?: string;
+  descriptionMeta?: string;
   image?: string;
   developer?: string;
   version?: string;
@@ -100,4 +102,3 @@ export interface UpdateArticleDto {
   createdById?: number;
   createdAt?: string | Date;
 }
-
