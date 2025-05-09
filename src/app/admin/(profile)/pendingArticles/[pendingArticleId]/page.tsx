@@ -30,23 +30,33 @@ import {
 // Utils & Types
 import { toast } from "react-toastify";
 import { PendingArticleAndObjects } from "@/utils/types";
+import ConfirmBox from "@/components/confirmBox";
+import { deleteArticleCreatedBy } from "@/apiCalls/adminApiCall";
+import { deleteArticle } from "@/apiCalls/ownerApiCall";
 
 interface PageparamsProps {
   params: Promise<{ pendingArticleId: string }>;
 }
+type ConfirmOpenState = {
+  delete: boolean;
+};
 
 export default function Page({ params }: PageparamsProps) {
   const [pendingArticle, setPendingArticle] =
     useState<PendingArticleAndObjects>();
-  const [pendingArticleId, setPendingArticleId] = useState<string>();
+  const [pendingArticleId, setPendingArticleId] = useState<number>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  const [isConfirmOpen, setIsConfirmOpen] = useState<ConfirmOpenState>({
+    delete: false,
+  });
+
   useEffect(() => {
     const getParams = async () => {
       const { pendingArticleId } = await params;
-      setPendingArticleId(pendingArticleId);
+      setPendingArticleId(Number(pendingArticleId));
     };
     getParams();
   }, [params]);
@@ -91,13 +101,30 @@ export default function Page({ params }: PageparamsProps) {
       } catch (error: any) {
         toast.error(error?.response?.data?.message);
       }
-    } else if (pendingArticle.status === "DELETE") {
+    } else if (pendingArticle.status === "DELETE" && pendingArticle.articleId) {
+      console.log("here")
+      try {
+        const res = await deleteArticle(pendingArticle.articleId);
+        toast.success(res);
+      } catch (error: any) {
+        toast.error(error);
+      }
     }
   };
 
   if (isLoading) return <LoadingArticle />;
   if (error) return NotFoundPage();
   if (!pendingArticle) return NotFoundPage();
+
+  const handleDelete = async () => {
+    if (!pendingArticleId) return;
+    try {
+      const res = await deleteArticleCreatedBy(pendingArticleId);
+      toast.success(res);
+    } catch (error: any) {
+      toast.error(error);
+    }
+  };
 
   return (
     <div className="min-w-[320px]">
@@ -363,13 +390,15 @@ export default function Page({ params }: PageparamsProps) {
           >
             update
           </Link>
-          <Link
+          <button
+            onClick={() => {
+              setIsConfirmOpen({ ...isConfirmOpen, delete: true });
+            }}
             className="flex justify-center items-center bg-red-500 w-1/2 rounded-3xl
            font-bold text-xl shadow-xl shadow-red-500/20"
-            href={""}
           >
             delete
-          </Link>
+          </button>
         </div>
 
         {/* info for admin and post */}
@@ -423,8 +452,8 @@ export default function Page({ params }: PageparamsProps) {
           </div>
         </div>
       </div>
-      {/* move To article */}
 
+      {/* move To article */}
       <div className=" bg-[#1b1d1f] max-[770px]:bg-transparent p-8 m-7 max-[770px]:m-0 ">
         <p className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center ">
           move To Article
@@ -440,6 +469,15 @@ export default function Page({ params }: PageparamsProps) {
           </p>
         </button>
       </div>
+
+      {/* Confirm Box */}
+      {isConfirmOpen.delete && (
+        <ConfirmBox
+          message={"Are you sure you want to delete this pending article?"}
+          onConfirm={handleDelete}
+          onCancel={() => setIsConfirmOpen({ ...isConfirmOpen, delete: false })}
+        />
+      )}
     </div>
   );
 }

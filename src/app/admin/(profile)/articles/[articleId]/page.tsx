@@ -25,6 +25,9 @@ import { toast } from "react-toastify";
 import { approvedArticle } from "@/apiCalls/ownerApiCall";
 import { ArticleAndObjects } from "@/utils/types";
 import { fetchArticle } from "@/apiCalls/superAdminApiCall";
+import { createPendingUpdateArticle } from "@/apiCalls/adminApiCall";
+import { CreateArticleDto } from "@/utils/dtos";
+import { ArticleType } from "@prisma/client";
 
 interface PageparamsProps {
   params: Promise<{ articleId: string }>;
@@ -42,8 +45,39 @@ interface DownloadLink {
 }
 
 export default function PageArticle({ params }: PageparamsProps) {
+  const [formData, setFormData] = useState<CreateArticleDto>({
+    title: "",
+    description: "",
+    image: "",
+    developer: "",
+    version: "",
+    versionOriginal: null,
+    androidVer: "",
+    articleType: ArticleType.GAME,
+    gameCategory: null,
+    programCategory: null,
+    OBB: false,
+    Script: false,
+    OriginalAPK: false,
+    linkAPK: "",
+    linkOBB: null,
+    linkVideo: null,
+    linkScript: null,
+    linkOriginalAPK: null,
+    sizeFileAPK: "",
+    sizeFileOBB: null,
+    sizeFileScript: null,
+    sizeFileOriginalAPK: null,
+    appScreens: [],
+    keywords: [],
+    isMod: false,
+    typeMod: null,
+    ratedFor: 0,
+    installs: "",
+    createdById: 0,
+  });
   const [article, setArticle] = useState<ArticleAndObjects>();
-  const [articleId, setArticleId] = useState<string>();
+  const [articleId, setArticleId] = useState<number>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,7 +89,7 @@ export default function PageArticle({ params }: PageparamsProps) {
   useEffect(() => {
     const getParams = async () => {
       const { articleId } = await params;
-      setArticleId(articleId);
+      setArticleId(Number(articleId));
     };
     getParams();
   }, [params]);
@@ -69,7 +103,68 @@ export default function PageArticle({ params }: PageparamsProps) {
 
       try {
         const Article = await fetchArticle(articleId);
-
+        const {
+          title,
+          description,
+          image,
+          developer,
+          version,
+          versionOriginal,
+          androidVer,
+          articleType,
+          gameCategory,
+          programCategory,
+          OBB,
+          Script,
+          OriginalAPK,
+          linkAPK,
+          linkOBB,
+          linkVideo,
+          linkScript,
+          linkOriginalAPK,
+          sizeFileAPK,
+          sizeFileOBB,
+          sizeFileScript,
+          sizeFileOriginalAPK,
+          appScreens,
+          keywords,
+          isMod,
+          typeMod,
+          ratedFor,
+          installs,
+          createdById,
+        } = Article;
+        setFormData({
+          title,
+          description,
+          image,
+          developer,
+          version,
+          versionOriginal,
+          androidVer,
+          articleType,
+          gameCategory,
+          programCategory,
+          OBB,
+          Script,
+          OriginalAPK,
+          linkAPK,
+          linkOBB,
+          linkVideo,
+          linkScript,
+          linkOriginalAPK,
+          sizeFileAPK,
+          sizeFileOBB,
+          sizeFileScript,
+          sizeFileOriginalAPK,
+          appScreens,
+          keywords,
+          isMod,
+          typeMod,
+          ratedFor,
+          installs,
+          createdById,
+        });
         setArticle(Article);
       } catch (error: any) {
         setError("Failed to fetch pending articles.");
@@ -151,7 +246,7 @@ export default function PageArticle({ params }: PageparamsProps) {
         key={key}
         href={link}
         title={`Download ${label} ${article.title} Updated to version ${
-          key=== "original-apk" ? article.versionOriginal : article.version
+          key === "original-apk" ? article.versionOriginal : article.version
         }`}
         className={`flex items-center justify-between max-[1000px]:flex-col 
               box-border py-4 px-8 max-sm:px-4 uppercase ${bgColor} leading-relaxed 
@@ -160,7 +255,13 @@ export default function PageArticle({ params }: PageparamsProps) {
         <div>
           <p>
             Download {label} {article.title}{" "}
-            <span> Updated to version {key === "original-apk" ? article.versionOriginal : article.version}</span>
+            <span>
+              {" "}
+              Updated to version{" "}
+              {key === "original-apk"
+                ? article.versionOriginal
+                : article.version}
+            </span>
           </p>
         </div>
         <div className="max-[1000px]:font-medium flex items-center gap-2">
@@ -170,6 +271,21 @@ export default function PageArticle({ params }: PageparamsProps) {
       </Link>
     );
   };
+
+  const handleDelete = async () => {
+    if (!articleId) return;
+    try {
+      const response = await createPendingUpdateArticle(
+        articleId,
+        formData,
+        "DELETE"
+      );
+      toast.success("article is DELETE");
+    } catch (error: any) {
+      toast.error(error);
+    }
+  };
+
   return (
     <div className="min-w-[320px]">
       <Toolbar
@@ -543,10 +659,8 @@ export default function PageArticle({ params }: PageparamsProps) {
       {/* Confirm Box */}
       {isConfirmOpen.delete && (
         <ConfirmBox
-          message="Are you sure you want to delete this article?"
-          onConfirm={() =>
-            handleApproved(article.isApproved ? "false" : "true")
-          }
+          message={"Are you sure you want to delete this article?"}
+          onConfirm={handleDelete}
           onCancel={() => setIsConfirmOpen({ ...isConfirmOpen, delete: false })}
         />
       )}

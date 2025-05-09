@@ -3,6 +3,7 @@ import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
 import { UpdateArticleDto } from "@/utils/dtos";
 import { updateArticleSchema } from "@/utils/validationSchemas";
+import { deleteFile } from "@/lib/r2";
 
 interface Props {
   params: Promise<{ pendingArticleId: string }>;
@@ -96,10 +97,10 @@ export async function PUT(request: NextRequest, { params }: Props) {
       select: {
         id: true,
         createdById: true,
-        
+
         OBB: true,
         Script: true,
-        OriginalAPK: true ,
+        OriginalAPK: true,
 
         linkOBB: true,
         linkScript: true,
@@ -108,8 +109,8 @@ export async function PUT(request: NextRequest, { params }: Props) {
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
 
-        isMod: true ,
-        typeMod: true ,
+        isMod: true,
+        typeMod: true,
       },
     });
     if (!pendingArticle) {
@@ -141,12 +142,13 @@ export async function PUT(request: NextRequest, { params }: Props) {
         image: body.image,
         developer: body.developer,
         version: body.version,
-        versionOriginal:body.versionOriginal,
+        versionOriginal: body.versionOriginal,
         androidVer: body.androidVer,
 
         articleType: body.articleType,
-        gameCategory:body.articleType==="GAME"? body.gameCategory:null,
-        programCategory: body.articleType==="PROGRAM"? body.programCategory:null,
+        gameCategory: body.articleType === "GAME" ? body.gameCategory : null,
+        programCategory:
+          body.articleType === "PROGRAM" ? body.programCategory : null,
 
         OBB: body.OBB ?? pendingArticle.OBB,
         Script: body.Script ?? pendingArticle.Script, // احتفظ بالقيمة القديمة إذا لم يتم إرسال Script
@@ -230,7 +232,26 @@ export async function DELETE(request: NextRequest, { params }: Props) {
 
     const pendingArticle = await prisma.pendingArticle.findUnique({
       where: { id: pendingArticleId, createdById: userFromToken.id },
-      select: { id: true, createdById: true },
+      select: {
+        id: true,
+        createdById: true,
+        linkAPK: true,
+        linkOBB: true,
+        linkOriginalAPK: true,
+        linkScript: true,
+        image: true,
+        appScreens: true,
+        article: {
+          select: {
+            linkAPK: true,
+            linkOBB: true,
+            linkOriginalAPK: true,
+            linkScript: true,
+            image: true,
+            appScreens: true,
+          },
+        },
+      },
     });
     if (!pendingArticle) {
       return NextResponse.json(
@@ -240,6 +261,51 @@ export async function DELETE(request: NextRequest, { params }: Props) {
     }
 
     await prisma.pendingArticle.delete({ where: { id: pendingArticleId } });
+
+    if (pendingArticle.article) {
+      const { article } = pendingArticle;
+
+      const fileComparisons = [
+        ["image", pendingArticle.image, article.image],
+        ["linkAPK", pendingArticle.linkAPK, article.linkAPK],
+        ["linkOBB", pendingArticle.linkOBB, article.linkOBB],
+        [
+          "linkOriginalAPK",
+          pendingArticle.linkOriginalAPK,
+          article.linkOriginalAPK,
+        ],
+        ["linkScript", pendingArticle.linkScript, article.linkScript],
+      ];
+
+      for (const [, newVal, oldVal] of fileComparisons) {
+        if (newVal !== oldVal && newVal) {
+          await deleteFile(new URL(newVal).pathname.slice(1));
+        }
+      }
+
+      const screensToDelete = pendingArticle.appScreens.filter(
+        (screen) => !article.appScreens.includes(screen)
+      );
+
+      await Promise.all(
+        screensToDelete.map((screen) =>
+          deleteFile(new URL(screen).pathname.slice(1))
+        )
+      );
+    } else {
+      const fileLinks = [
+        pendingArticle.image,
+        pendingArticle.linkAPK,
+        pendingArticle.linkOBB,
+        pendingArticle.linkOriginalAPK,
+        pendingArticle.linkScript,
+        ...pendingArticle.appScreens,
+      ].filter((url): url is string => !!url);
+
+      await Promise.all(
+        fileLinks.map((url) => deleteFile(new URL(url).pathname.slice(1)))
+      );
+    }
 
     return NextResponse.json(
       { message: "Pending Article deleted" },

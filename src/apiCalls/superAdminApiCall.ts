@@ -40,7 +40,7 @@ export async function fetchArticlesCount(): Promise<number> {
 }
 
 // Get my single Article for user
-export async function fetchArticle(articleId: string): Promise<ArticleAndObjects> {
+export async function fetchArticle(articleId: number): Promise<ArticleAndObjects> {
   try {
     const response = await axios.get(
       `${DOMAIN}/api/superAdmin/articles/${articleId}`,
@@ -97,7 +97,7 @@ export async function fetchPendingArticlesCount(): Promise<number> {
 
 // Get single Pending Article for user
 export async function fetchPendingArticle(
-  pendingArticleId: string
+  pendingArticleId: number
 ): Promise<PendingArticleAndObjects> {
   try {
     const response = await axios.get(

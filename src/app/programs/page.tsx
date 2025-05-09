@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import ProgramsPage from "./[pageId]/page";
 
 export default function ProgramsPageN1() {

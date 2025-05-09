@@ -180,3 +180,24 @@ export async function getArticleCreateBy(
     throw new Error(errorMessage);
   }
 }
+
+//delete my pending article
+export async function deleteArticleCreatedBy(pendingArticleId: number): Promise<string> {
+  try {
+    const response = await axios.delete(
+      `${DOMAIN}/api/admin/pendingArticles/${pendingArticleId}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data.message;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to delete Pending Article";
+
+    throw new Error(errorMessage);
+  }
+}

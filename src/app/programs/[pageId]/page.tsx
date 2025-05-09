@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import Toolbar from "@/components/toolbar";
 import AppList from "@/components/list/appList";
 import Pagination from "@/components/pagination";
@@ -87,7 +89,7 @@ export default async function ProgramsPage({ params }: ArticlesPageProp) {
           </div>
 
           <div className="px-7 max-[500px]:px-0">
-            <AppList url={"program"} articles={articles} />
+            <AppList url={"home"} articles={articles} />
             <Pagination
               pages={pages}
               pageSelect={Number(pageId)}

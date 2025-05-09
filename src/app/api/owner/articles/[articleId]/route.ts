@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
+import { deleteFile } from "@/lib/r2";
 
 interface Props {
   params: Promise<{ articleId: string }>;
@@ -39,12 +40,12 @@ export async function GET(request: NextRequest, { params }: Props) {
         image: true,
         developer: true,
         version: true,
-        versionOriginal:true,
+        versionOriginal: true,
         androidVer: true,
 
         articleType: true,
         gameCategory: true,
-        programCategory:true,
+        programCategory: true,
 
         OBB: true,
         Script: true,
@@ -90,13 +91,97 @@ export async function GET(request: NextRequest, { params }: Props) {
       },
     });
     if (!article) {
-      return NextResponse.json({ message: "article not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "article not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(article, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ *  @method  DELETE
+ *  @route   ~/api/owner/articles/:articleId
+ *  @desc    Delete my article
+ *  @access  private (only user himself can Delete article | OWNER can Delete any data)
+ */
+export async function DELETE(request: NextRequest, { params }: Props) {
+  try {
+    const articleId = Number((await params).articleId);
+    if (isNaN(articleId)) {
+      return NextResponse.json(
+        { message: "Invalid article ID" },
+        { status: 400 }
+      );
+    }
+
+    const userFromToken = verifyToken(request);
+    if (!userFromToken) {
+      return NextResponse.json(
+        { message: "Access denied, you are not authorized" },
+        { status: 403 }
+      );
+    }
+    if (!["OWNER"].includes(userFromToken.role)) {
+      return NextResponse.json(
+        { message: "Access denied, only OWNER allowed" },
+        { status: 403 }
+      );
+    }
+
+    const article = await prisma.article.findUnique({
+      where: { id: articleId },
+      select: {
+        id: true,
+        image: true,
+        linkAPK: true,
+        linkOBB: true,
+        linkScript: true,
+        linkOriginalAPK: true,
+        appScreens: true,
+      },
+    });
+    if (!article) {
+      return NextResponse.json(
+        { message: "article not found" },
+        { status: 404 }
+      );
+    }
+
+    const filesToDelete = [
+      article.image,
+      article.linkAPK,
+      article.linkOBB,
+      article.linkScript,
+      article.linkOriginalAPK,
+      ...(article.appScreens || []),
+    ].filter(
+      (url): url is string => typeof url === "string" && url.trim() !== ""
+    );
+
+    await Promise.all(
+      filesToDelete.map(async (url) => {
+        try {
+          await deleteFile(new URL(url).pathname.slice(1));
+        } catch (err) {
+          console.warn("Failed to delete file:", url, err);
+        }
+      })
+    );
+
+    await prisma.article.delete({ where: { id: articleId } });
+
+    return NextResponse.json({ message: "article deleted" }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "internal server error" ,error},
       { status: 500 }
     );
   }

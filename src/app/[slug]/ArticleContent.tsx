@@ -140,7 +140,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
 
           <Toolbar
             local={"home"}
-            firstLocal={"games"}
+            firstLocal={article.articleType==="GAME"?"games":"programs"}
             scndLocal={`${article.title}`}
           />
           {/* content */}

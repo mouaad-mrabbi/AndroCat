@@ -101,7 +101,6 @@ model Article {
   version         String
   versionOriginal String?
   androidVer      String
-  ratings         ArticleRating[]
 
   articleType     ArticleType
   gameCategory    GameCategories?
@@ -150,6 +149,7 @@ model Article {
   validatedBy User @relation(name: "ValidatedBy", fields: [validatedById], references: [id])
 
   pendingArticle PendingArticle?
+  ratings        ArticleRating[]
 }
 
 model ArticleRating {
@@ -161,7 +161,7 @@ model ArticleRating {
   updatedAt DateTime @updatedAt
 
   articleId Int
-  article   Article @relation(fields: [articleId], references: [id])
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   @@unique([articleId, ipAddress]) // منع نفس الـ IP من تقييم نفس العنصر أكثر من مرة
   @@index([articleId]) // فهرس لتحسين الأداء
@@ -222,7 +222,7 @@ model PendingArticle {
   createdBy   User @relation(fields: [createdById], references: [id])
 
   articleId Int?     @unique
-  article   Article? @relation(fields: [articleId], references: [id])
+  article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   rejected RejectedPendingArticle?
 }

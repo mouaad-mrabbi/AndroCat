@@ -30,11 +30,16 @@ export async function fetchArticlesCount(): Promise<number> {
 }
 
 // Get single Article
-export async function fetchArticle(articleId: string): Promise<ArticleAndObjects> {
+export async function fetchArticle(
+  articleId: string
+): Promise<ArticleAndObjects> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/owner/articles/${articleId}`, {
-      withCredentials: true,
-    });
+    const response = await axios.get(
+      `${DOMAIN}/api/owner/articles/${articleId}`,
+      {
+        withCredentials: true,
+      }
+    );
 
     return response.data;
   } catch (error: any) {
@@ -56,6 +61,27 @@ export async function approvedArticle(articleId: number, approved: string) {
 
     return response;
   } catch (error: any) {
-    throw (error || "Failed to Approved article");
+    throw error || "Failed to Approved article";
+  }
+}
+
+//delete my pending article
+export async function deleteArticle(articleId: number): Promise<string> {
+  try {
+    const response = await axios.delete(
+      `${DOMAIN}/api/owner/articles/${articleId}`,
+      {
+        withCredentials: true,
+      }
+    );
+
+    return response.data.message;
+  } catch (error: any) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to delete Article";
+
+    throw new Error(errorMessage);
   }
 }
