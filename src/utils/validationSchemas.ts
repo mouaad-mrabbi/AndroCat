@@ -25,12 +25,12 @@ export const updateUserSchema = z.object({
 export const createArticleSchema = z
   .object({
     title: z.string().min(2).max(50),
-    description: z.string().min(10).max(500),
+    description: z.string().min(10).max(1000),
     descriptionMeta: z.string().min(10).max(500),
     image: z.string().url().max(500),
     developer: z.string().min(2).max(50),
     version: z.string().min(1).max(50),
-    versionOriginal: z.string().min(1).max(50).optional(),
+    versionOriginal: z.string().min(1).max(50).nullable().optional(),
     androidVer: z.string().min(1).max(20),
 
     articleType: z.nativeEnum(ArticleType),
@@ -245,12 +245,12 @@ export const createArticleSchema = z
 export const updateArticleSchema = z
   .object({
     title: z.string().min(2).max(50).optional(),
-    description: z.string().min(10).max(500).optional(),
+    description: z.string().min(10).max(1000).optional(),
     descriptionMeta: z.string().min(10).max(500).optional(),
     image: z.string().url().max(500).optional(),
     developer: z.string().min(2).max(50).optional(),
     version: z.string().min(1).max(50).optional(),
-    versionOriginal: z.string().min(1).max(50).optional(),
+    versionOriginal: z.string().min(1).max(50).nullable().optional(),
     androidVer: z.string().min(1).max(20).optional(),
 
     articleType: z.nativeEnum(ArticleType).optional(),
