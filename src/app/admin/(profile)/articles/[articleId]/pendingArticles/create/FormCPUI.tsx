@@ -898,6 +898,7 @@ export default function FormCPUA({ articleId }: pageProps) {
               title={formData.title}
               randomText={`${articleId}`}
               fileType={"original-apks"}
+              version={formData.versionOriginal||""}
               onChangeData={handleFormUploadOriginalAPK}
             />
           </div>
@@ -975,6 +976,8 @@ export default function FormCPUA({ articleId }: pageProps) {
               title={formData.title}
               randomText={`${articleId}`}
               fileType={"apks"}
+              version={formData.version}
+              isMod={formData.isMod}
               onChangeData={handleFormUploadDataAPK}
             />
           </div>

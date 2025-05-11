@@ -778,6 +778,7 @@ const FormCreatePArticle = () => {
               title={formData.title}
               randomText={randomText}
               fileType={"original-apks"}
+              version={formData.versionOriginal || ""}
               onChangeData={handleFormUploadOriginalAPK}
             />
           </div>
@@ -855,6 +856,8 @@ const FormCreatePArticle = () => {
               title={formData.title}
               randomText={randomText}
               fileType={"apks"}
+              version={formData.version}
+              isMod={formData.isMod}
               onChangeData={handleFormUploadDataAPK}
             />
           </div>

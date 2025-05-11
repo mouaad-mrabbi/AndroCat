@@ -24,7 +24,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
   >({
     title: "",
     description: "",
-    descriptionMeta:"",
+    descriptionMeta: "",
     image: "",
     developer: "",
     version: "",
@@ -58,7 +58,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
   const [formDataOrigin, setFormDataOrigin] = useState<CreateArticleDto>({
     title: "",
     description: "",
-    descriptionMeta:"",
+    descriptionMeta: "",
     image: "",
     developer: "",
     version: "",
@@ -253,7 +253,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
 
     /*     const captchaValue = recaptchaRef.current?.getValue();
     if (!captchaValue) {
@@ -270,8 +270,8 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
       toast.success("Article is updated");
     } catch (error: any) {
       toast.error(error?.response?.data.message);
-    }finally{
-      setIsLoading(false)
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -873,6 +873,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
               title={formData.title}
               randomText={`${formData.articleId}`}
               fileType={"original-apks"}
+              version={formData.versionOriginal || ""}
               onChangeData={handleFormUploadOriginalAPK}
             />
           </div>
@@ -950,6 +951,8 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
               title={formData.title}
               randomText={`${formData.articleId}`}
               fileType={"apks"}
+              version={formData.version}
+              isMod={formData.isMod}
               onChangeData={handleFormUploadDataAPK}
             />
           </div>

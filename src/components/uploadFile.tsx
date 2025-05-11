@@ -1,17 +1,22 @@
 "use client";
+import { DOMAINCDN } from "@/utils/constants";
 import { useState, useRef, ChangeEvent } from "react";
 import { toast } from "react-toastify";
 import slugify from "slugify";
 
 export default function UploadFile({
-  title="mouad mrabbi",
-  randomText="k0j2nc",
-  fileType="obbs",
+  title = "",
+  randomText = "xxxxxx",
+  fileType = "obbs",
+  version,
+  isMod,
   onChangeData,
 }: {
   title: string;
   randomText: string;
   fileType: string;
+  version?: string;
+  isMod?: boolean;
   onChangeData?: (data: { publicURL: string }) => void;
 }) {
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -29,18 +34,17 @@ export default function UploadFile({
 
     try {
       let extension;
-      // ✅ تحديد الامتداد بناءً على نوع MIME
       if (file.type === "image/png") {
         extension = "png";
       } else if (file.type === "image/webp") {
         extension = "webp";
       } else if (file.type === "image/jpeg" || file.type === "image/jpg") {
         extension = "jpg";
-      } else if (fileType === "apks"||fileType === "original-apks") {
+      } else if (fileType === "apks" || fileType === "original-apks") {
         extension = "apk";
       } else if (fileType === "obbs") {
         extension = "zip";
-      }else if (fileType === "scripts") {
+      } else if (fileType === "scripts") {
         extension = "zip";
       } else {
         // في حالة عدم تطابق أي نوع
@@ -56,7 +60,13 @@ export default function UploadFile({
         remove: /[^\w\s-]/g,
       });
 
-      const fileName = `${fileType}/${randomText}/${cleanTitleFile}-${randomNumber}.${extension}`;
+      const fileName = `${fileType}/${randomText}/${cleanTitleFile}${
+        fileType === "apks"
+          ? `${isMod ? "-mod" : ""}_${version}-AndroCat.com`
+          : fileType === "original-apks"
+          ? `-original_${version}-AndroCat.com`
+          : `-${randomNumber}`
+      }.${extension}`;
 
       const response = await fetch("/api/upload", {
         method: "POST",
@@ -74,8 +84,7 @@ export default function UploadFile({
         signedUrl,
         abortControllerRef.current.signal
       );
-      onChangeData?.({ publicURL: `https://cdn.androcat.com/${fileName}` });
-      console.log(`https://cdn.androcat.com/${fileName}`);
+      onChangeData?.({ publicURL: `${DOMAINCDN}/${fileName}` });
       toast.success("File uploaded successfully!");
       setFile(null);
       /* fetchFiles(); */
@@ -161,11 +170,12 @@ export default function UploadFile({
                 className="hidden"
                 id="file-upload"
               />
-              <div className="cursor-pointer flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none
+              <div
+                className="cursor-pointer flex-1 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none
                 focus:ring-indigo-500 focus:border-indigo-500
                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
                 dark:focus:border-indigo-500 transition duration-300"
-               >
+              >
                 {file ? file.name : "Choose a file"}
               </div>
             </label>

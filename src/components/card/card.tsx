@@ -14,8 +14,8 @@ export default function Card({ article }: { article: allArticle }) {
         <div className="relative">
           <Image
             src={article.image}
-            width={90}
-            height={90}
+            width={190}
+            height={190}
             alt={article.title}
             className="aspect-square w-full rounded-2xl object-cover "
             draggable={false}

@@ -43,8 +43,8 @@ export default function LandCard({ article, url, index }: Props) {
         <div className="relative aspect-square h-full max-[820px]:h-auto max-[820px]:w-full">
           <Image
             src={imageSrc}
-            width={90}
-            height={90}
+            width={190}
+            height={190}
             alt={`${article.title} ${article.isMod ? article.typeMod : ""}`}
             className="h-full w-full rounded-2xl object-cover"
 /*          priority={index < 3} // أول 3 صور يتم تحميلها بالأولوية */

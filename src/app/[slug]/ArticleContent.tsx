@@ -160,8 +160,8 @@ export async function ArticleContent({ slug }: { slug: string }) {
                   <div className=" aspect-square h-[136px] min-[500px]:h-[184px] min-[770px]:h-[160px] min-[1200px]:h-[184px]">
                     <Image
                       src={article.image}
-                      width={90}
-                      height={90}
+                      width={190}
+                      height={190}
                       alt={`${article.title} ${article.isMod ? "mod" : ""} apk`}
                       className="aspect-square w-full rounded-2xl object-cover"
                       priority // لتحميل الصورة أولاً
@@ -333,8 +333,8 @@ export async function ArticleContent({ slug }: { slug: string }) {
                   >
                     <Image
                       src={elem}
-                      width={90}
-                      height={90}
+                      width={526}
+                      height={296}
                       alt={`${article.title} ${
                         article.isMod ? article.typeMod : ""
                       }`}
