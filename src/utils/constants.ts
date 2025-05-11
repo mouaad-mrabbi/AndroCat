@@ -10,6 +10,6 @@ export const DOMAIN =
     ? PRODUCTION_DOMAIN
     : DEVELOPMENT_DOMAIN;
 
-export const DOMAINCDN = "http://cdn.androcat.com";
+export const DOMAINCDN = "https://cdn.androcat.com";
 
 export const DomainsImages = ["cdn.androcat.com"];
