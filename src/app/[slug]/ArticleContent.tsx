@@ -54,7 +54,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
       } free on android`,
       description: `Download ${article.title} ${
         article.isMod && article.typeMod
-      } - ${article.descriptionMeta}`,
+      } ${article.version} ${article.descriptionMeta}`,
       url: `${DOMAIN}/${slug}`,
       image: article.image,
       keywords: article.keywords?.join(", ") || "games, apps, mods",
@@ -100,7 +100,13 @@ export async function ArticleContent({ slug }: { slug: string }) {
       },
     ];
 
-    const renderDownloadLink = ({ key, label, bgColor, size, link }:DownloadLink) => {
+    const renderDownloadLink = ({
+      key,
+      label,
+      bgColor,
+      size,
+      link,
+    }: DownloadLink) => {
       if (!link) return null;
 
       return (
@@ -140,7 +146,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
 
           <Toolbar
             local={"home"}
-            firstLocal={article.articleType==="GAME"?"games":"programs"}
+            firstLocal={article.articleType === "GAME" ? "games" : "programs"}
             scndLocal={`${article.title}`}
           />
           {/* content */}

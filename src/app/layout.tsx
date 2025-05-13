@@ -26,6 +26,12 @@ export const metadata = {
   },
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1.0,
+  maximumScale: 5.0,
+};
+
 import "./globals.css";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
@@ -48,7 +54,7 @@ export default function RootLayout({
               "@type": "Organization",
               name: "AndroCat",
               url: DOMAIN,
-              logo: `${DOMAIN}/images/AndroCat-icon.png`,
+              logo: `${DOMAIN}/images/AndroCat-logo.png`,
               sameAs: [
                 "https://twitter.com/androcat",
                 "https://facebook.com/androcat",
