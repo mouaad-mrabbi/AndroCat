@@ -84,7 +84,7 @@ export async function getSignedUrlForUpload(
   });
 
   try {
-    const signedUrl = await getSignedUrl(S3, command, { expiresIn: 3600 });
+    const signedUrl = await getSignedUrl(S3, command, { expiresIn: 3600 * 3 });
     return signedUrl;
   } catch (error) {
     console.error("Error generating signed URL:", error);
