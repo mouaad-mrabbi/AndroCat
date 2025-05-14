@@ -3,9 +3,7 @@ import { verifyToken } from "@/utils/verifyToken";
 import prisma from "@/utils/db";
 
 function generateRandomIP() {
-  return Array.from({ length: 4 }, () => Math.floor(Math.random() * 256)).join(
-    "."
-  );
+  return Array.from({ length: 4 }, () => Math.floor(Math.random() * 256)).join(".");
 }
 
 function getRandomRate(min: number, max: number): number {
@@ -22,10 +20,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (minRate < 1 || maxRate > 5 || minRate > maxRate) {
-      return NextResponse.json(
-        { error: "Invalid rate range" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid rate range" }, { status: 400 });
     }
 
     const userFromToken = verifyToken(req);
@@ -35,6 +30,7 @@ export async function POST(req: NextRequest) {
         { status: 403 }
       );
     }
+
     if (!["OWNER"].includes(userFromToken.role)) {
       return NextResponse.json(
         { message: "Access denied, only admins allowed" },
@@ -75,10 +71,12 @@ export async function POST(req: NextRequest) {
       ? Number(ratingStats._avg.rate.toFixed(1))
       : 0;
 
-    await prisma.article.update({
-      where: { id: articleId },
-      data: { ratingCount, averageRating },
-    });
+    // ✅ نستخدم executeRaw لتجنب تعديل حقل updatedAt تلقائيًا
+    await prisma.$executeRaw`
+      UPDATE "Article"
+      SET "ratingCount" = ${ratingCount}, "averageRating" = ${averageRating}
+      WHERE "id" = ${articleId}
+    `;
 
     return NextResponse.json(
       { message: `Successfully created ${count} fake ratings.` },

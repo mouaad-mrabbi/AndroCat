@@ -47,6 +47,8 @@ export async function generateMetadata({ params }: ArticlesPageProp) {
             : article.programCategory,
         tag: ["MOD", "GTA", "Android", "Free Download"],
       },
+      siteName: "AndroCat",
+      site_name: "androcat",
     },
     twitter: {
       card: "summary_large_image",

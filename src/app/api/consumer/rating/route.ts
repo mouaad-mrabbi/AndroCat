@@ -20,11 +20,14 @@ const rateLimit = new LRUCache({
 export async function POST(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const articleId = Number(searchParams.get("articleId")) ;
+    const articleId = Number(searchParams.get("articleId"));
     const rate = parseFloat(searchParams.get("rate") || "");
 
     if (!articleId) {
-      return NextResponse.json({ error: "Invalid article ID" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Invalid article ID" },
+        { status: 400 }
+      );
     }
 
     if (isNaN(rate) || rate < 1 || rate > 5) {
@@ -36,21 +39,17 @@ export async function POST(req: NextRequest) {
 
     // Get the user's IP address
     const ipAddress = (await headers()).get("x-forwarded-for") || "unknown";
+/*     const ipAddress = "198.51.240.44";  */
 
-    /*  const ipAddress = "198.51.210.46"; */
-
-    // Check the request limit for this IP
+    // Rate limiting
     const key = `rate-limit:${ipAddress}`;
     const requestCount = (rateLimit.get(key) || 0) as number;
-
     if (requestCount >= 5) {
       return NextResponse.json(
         { message: "Too Many Rating. Try again later." },
         { status: 429 }
       );
     }
-
-    // زيادة عدد الطلبات لهذا المستخدم
     rateLimit.set(key, requestCount + 1);
 
     // Check if article is approved
@@ -65,65 +64,34 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // البحث عن التقييم الحالي لنفس المستخدم على نفس العنصر
+    // Check if user already rated
     const existingRating = await prisma.articleRating.findUnique({
       where: { articleId_ipAddress: { articleId, ipAddress } },
       select: { rate: true, id: true },
     });
 
-    // Update the rating if it already exists
     if (existingRating) {
       if (existingRating.rate === rate) {
         return NextResponse.json(
-          {
-            message: "You've already rated this article.",
-          },
+          { message: "You've already rated this article." },
           { status: 400 }
         );
       }
-      const updatedRating = await prisma.articleRating.update({
+
+      await prisma.articleRating.update({
         where: { id: existingRating.id },
         data: { rate, updatedAt: new Date() },
       });
-
-      // Update rating accounts on the article
-      const ratingStats = await prisma.articleRating.aggregate({
-        _count: { articleId: true },
-        _avg: { rate: true },
-        where: { articleId },
+    } else {
+      await prisma.articleRating.create({
+        data: { articleId, ipAddress, rate },
       });
-
-      const ratingCount = ratingStats._count.articleId;
-      const averageRating = ratingStats._avg.rate
-        ? Number(ratingStats._avg.rate.toFixed(1))
-        : 0;
-
-      // تحديث العنصر بعد التحقق من القيم
-      await prisma.article.update({
-        where: { id: articleId },
-        select: { ratingCount: true, averageRating: true },
-        data: { ratingCount, averageRating },
-      });
-
-      return NextResponse.json(
-        { message: "Rating submitted successfully!" },
-        { status: 200 }
-      );
     }
 
-    // Create a new rating if none exists
-    const newRating = await prisma.articleRating.create({
-      data: { articleId, ipAddress, rate },
-    });
-
-    // Update rating accounts on the article
+    // Get new rating stats
     const ratingStats = await prisma.articleRating.aggregate({
-      _count: {
-        articleId: true, // هذا يعطيك عدد التقييمات
-      },
-      _avg: {
-        rate: true, // هذا يحسب المتوسط
-      },
+      _count: { articleId: true },
+      _avg: { rate: true },
       where: { articleId },
     });
 
@@ -132,17 +100,19 @@ export async function POST(req: NextRequest) {
       ? Number(ratingStats._avg.rate.toFixed(1))
       : 0;
 
-    await prisma.article.update({
-      where: { id: articleId },
-      select: { ratingCount: true, averageRating: true },
-      data: { ratingCount, averageRating },
-    });
+    // ✅ Update article rating data without touching updatedAt
+    await prisma.$executeRawUnsafe(`
+      UPDATE "Article"
+      SET "ratingCount" = ${ratingCount}, "averageRating" = ${averageRating}
+      WHERE "id" = ${articleId}
+    `);
 
     return NextResponse.json(
       { message: "Rating submitted successfully!" },
-      { status: 201 }
+      { status: existingRating ? 200 : 201 }
     );
   } catch (error) {
+    console.error("Rating error:", error);
     return NextResponse.json(
       { message: "internal server error" },
       { status: 500 }
