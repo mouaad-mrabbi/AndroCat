@@ -43,8 +43,8 @@ export default async function DownloadAPKPage({ params }: ArticlesPageProp) {
             <div className="aspect-square w-44 mb-9">
               <Image
                 src={article.image}
-                width={90}
-                height={90}
+                width={190}
+                height={190}
                 alt={article?.title || "game"}
                 className="aspect-square w-full rounded-2xl object-cover"
                 priority
