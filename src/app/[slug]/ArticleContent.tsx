@@ -142,7 +142,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
           />
         </Head>
         <div className="min-w-[320px]">
-          <InterstitialAd />
+{/*       ads remove    <InterstitialAd /> */}
 
           <Toolbar
             local={"home"}
