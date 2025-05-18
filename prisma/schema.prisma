@@ -95,6 +95,7 @@ enum ProgramCategories {
 model Article {
   id              Int             @id @default(autoincrement())
   title           String
+  secondTitle     String?
   description     String
   descriptionMeta String
   image           String
@@ -181,6 +182,7 @@ model PendingArticle {
   checking Boolean    @default(false)
 
   title           String
+  secondTitle     String?
   description     String
   descriptionMeta String
   image           String

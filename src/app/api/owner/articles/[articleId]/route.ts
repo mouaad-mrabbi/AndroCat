@@ -36,6 +36,7 @@ export async function GET(request: NextRequest, { params }: Props) {
       select: {
         id: true,
         title: true,
+        secondTitle:true,
         description: true,
         image: true,
         developer: true,

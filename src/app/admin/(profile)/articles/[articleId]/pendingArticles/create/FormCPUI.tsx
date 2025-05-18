@@ -20,6 +20,7 @@ interface pageProps {
 export default function FormCPUA({ articleId }: pageProps) {
   const [formData, setFormData] = useState<CreateArticleDto>({
     title: "",
+    secondTitle: null,
     description: "",
     descriptionMeta: "",
     image: "",
@@ -52,6 +53,7 @@ export default function FormCPUA({ articleId }: pageProps) {
   });
   const [formDataOrigin, setFormDataOrigin] = useState<CreateArticleDto>({
     title: "",
+    secondTitle: null,
     description: "",
     descriptionMeta: "",
     image: "",
@@ -102,6 +104,7 @@ export default function FormCPUA({ articleId }: pageProps) {
         const article = await getArticleCreateBy(articleId);
         const {
           title,
+          secondTitle,
           description,
           descriptionMeta,
           image,
@@ -134,6 +137,7 @@ export default function FormCPUA({ articleId }: pageProps) {
         } = article;
         setFormData({
           title,
+          secondTitle,
           description,
           descriptionMeta,
           image,
@@ -166,6 +170,7 @@ export default function FormCPUA({ articleId }: pageProps) {
         });
         setFormDataOrigin({
           title,
+          secondTitle,
           description,
           descriptionMeta,
           image,
@@ -336,17 +341,6 @@ export default function FormCPUA({ articleId }: pageProps) {
     }
   };
 
-  const copyToClipboard = (Url: string) => {
-    navigator.clipboard
-      .writeText(Url)
-      .then(() => {
-        toast.success("URL copied to clipboard!");
-      })
-      .catch(() => {
-        toast.error("Failed to copy URL.");
-      });
-  };
-
   const handleFormUploadDataAPK = async (data: { publicURL: string }) => {
     const response = await fetch(data.publicURL, { method: "HEAD" });
     const size = response.headers.get("content-length");
@@ -464,6 +458,23 @@ export default function FormCPUA({ articleId }: pageProps) {
       dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
       dark:focus:border-indigo-500"
               /* required */
+            />
+          </div>
+
+          {/* second Title */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              second Title:
+            </label>
+            <input
+              type="text"
+              name="secondTitle"
+              value={formData.secondTitle || ""}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
+                dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
+                dark:focus:border-indigo-500"
             />
           </div>
 
@@ -898,7 +909,7 @@ export default function FormCPUA({ articleId }: pageProps) {
               title={formData.title}
               randomText={`${articleId}`}
               fileType={"original-apks"}
-              version={formData.versionOriginal||""}
+              version={formData.versionOriginal || ""}
               onChangeData={handleFormUploadOriginalAPK}
             />
           </div>

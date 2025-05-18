@@ -70,8 +70,9 @@ export async function POST(request: NextRequest, { params }: Props) {
             data: {
               status: "UPDATE",
               title: body.title,
+              secondTitle: body.secondTitle,
               description: body.description,
-              descriptionMeta:body.descriptionMeta,
+              descriptionMeta: body.descriptionMeta,
               image: body.image,
               developer: body.developer,
               version: body.version,
@@ -122,8 +123,9 @@ export async function POST(request: NextRequest, { params }: Props) {
             data: {
               status: "DELETE",
               title: body.title,
+              secondTitle: body.secondTitle,
               description: body.description,
-              descriptionMeta:body.descriptionMeta,
+              descriptionMeta: body.descriptionMeta,
               image: body.image,
               developer: body.developer,
               version: body.version,
@@ -175,8 +177,9 @@ export async function POST(request: NextRequest, { params }: Props) {
             data: {
               status: "UPDATE",
               title: body.title,
+              secondTitle: body.secondTitle,
               description: body.description,
-              descriptionMeta:body.descriptionMeta,
+              descriptionMeta: body.descriptionMeta,
               image: body.image,
               developer: body.developer,
               version: body.version,
@@ -226,8 +229,9 @@ export async function POST(request: NextRequest, { params }: Props) {
             data: {
               status: "DELETE",
               title: body.title,
+              secondTitle: body.secondTitle,
               description: body.description,
-              descriptionMeta:body.descriptionMeta,
+              descriptionMeta: body.descriptionMeta,
               image: body.image,
               developer: body.developer,
               version: body.version,

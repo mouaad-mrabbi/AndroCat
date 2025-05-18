@@ -25,6 +25,7 @@ export const updateUserSchema = z.object({
 export const createArticleSchema = z
   .object({
     title: z.string().min(2).max(50),
+    secondTitle: z.string().min(2).max(50).nullable().optional(),
     description: z.string().min(10).max(1500),
     descriptionMeta: z.string().min(10).max(500),
     image: z.string().url().max(500),
@@ -245,6 +246,7 @@ export const createArticleSchema = z
 export const updateArticleSchema = z
   .object({
     title: z.string().min(2).max(50).optional(),
+    secondTitle: z.string().min(2).max(50).nullable().optional(),
     description: z.string().min(10).max(1500).optional(),
     descriptionMeta: z.string().min(10).max(500).optional(),
     image: z.string().url().max(500).optional(),

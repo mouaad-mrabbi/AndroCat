@@ -154,7 +154,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
             <div className="flex max-[770px]:flex-col p-6">
               {/* title */}
               <h1 className="text-[1.5rem] font-bold min-[770px]:hidden mb-4">
-                Download <span>{article.title}</span>{" "}
+                Download <span>{article.title}</span> APK{" "}
                 {article.isMod && <span>({article.typeMod})</span>}{" "}
                 <span>{article.version}</span> free on android
               </h1>

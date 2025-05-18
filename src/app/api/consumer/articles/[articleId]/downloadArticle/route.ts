@@ -43,6 +43,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         select: {
           id: true,
           title: true,
+          secondTitle:true,
           image: true,
           androidVer: true,
           linkAPK: true,
@@ -63,6 +64,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         select: {
           id: true,
           title: true,
+          secondTitle:true,
           image: true,
           androidVer: true,
           linkOBB: true,
@@ -83,6 +85,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         select: {
           id: true,
           title: true,
+          secondTitle:true,
           image: true,
           androidVer: true,
           linkScript: true,
@@ -103,6 +106,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         select: {
           id: true,
           title: true,
+          secondTitle:true,
           image: true,
           androidVer: true,
           versionOriginal:true,

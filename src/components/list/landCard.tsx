@@ -27,12 +27,14 @@ export default function LandCard({ article, url, index }: Props) {
   return (
     <Suspense fallback={LoadingLandCard()}>
       <Link
-        title={`${article.title} ${article.isMod ? `(${article.typeMod})` : ""}`}
+        title={`${article.title} ${
+          article.isMod ? `(${article.typeMod})` : ""
+        }`}
         href={
           url === "home"
-            ? `/${article.id}-${slugify(article.title, { lower: true })}${
-                article.isMod ? "-mod" : ""
-              }`
+            ? `/${article.id}-download-${slugify(article.title, {
+                lower: true,
+              })}${article.isMod ? "-mod" : ""}-apk-free-android`
             : url === "pendingArticles" || url === "articles"
             ? `/admin/${url}/${article.id}`
             : "#"
@@ -47,7 +49,7 @@ export default function LandCard({ article, url, index }: Props) {
             height={190}
             alt={`${article.title} ${article.isMod ? article.typeMod : ""}`}
             className="h-full w-full rounded-2xl object-cover"
-/*          priority={index < 3} // أول 3 صور يتم تحميلها بالأولوية */
+            /*          priority={index < 3} // أول 3 صور يتم تحميلها بالأولوية */
             draggable="false"
             loading="lazy"
           />
@@ -61,7 +63,8 @@ export default function LandCard({ article, url, index }: Props) {
         <div className="flex flex-col justify-between max-[820px]:h-28 ">
           <div>
             <p className="font-semibold line-clamp-2 max-[820px]:text-sm">
-              {article.title} {article.isMod && <span>({article.typeMod})</span>}
+              {article.title}{" "}
+              {article.isMod && <span>({article.typeMod})</span>}
             </p>
             <p className="font-extralight text-xs max-[820px]:text-[10px] text-[#909192] line-clamp-1">
               {article.developer}

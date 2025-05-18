@@ -23,6 +23,7 @@ export const metadata = {
   other: {
     author: "MOUAAD MRABBI",
     copyright: "© 2025 AndroCat. All rights reserved.",
+     monetag: 'd08006823b80598a8e946d1ff465a0b2',
   },
 };
 

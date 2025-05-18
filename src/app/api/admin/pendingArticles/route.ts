@@ -116,6 +116,7 @@ export async function POST(request: NextRequest) {
       data: {
         status: "CREATE",
         title: body.title,
+        secondTitle:body.secondTitle,
         description: body.description,
         descriptionMeta:body.descriptionMeta,
         image: body.image,

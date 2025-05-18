@@ -74,6 +74,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
       select: {
         id: true,
         title: true,
+        secondTitle:true,
         description: true,
         descriptionMeta:true,
         image: true,
@@ -114,6 +115,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
       },
       data: {
         title: pendingArticle.title,
+        secondTitle:pendingArticle.secondTitle,
         description: pendingArticle.description,
         descriptionMeta:pendingArticle.descriptionMeta,
         image: pendingArticle.image,

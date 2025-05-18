@@ -138,6 +138,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
       where: { id: pendingArticleId },
       data: {
         title: body.title,
+        secondTitle: body.secondTitle,
         description: body.description,
         descriptionMeta:body.descriptionMeta,
         image: body.image,

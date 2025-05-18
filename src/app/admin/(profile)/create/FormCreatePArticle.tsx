@@ -11,6 +11,7 @@ import { ModalForm } from "@/components/modalForm";
 const FormCreatePArticle = () => {
   const [formData, setFormData] = useState<CreateArticleDto>({
     title: "",
+    secondTitle: null,
     description: "",
     descriptionMeta: "",
     image: "",
@@ -148,6 +149,7 @@ const FormCreatePArticle = () => {
       if (status === 201) {
         setFormData({
           title: "",
+          secondTitle: null,
           description: "",
           descriptionMeta: "",
           image: "",
@@ -230,17 +232,6 @@ const FormCreatePArticle = () => {
     } else {
       return `${(size / (1024 * 1024)).toFixed(2)} MB`;
     }
-  };
-
-  const copyToClipboard = (Url: string) => {
-    navigator.clipboard
-      .writeText(Url)
-      .then(() => {
-        toast.success("URL copied to clipboard!");
-      })
-      .catch(() => {
-        toast.error("Failed to copy URL.");
-      });
   };
 
   const handleFormUploadDataAPK = async (data: { publicURL: string }) => {
@@ -344,6 +335,23 @@ const FormCreatePArticle = () => {
       dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
       dark:focus:border-indigo-500"
               /* required */
+            />
+          </div>
+
+          {/* second Title */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              second Title:
+            </label>
+            <input
+              type="text"
+              name="secondTitle"
+              value={formData.secondTitle||""}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
+      dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
+      dark:focus:border-indigo-500"
             />
           </div>
 

@@ -23,8 +23,9 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
     pendingArticle: { select: { id: true } };
     id: true;
     title: true;
+    secondTitle: true;
     description: true;
-    descriptionMeta:true;
+    descriptionMeta: true;
     image: true;
     developer: true;
     version: true;
@@ -70,13 +71,13 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
   };
 }>;
 
-
 export type PendingArticleAndObjects = Prisma.PendingArticleGetPayload<{
   select: {
     createdBy: { select: { profile: true; username: true } };
     id: true;
-    status:true;
+    status: true;
     title: true;
+    secondTitle: true;
     description: true;
     image: true;
     developer: true;
@@ -113,6 +114,6 @@ export type PendingArticleAndObjects = Prisma.PendingArticleGetPayload<{
     createdById: true;
     createdAt: true;
     updatedAt: true;
-    articleId:true
+    articleId: true;
   };
 }>;

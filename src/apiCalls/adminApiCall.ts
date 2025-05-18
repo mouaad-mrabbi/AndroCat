@@ -15,6 +15,7 @@ interface PendingArticle {
   status: ActionType;
   checking: boolean;
   title: string;
+  secondTitle?:string,
   description: string;
   descriptionMeta:string;
   image: string;
