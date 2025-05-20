@@ -25,12 +25,11 @@ export default function Countdown({
     if (!clickedOnce) {
       setClickedOnce(true);
 
-      const script = document.createElement("script");
-      script.src = "https://al5sm.com/tag.min.js";
-      script.setAttribute("data-zone", "9348543");
-      script.async = true;
-
-      (document.body || document.documentElement).appendChild(script);
+      const adScript = document.createElement("script");
+      adScript.src =
+        "//pl26463102.profitableratecpm.com/0c/b6/8c/0cb68c1040fbce3d43357b3727be32f1.js";
+      adScript.async = true;
+      document.body.appendChild(adScript);
     }
   }, []);
 
