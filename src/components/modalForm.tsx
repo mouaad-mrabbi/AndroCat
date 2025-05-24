@@ -1,12 +1,13 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
+import { DOMAINCDN } from "@/utils/constants";
+import React, { useEffect, useState } from "react";
 
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  url: string | null;
-  onDelete?: (deletedUrl: string) => void; // <<-- جديد
+  path: string | null;
+  onDelete?: (deletedPath: string) => void;
 };
 
 type FileInfo = {
@@ -17,21 +18,20 @@ type FileInfo = {
 };
 
 function formatBytes(bytes: number): string {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) return "0 Bytes";
   const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const sizes = ["Bytes", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   const size = parseFloat((bytes / Math.pow(k, i)).toFixed(2));
   return `${size} ${sizes[i]}`;
 }
 
-// استخراج key من URL
-function getKeyFromUrl(url: string): string {
-  const parsed = new URL(url);
-  return decodeURIComponent(parsed.pathname.slice(1)); // حذف أول "/"
-}
-
-export const ModalForm: React.FC<ModalProps> = ({ isOpen, onClose, url,onDelete }) => {
+export const ModalForm: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  path,
+  onDelete,
+}) => {
   const [info, setInfo] = useState<FileInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,21 +39,25 @@ export const ModalForm: React.FC<ModalProps> = ({ isOpen, onClose, url,onDelete 
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen && url) {
+    if (isOpen && path) {
       const fetchData = async () => {
         setLoading(true);
         setError(null);
         setInfo(null);
 
         try {
-          const res = await fetch(`/api/files/fileInfo?url=${encodeURIComponent(url)}`);
+          const res = await fetch(
+            `/api/files/fileInfo?url=${encodeURIComponent(
+              `${DOMAINCDN}/${path}`
+            )}`
+          );
           const data = await res.json();
 
-          if (!res.ok) throw new Error(data.error || 'Unknown error');
+          if (!res.ok) throw new Error(data.error || "Unknown error");
 
           setInfo(data);
         } catch (err: any) {
-          setError(err.message || 'Failed to load info');
+          setError(err.message || "Failed to load info");
         } finally {
           setLoading(false);
         }
@@ -61,27 +65,27 @@ export const ModalForm: React.FC<ModalProps> = ({ isOpen, onClose, url,onDelete 
 
       fetchData();
     }
-  }, [isOpen, url]);
+  }, [isOpen, path]);
 
   const handleDelete = async () => {
-    if (!url) return;
-    const key = getKeyFromUrl(url);
+    if (!path) return;
+    console.log(path)
 
     setDeleting(true);
     setDeleteError(null);
 
     try {
-      const res = await fetch('/api/files', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key }),
+      const res = await fetch("/api/files", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ key: path }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.error || 'Error deleting file');
+      if (!res.ok) throw new Error(data.error || "Error deleting file");
       if (onDelete) {
-        onDelete(url);
+        onDelete(path);
       }
 
       onClose(); // إغلاق المودال بعد الحذف
@@ -113,7 +117,7 @@ export const ModalForm: React.FC<ModalProps> = ({ isOpen, onClose, url,onDelete 
         <div className="flex gap-4 flex-col sm:flex-row">
           <div className="rounded-lg bg-black aspect-[650/300] h-[200px] max-[400px]:h-[125px] max-[500px]:h-[150px] max-[770px]:h-[200px]">
             <img
-              src={url || ''}
+              src={`${DOMAINCDN}/${path}` || ""}
               alt="Preview"
               className="object-contain rounded-lg h-full w-full"
             />
@@ -121,12 +125,12 @@ export const ModalForm: React.FC<ModalProps> = ({ isOpen, onClose, url,onDelete 
 
           <div className="flex flex-col justify-between text-sm text-gray-700 dark:text-gray-200">
             <a
-              href={url || ''}
+              href={`${DOMAINCDN}/${path}` || ""}
               target="_blank"
               rel="noopener noreferrer"
               className="break-all underline"
             >
-              {url}
+              {`${DOMAINCDN}/${path}`}
             </a>
 
             {loading && <p className="mt-2 text-blue-500">Loading info...</p>}
@@ -135,10 +139,16 @@ export const ModalForm: React.FC<ModalProps> = ({ isOpen, onClose, url,onDelete 
 
             {info && (
               <div className="mt-2 space-y-1">
-                <p><strong>Type:</strong> {info.type}</p>
-                <p><strong>Size:</strong> {formatBytes(Number(info.size))}</p>
+                <p>
+                  <strong>Type:</strong> {info.type}
+                </p>
+                <p>
+                  <strong>Size:</strong> {formatBytes(Number(info.size))}
+                </p>
                 {info.width && info.height && (
-                  <p><strong>Dimensions:</strong> {info.width} × {info.height}</p>
+                  <p>
+                    <strong>Dimensions:</strong> {info.width} × {info.height}
+                  </p>
                 )}
               </div>
             )}
@@ -148,7 +158,7 @@ export const ModalForm: React.FC<ModalProps> = ({ isOpen, onClose, url,onDelete 
               disabled={deleting}
               className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded disabled:opacity-50"
             >
-              {deleting ? 'Deleting...' : 'Delete'}
+              {deleting ? "Deleting..." : "Delete"}
             </button>
             {deleteError && <p className="text-red-500 mt-2">{deleteError}</p>}
           </div>
@@ -157,5 +167,3 @@ export const ModalForm: React.FC<ModalProps> = ({ isOpen, onClose, url,onDelete 
     </div>
   );
 };
-
-

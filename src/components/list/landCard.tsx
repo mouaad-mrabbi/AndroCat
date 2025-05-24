@@ -2,9 +2,10 @@ import { Suspense } from "react";
 import Star from "../card/star";
 import Image from "next/image";
 import Link from "next/link";
-import { DomainsImages } from "@/utils/constants";
+import { DOMAINCDN } from "@/utils/constants";
 import { allArticle } from "@/utils/types";
 import slugify from "slugify";
+import { slugifyTitle } from "@/utils/slugifyTitle";
 
 type Props = {
   article: allArticle;
@@ -13,17 +14,9 @@ type Props = {
 };
 
 export default function LandCard({ article, url, index }: Props) {
-  const defaultImage = "/images/defaultSquareImage.png"; // صورة بديلة
 
-  // دالة للتحقق من الدومين
-  const isValidDomain = (url: string) => {
-    const validDomains = DomainsImages; // إضافة الدومينات المسموح بها
-    return validDomains.some((domain) => url.includes(domain));
-  };
-
-  // التحقق من الدومين للصورة الرئيسية
-  const imageSrc = isValidDomain(article.image) ? article.image : defaultImage;
-
+  const cleanTitle = slugifyTitle(article.title);
+  
   return (
     <Suspense fallback={LoadingLandCard()}>
       <Link
@@ -32,9 +25,9 @@ export default function LandCard({ article, url, index }: Props) {
         }`}
         href={
           url === "home"
-            ? `/${article.id}-download-${slugify(article.title, {
-                lower: true,
-              })}${article.isMod ? "-mod" : ""}-apk-free-android`
+            ? `/${article.id}-${cleanTitle}${
+                article.isMod ? "-mod" : ""
+              }-apk-android-download`
             : url === "pendingArticles" || url === "articles"
             ? `/admin/${url}/${article.id}`
             : "#"
@@ -44,12 +37,12 @@ export default function LandCard({ article, url, index }: Props) {
       >
         <div className="relative aspect-square h-full max-[820px]:h-auto max-[820px]:w-full">
           <Image
-            src={imageSrc}
+            src={`${DOMAINCDN}/${article.image}`}
             width={190}
             height={190}
             alt={`${article.title} ${article.isMod ? article.typeMod : ""}`}
             className="h-full w-full rounded-2xl object-cover"
-            /*          priority={index < 3} // أول 3 صور يتم تحميلها بالأولوية */
+            /*priority={index < 3}*/
             draggable="false"
             loading="lazy"
           />

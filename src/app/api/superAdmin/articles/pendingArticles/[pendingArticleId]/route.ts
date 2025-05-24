@@ -164,25 +164,25 @@ export async function PUT(request: NextRequest, { params }: Props) {
     });
 
     if (article.image !== newArticle.image) {
-      await deleteFile(new URL(article.image).pathname.slice(1));
+      await deleteFile(article.image);
     }
     if (article.linkAPK !== newArticle.linkAPK) {
-      await deleteFile(new URL(article.linkAPK).pathname.slice(1));
+      await deleteFile(article.linkAPK);
     }
     if (article.linkOBB !== newArticle.linkOBB && article.linkOBB) {
-      await deleteFile(new URL(article.linkOBB).pathname.slice(1));
+      await deleteFile(article.linkOBB);
     }
     if (article.linkScript !== newArticle.linkScript && article.linkScript) {
-      await deleteFile(new URL(article.linkScript).pathname.slice(1));
+      await deleteFile(article.linkScript);
     }   
      if (article.linkOriginalAPK !== newArticle.linkOriginalAPK && article.linkOriginalAPK) {
-      await deleteFile(new URL(article.linkOriginalAPK).pathname.slice(1));
+      await deleteFile(article.linkOriginalAPK);
     }
     await Promise.all(
       article.appScreens.map(async (screen) => {
         if (!newArticle.appScreens.includes(screen) && screen) {
           try {
-            await deleteFile(new URL(screen).pathname.slice(1));
+            await deleteFile(screen);
           } catch (error) {
             console.error("Failed to delete screen:", screen, error);
           }

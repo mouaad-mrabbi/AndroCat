@@ -48,6 +48,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           androidVer: true,
           linkAPK: true,
           sizeFileAPK: true,
+          isMod:true,
         },
       });
       if (!article) {
@@ -69,6 +70,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           androidVer: true,
           linkOBB: true,
           sizeFileOBB: true,
+          isMod:true,
         },
       });
       if (!article) {
@@ -90,6 +92,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           androidVer: true,
           linkScript: true,
           sizeFileScript: true,
+          isMod:true,
         },
       });
       if (!article) {
@@ -112,6 +115,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           versionOriginal:true,
           linkOriginalAPK: true,
           sizeFileOriginalAPK: true,
+          isMod:true,
         },
       });
       if (!article) {

@@ -2,7 +2,6 @@ import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
 import { renameFile } from "@/lib/r2";
-import { DOMAINCDN } from "@/utils/constants";
 import { CreateArticleDto } from "@/utils/dtos";
 import { createArticleSchema } from "@/utils/validationSchemas";
 
@@ -212,20 +211,20 @@ export async function POST(request: NextRequest, { params }: Props) {
     await prisma.pendingArticle.delete({ where: { id: pendingArticleId } });
 
     await renameFile(
-      new URL(newArticle.image).pathname.slice(1),
+      newArticle.image,
       `posts/${newArticle.id}/${newArticle.image.split("/").pop()}`
     );
     await renameFile(
-      new URL(newArticle.linkAPK).pathname.slice(1),
+      newArticle.linkAPK,
       `apks/${newArticle.id}/${newArticle.linkAPK.split("/").pop()}`
     );
     await prisma.article.update({
       where: { id: newArticle.id },
       data: {
-        image: `${DOMAINCDN}/posts/${newArticle.id}/${newArticle.image
+        image: `posts/${newArticle.id}/${newArticle.image
           .split("/")
           .pop()}`,
-        linkAPK: `${DOMAINCDN}/apks/${newArticle.id}/${newArticle.linkAPK
+        linkAPK: `apks/${newArticle.id}/${newArticle.linkAPK
           .split("/")
           .pop()}`,
       },
@@ -234,13 +233,13 @@ export async function POST(request: NextRequest, { params }: Props) {
 
     if (newArticle.OBB && newArticle.linkOBB) {
       await renameFile(
-        new URL(newArticle.linkOBB).pathname.slice(1),
+        newArticle.linkOBB,
         `obbs/${newArticle.id}/${newArticle.linkOBB.split("/").pop()}`
       );
       await prisma.article.update({
         where: { id: newArticle.id },
         data: {
-          linkOBB: `${DOMAINCDN}/obbs/${newArticle.id}/${newArticle.linkOBB
+          linkOBB: `obbs/${newArticle.id}/${newArticle.linkOBB
             .split("/")
             .pop()}`,
         },
@@ -249,13 +248,13 @@ export async function POST(request: NextRequest, { params }: Props) {
     }
     if (newArticle.Script && newArticle.linkScript) {
       await renameFile(
-        new URL(newArticle.linkScript).pathname.slice(1),
+        newArticle.linkScript,
         `scripts/${newArticle.id}/${newArticle.linkScript.split("/").pop()}`
       );
       await prisma.article.update({
         where: { id: newArticle.id },
         data: {
-          linkScript: `${DOMAINCDN}/scripts/${newArticle.id}/${newArticle.linkScript
+          linkScript: `scripts/${newArticle.id}/${newArticle.linkScript
             .split("/")
             .pop()}`,
         },
@@ -264,13 +263,13 @@ export async function POST(request: NextRequest, { params }: Props) {
     }
     if (newArticle.OriginalAPK && newArticle.linkOriginalAPK) {
       await renameFile(
-        new URL(newArticle.linkOriginalAPK).pathname.slice(1),
+        newArticle.linkOriginalAPK,
         `original-apks/${newArticle.id}/${newArticle.linkOriginalAPK.split("/").pop()}`
       );
       await prisma.article.update({
         where: { id: newArticle.id },
         data: {
-          linkOriginalAPK: `${DOMAINCDN}/original-apks/${newArticle.id}/${newArticle.linkOriginalAPK
+          linkOriginalAPK: `original-apks/${newArticle.id}/${newArticle.linkOriginalAPK
             .split("/")
             .pop()}`,
         },
@@ -281,14 +280,14 @@ export async function POST(request: NextRequest, { params }: Props) {
     await Promise.all(
       newArticle.appScreens.map((screen) =>
         renameFile(
-          new URL(screen).pathname.slice(1),
+          screen,
           `screenshots/${newArticle.id}/${screen.split("/").pop()}`
         )
       )
     );
     const updatedScreens = newArticle.appScreens.map((screen) => {
       const fileName = screen.split("/").pop();
-      return `${DOMAINCDN}/screenshots/${newArticle.id}/${fileName}`;
+      return `screenshots/${newArticle.id}/${fileName}`;
     });
     await prisma.article.update({
       where: { id: newArticle.id },

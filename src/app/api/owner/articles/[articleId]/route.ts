@@ -170,7 +170,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
     await Promise.all(
       filesToDelete.map(async (url) => {
         try {
-          await deleteFile(new URL(url).pathname.slice(1));
+          await deleteFile(url);
         } catch (err) {
           console.warn("Failed to delete file:", url, err);
         }

@@ -1,11 +1,12 @@
 "use client";
 
+import { DOMAINCDN } from "@/utils/constants";
 import React, { useEffect, useState } from "react";
 
 type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  url: string | null;
+  path: string | null;
   origin: boolean;
   onDelete?: (deletedUrl: string) => void; // <<-- جديد
 };
@@ -26,16 +27,10 @@ function formatBytes(bytes: number): string {
   return `${size} ${sizes[i]}`;
 }
 
-// استخراج key من URL
-function getKeyFromUrl(url: string): string {
-  const parsed = new URL(url);
-  return decodeURIComponent(parsed.pathname.slice(1)); // حذف أول "/"
-}
-
 export const ModalFormCPUI: React.FC<ModalProps> = ({
   isOpen,
   onClose,
-  url,
+  path,
   origin,
   onDelete,
 }) => {
@@ -46,7 +41,7 @@ export const ModalFormCPUI: React.FC<ModalProps> = ({
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (isOpen && url) {
+    if (isOpen && path) {
       const fetchData = async () => {
         setLoading(true);
         setError(null);
@@ -54,7 +49,7 @@ export const ModalFormCPUI: React.FC<ModalProps> = ({
 
         try {
           const res = await fetch(
-            `/api/files/fileInfo?url=${encodeURIComponent(url)}`
+            `/api/files/fileInfo?url=${encodeURIComponent(path)}`
           );
           const data = await res.json();
 
@@ -70,11 +65,10 @@ export const ModalFormCPUI: React.FC<ModalProps> = ({
 
       fetchData();
     }
-  }, [isOpen, url]);
+  }, [isOpen, path]);
 
   const handleDelete = async () => {
-    if (!url) return;
-    const key = getKeyFromUrl(url);
+    if (!path) return;
 
     setDeleting(true);
     setDeleteError(null);
@@ -82,21 +76,21 @@ export const ModalFormCPUI: React.FC<ModalProps> = ({
     try {
       if (origin) {
         if (onDelete) {
-          onDelete(url);
+          onDelete(path);
         }
         onClose(); // إغلاق المودال بعد الحذف
       } else {
         const res = await fetch("/api/files", {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ key }),
+          body: JSON.stringify({ key: path }),
         });
 
         const data = await res.json();
 
         if (!res.ok) throw new Error(data.error || "Error deleting file");
         if (onDelete) {
-          onDelete(url);
+          onDelete(path);
         }
 
         onClose(); // إغلاق المودال بعد الحذف
@@ -129,7 +123,7 @@ export const ModalFormCPUI: React.FC<ModalProps> = ({
         <div className="flex gap-4 flex-col sm:flex-row">
           <div className="rounded-lg bg-black aspect-[650/300] h-[200px] max-[400px]:h-[125px] max-[500px]:h-[150px] max-[770px]:h-[200px]">
             <img
-              src={url || ""}
+              src={`${DOMAINCDN}/${path}` || ""}
               alt="Preview"
               className="object-contain rounded-lg h-full w-full"
             />
@@ -137,12 +131,12 @@ export const ModalFormCPUI: React.FC<ModalProps> = ({
 
           <div className="flex flex-col justify-between text-sm text-gray-700 dark:text-gray-200">
             <a
-              href={url || ""}
+              href={`${DOMAINCDN}/${path}` || ""}
               target="_blank"
               rel="noopener noreferrer"
               className="break-all underline"
             >
-              {url}
+              {`${DOMAINCDN}/${path}`}
             </a>
 
             {loading && <p className="mt-2 text-blue-500">Loading info...</p>}

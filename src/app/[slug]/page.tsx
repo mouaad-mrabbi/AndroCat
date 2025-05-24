@@ -1,6 +1,6 @@
 import { ArticleContent } from "./ArticleContent";
 import { fetchMetadata } from "@/apiCalls/consumerApiCall";
-import { DOMAIN } from "@/utils/constants";
+import { DOMAIN, DOMAINCDN } from "@/utils/constants";
 
 interface ArticlesPageProp {
   params: Promise<{ slug: string }>;
@@ -16,26 +16,28 @@ export async function generateMetadata({ params }: ArticlesPageProp) {
   return {
     title: `Download ${article.title} ${article.isMod && article.typeMod} ${
       article.version
-    } android`,
+    } apk for android`,
     description: `Download ${article.title} ${
       article.isMod && article.typeMod
     } ${article.version} ${article.descriptionMeta}`,
-    keywords: article.keywords?.join(", ") || "games, apps, mods",
+    keywords:
+      [...(article.keywords || []), "games", "apps", "mod", "apk"].join(", ") ||
+      "games, apps, mod, apk",
     openGraph: {
       type: "article",
       url: `${DOMAIN}/${slug}`,
       title: `Download ${article.title} ${article.isMod && article.typeMod} ${
         article.version
-      } free on android`,
+      } apk for android`,
       description: `Download ${article.title} ${
         article.isMod && article.typeMod
       } ${article.version} ${article.descriptionMeta}`,
       images: [
         {
-          url: article.image,
+          url: `${DOMAINCDN}/${article.image}`,
           alt: `Download ${article.title} ${article.isMod && article.typeMod} ${
             article.version
-          } free on android`,
+          } apk for android`,
           width: 190,
           height: 190,
         },
@@ -54,11 +56,11 @@ export async function generateMetadata({ params }: ArticlesPageProp) {
       card: "summary_large_image",
       title: `Download ${article.title} ${article.isMod && article.typeMod} ${
         article.version
-      } free on android`,
+      } apk for android`,
       description: `Download ${article.title} ${
         article.isMod && article.typeMod
       } ${article.version} ${article.descriptionMeta}`,
-      image: article.image,
+      image: `${DOMAINCDN}/${article.image}`,
       creator: "@YourTwitterHandle",
       site: "@YourSiteTwitterHandle",
     },

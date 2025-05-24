@@ -8,6 +8,8 @@ import { IoArrowBack } from "react-icons/io5";
 import InterstitialAd from "@/components/interstitialAd";
 import BannerAd from "@/components/bannerAd";
 import { headers } from "next/headers";
+import { DOMAINCDN } from "@/utils/constants";
+import { slugifyTitle } from "@/utils/slugifyTitle";
 
 interface ArticlesPageProp {
   params: Promise<{ articleId: string }>;
@@ -24,6 +26,7 @@ export default async function DownloadAPKPage({ params }: ArticlesPageProp) {
 
   try {
     const article = await getDownloadData(articleId, "apk");
+    const cleanTitle = slugifyTitle(article.title);
 
     return (
       <div>
@@ -32,7 +35,9 @@ export default async function DownloadAPKPage({ params }: ArticlesPageProp) {
         <div className="max-w-[648px] mx-auto p-10">
           {/* Back Window */}
           <Link
-            href={`/${articleId}`}
+            href={`/${article.id}-${cleanTitle}${
+                article.isMod ? "-mod" : ""
+              }-apk-android-download`}
             className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-500/50"
           >
             <IoArrowBack />
@@ -42,7 +47,7 @@ export default async function DownloadAPKPage({ params }: ArticlesPageProp) {
           <div className="flex flex-col items-center max-w-[480px] mx-auto">
             <div className="aspect-square w-44 mb-9">
               <Image
-                src={article.image}
+                src={`${DOMAINCDN}/${article.image}`}
                 width={190}
                 height={190}
                 alt={article?.title || "game"}
@@ -62,7 +67,7 @@ export default async function DownloadAPKPage({ params }: ArticlesPageProp) {
               <span>Android {article.androidVer} +</span>
             </div>
 
-            {/* ✅ إعلان حسب نوع الجهاز */}
+            {/* ads */}
             <div className="my-4">
               {isMobile ? (
                 <BannerAd
@@ -83,6 +88,7 @@ export default async function DownloadAPKPage({ params }: ArticlesPageProp) {
           </div>
         </div>
 
+        {/* ads */}
         <div className="my-4">
           {isMobile ? (
             <BannerAd

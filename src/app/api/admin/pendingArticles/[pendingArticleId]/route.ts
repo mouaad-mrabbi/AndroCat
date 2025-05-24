@@ -281,7 +281,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
 
       for (const [, newVal, oldVal] of fileComparisons) {
         if (newVal !== oldVal && newVal) {
-          await deleteFile(new URL(newVal).pathname.slice(1));
+          await deleteFile(newVal);
         }
       }
 
@@ -291,7 +291,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
 
       await Promise.all(
         screensToDelete.map((screen) =>
-          deleteFile(new URL(screen).pathname.slice(1))
+          deleteFile(screen)
         )
       );
     } else {
@@ -305,7 +305,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
       ].filter((url): url is string => !!url);
 
       await Promise.all(
-        fileLinks.map((url) => deleteFile(new URL(url).pathname.slice(1)))
+        fileLinks.map((url) => deleteFile(url))
       );
     }
 

@@ -1,4 +1,5 @@
 "use client";
+import { DOMAINCDN } from "@/utils/constants";
 import { useState, useEffect } from "react";
 
 export default function Countdown({
@@ -71,7 +72,7 @@ export default function Countdown({
         </div>
       ) : (
         <a
-          href={link}
+          href={`${DOMAINCDN}/${link}`}
           className="mt-4 flex items-center box-border h-10 py-3 px-6 uppercase bg-green-500 text-white 
             font-bold rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95"
           download={clickedOnce}

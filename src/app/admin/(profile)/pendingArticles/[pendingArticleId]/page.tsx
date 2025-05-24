@@ -33,6 +33,7 @@ import { PendingArticleAndObjects } from "@/utils/types";
 import ConfirmBox from "@/components/confirmBox";
 import { deleteArticleCreatedBy } from "@/apiCalls/adminApiCall";
 import { deleteArticle } from "@/apiCalls/ownerApiCall";
+import { DOMAINCDN } from "@/utils/constants";
 
 interface PageparamsProps {
   params: Promise<{ pendingArticleId: string }>;
@@ -102,7 +103,7 @@ export default function Page({ params }: PageparamsProps) {
         toast.error(error?.response?.data?.message);
       }
     } else if (pendingArticle.status === "DELETE" && pendingArticle.articleId) {
-      console.log("here")
+      console.log("here");
       try {
         const res = await deleteArticle(pendingArticle.articleId);
         toast.success(res);
@@ -149,9 +150,9 @@ export default function Page({ params }: PageparamsProps) {
               {/* image square */}
               <div className=" aspect-square h-[136px] min-[500px]:h-[184px] min-[770px]:h-[160px] min-[1200px]:h-[184px]">
                 <Image
-                  src={pendingArticle.image}
-                  width={90}
-                  height={90}
+                  src={`${DOMAINCDN}/${pendingArticle.image}`}
+                  width={190}
+                  height={190}
                   alt={pendingArticle.title || "game"}
                   className="aspect-square w-full rounded-2xl object-cover"
                   priority // لتحميل الصورة أولاً
@@ -273,13 +274,13 @@ export default function Page({ params }: PageparamsProps) {
           >
             {pendingArticle.appScreens.map((elem: any) => (
               <Link
-                href={elem}
+                href={`${DOMAINCDN}/${elem}`}
                 target="_blank"
                 className="rounded-lg bg-black aspect-[650/300]  h-[300px] max-[400px]:h-[125px] max-[500px]:h-[150px] max-[770px]:h-[200px]"
                 key={elem}
               >
                 <Image
-                  src={elem}
+                  src={`${DOMAINCDN}/${elem}`}
                   width={90}
                   height={90}
                   alt={elem}
@@ -295,7 +296,7 @@ export default function Page({ params }: PageparamsProps) {
       <div className="flex flex-col gap-8 bg-[#1b1d1f] max-[770px]:bg-transparent p-8 m-7 max-[770px]:m-0 ">
         {/* APK link */}
         <Link
-          href={pendingArticle.linkAPK}
+          href={`${DOMAINCDN}/${pendingArticle.linkAPK}`}
           className="flex items-center justify-between max-[1000px]:flex-col 
           box-border py-4 px-8 max-sm:px-4 uppercase bg-green-500 leading-relaxed 
           font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-green-500/20"
@@ -314,7 +315,7 @@ export default function Page({ params }: PageparamsProps) {
         {/* OBB link */}
         {pendingArticle.OBB && pendingArticle.linkOBB && (
           <Link
-            href={pendingArticle.linkOBB || ""}
+            href={`${DOMAINCDN}/${pendingArticle.linkOBB}`}
             className="flex items-center justify-between max-[1000px]:flex-col 
           box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
           font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20"
@@ -334,7 +335,7 @@ export default function Page({ params }: PageparamsProps) {
         {/* Script link */}
         {pendingArticle.Script && pendingArticle.linkScript && (
           <Link
-            href={pendingArticle.linkScript}
+            href={`${DOMAINCDN}/${pendingArticle.linkScript}`}
             className="flex items-center justify-between max-[1000px]:flex-col 
           box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
           font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20 "
@@ -354,7 +355,7 @@ export default function Page({ params }: PageparamsProps) {
         {/* OriginalAPK link */}
         {pendingArticle.OriginalAPK && pendingArticle.linkOriginalAPK && (
           <Link
-            href={pendingArticle.linkOriginalAPK}
+            href={`${DOMAINCDN}/${pendingArticle.linkOriginalAPK}`}
             className="flex items-center justify-between max-[1000px]:flex-col 
           box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
           font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20 "

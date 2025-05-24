@@ -12,9 +12,8 @@ import { fetchArticleById } from "@/apiCalls/consumerApiCall";
 import Rating from "@/components/rating";
 import { headers } from "next/headers";
 import BannerAd from "@/components/bannerAd";
-import InterstitialAd from "@/components/interstitialAd";
 import Head from "next/head";
-import { DOMAIN } from "@/utils/constants";
+import { DOMAIN, DOMAINCDN } from "@/utils/constants";
 
 interface DownloadLink {
   key: string;
@@ -51,13 +50,13 @@ export async function ArticleContent({ slug }: { slug: string }) {
         article.articleType === "GAME" ? "VideoGame" : "SoftwareApplication",
       name: `Download ${article.title} ${article.isMod && article.typeMod} ${
         article.version
-      } free on android`,
+      } apk for android`,
       description: `Download ${article.title} ${
         article.isMod && article.typeMod
       } ${article.version} ${article.descriptionMeta}`,
       url: `${DOMAIN}/${slug}`,
-      image: article.image,
-      keywords: article.keywords?.join(", ") || "games, apps, mods",
+      image: `${DOMAINCDN}/${article.image}`,
+      keywords: [...(article.keywords || []), "games", "apps", "mod", "apk"].join(", ")|| "games, apps, mod, apk",
       developer: article.developer,
       applicationCategory: category,
       operatingSystem: "Android",
@@ -142,7 +141,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
           />
         </Head>
         <div className="min-w-[320px]">
-{/*       ads remove    <InterstitialAd /> */}
+          {/*       ads remove    <InterstitialAd /> */}
 
           <Toolbar
             local={"home"}
@@ -154,9 +153,9 @@ export async function ArticleContent({ slug }: { slug: string }) {
             <div className="flex max-[770px]:flex-col p-6">
               {/* title */}
               <h1 className="text-[1.5rem] font-bold min-[770px]:hidden mb-4">
-                Download <span>{article.title}</span> APK{" "}
+                Download <span>{article.title}</span>{" "}
                 {article.isMod && <span>({article.typeMod})</span>}{" "}
-                <span>{article.version}</span> free on android
+                <span>{article.version}</span> APK for Android
               </h1>
 
               <div className="flex">
@@ -165,12 +164,12 @@ export async function ArticleContent({ slug }: { slug: string }) {
                   {/* image square */}
                   <div className=" aspect-square h-[136px] min-[500px]:h-[184px] min-[770px]:h-[160px] min-[1200px]:h-[184px]">
                     <Image
-                      src={article.image}
+                      src={`${DOMAINCDN}/${article.image}`}
                       width={190}
                       height={190}
                       alt={`${article.title} ${article.isMod ? "mod" : ""} apk`}
                       className="aspect-square w-full rounded-2xl object-cover"
-                      priority // لتحميل الصورة أولاً
+                      priority
                     />
                   </div>
                   {/* developer */}
@@ -185,7 +184,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
                     <p className="text-[1.65rem] font-bold max-[770px]:hidden">
                       Download <span>{article.title}</span>{" "}
                       {article.isMod && <span>({article.typeMod})</span>}{" "}
-                      <span>{article.version}</span> free on android
+                      <span>{article.version}</span> APK for Android
                     </p>
                     {/* developer */}
                     <p className="text-sm text-[#b2b2b2] my-2.5 max-lg:hidden">
@@ -329,16 +328,16 @@ export async function ArticleContent({ slug }: { slug: string }) {
               >
                 {article.appScreens.map((elem) => (
                   <Link
-                    href={elem}
+                    href={`${DOMAINCDN}/${elem}`}
                     title={`${article.title} ${
                       article.isMod ? article.typeMod : ""
                     }`}
                     target="_blank"
                     className="rounded-lg bg-black aspect-[650/300]  h-[300px] max-[400px]:h-[125px] max-[500px]:h-[150px] max-[770px]:h-[200px]"
-                    key={elem}
+                    key={`${DOMAINCDN}/${elem}`}
                   >
                     <Image
-                      src={elem}
+                      src={`${DOMAINCDN}/${elem}`}
                       width={526}
                       height={296}
                       alt={`${article.title} ${

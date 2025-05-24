@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from "react";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useRouter } from "next/navigation";
-import UploadFile from "@/components/uploadFile";
 import { ModalFormCPUI } from "./ModalFormCPUI";
 import { CreateArticleDto } from "@/utils/dtos";
 import { ArticleType, GameCategories, ProgramCategories } from "@prisma/client";
@@ -11,6 +10,9 @@ import {
   createPendingUpdateArticle,
   getArticleCreateBy,
 } from "@/apiCalls/adminApiCall";
+import PageMultipartFileUploader, {
+  UploadState,
+} from "@/components/(MultipartFileUploader)/PageMultipartFileUploader";
 
 interface pageProps {
   articleId: number;
@@ -319,18 +321,6 @@ export default function FormCPUA({ articleId }: pageProps) {
     });
   };
 
-  const formatTime = (seconds: number) => {
-    if (seconds < 60) {
-      return `${Math.round(seconds)}s`;
-    } else if (seconds < 3600) {
-      return `${Math.round(seconds / 60)}m ${Math.round(seconds % 60)}s`;
-    } else {
-      return `${Math.round(seconds / 3600)}h ${Math.round(
-        (seconds % 3600) / 60
-      )}m`;
-    }
-  };
-
   const formatSize = (size: number) => {
     if (size < 1024) {
       return `${size} B`;
@@ -341,72 +331,93 @@ export default function FormCPUA({ articleId }: pageProps) {
     }
   };
 
-  const handleFormUploadDataAPK = async (data: { publicURL: string }) => {
-    const response = await fetch(data.publicURL, { method: "HEAD" });
-    const size = response.headers.get("content-length");
-    formatSize(Number(size));
+  const handleUploadImage = async (result: UploadState) => {
+    const file = result.successful?.[0];
+    const key = file?.s3Multipart?.key;
+
+    if (!key) return;
 
     setFormData((prevData) => ({
       ...prevData,
-      sizeFileAPK: formatSize(Number(size)),
-      linkAPK: data.publicURL,
+      image: key,
     }));
   };
 
-  const handleFormUploadDataScreenshots = async (data: {
-    publicURL: string;
-  }) => {
-    const response = await fetch(data.publicURL, { method: "HEAD" });
-    const size = response.headers.get("content-length");
-    formatSize(Number(size));
+  const handleUploadOBB = async (result: UploadState) => {
+    const file = result.successful?.[0];
+    const key = file?.s3Multipart?.key;
+    const size = file?.size;
+
+    if (!key || !size) return;
 
     setFormData((prevData) => ({
       ...prevData,
-      appScreens: [...prevData.appScreens, data.publicURL],
+      sizeFileOBB: formatSize(size),
+      linkOBB: key,
     }));
   };
 
-  const handleFormUploadDataOBB = async (data: { publicURL: string }) => {
-    const response = await fetch(data.publicURL, { method: "HEAD" });
-    const size = response.headers.get("content-length");
-    formatSize(Number(size));
+  const handleUploadScript = async (result: UploadState) => {
+    const file = result.successful?.[0];
+    const key = file?.s3Multipart?.key;
+    const size = file?.size;
 
-    setFormData((prevData) => ({
-      ...prevData,
-      sizeFileOBB: formatSize(Number(size)),
-      linkOBB: data.publicURL,
-    }));
-  };
-
-  const handleFormUploadOriginalAPK = async (data: { publicURL: string }) => {
-    const response = await fetch(data.publicURL, { method: "HEAD" });
-    const size = response.headers.get("content-length");
-    formatSize(Number(size));
-
-    setFormData((prevData) => ({
-      ...prevData,
-      sizeFileOriginalAPK: formatSize(Number(size)),
-      linkOriginalAPK: data.publicURL,
-    }));
-  };
-
-  const handleFormUploadDataScript = async (data: { publicURL: string }) => {
-    const response = await fetch(data.publicURL, { method: "HEAD" });
-    const size = response.headers.get("content-length");
-    formatSize(Number(size));
+    if (!key || !size) return;
 
     setFormData((prevData) => ({
       ...prevData,
       sizeFileScript: formatSize(Number(size)),
-      linkScript: data.publicURL,
+      linkScript: key,
     }));
   };
 
-  const handleFormUploadDataImage = async (data: { publicURL: string }) => {
+  const handleUploadOriginalAPK = async (result: UploadState) => {
+    const file = result.successful?.[0];
+    const key = file?.s3Multipart?.key;
+    const size = file?.size;
+
+    if (!key || !size) return;
+
     setFormData((prevData) => ({
       ...prevData,
-      image: data.publicURL,
+      sizeFileOriginalAPK: formatSize(Number(size)),
+      linkOriginalAPK: key,
     }));
+  };
+
+  const handleUploadAPK = async (result: UploadState) => {
+    const file = result.successful?.[0];
+    const key = file?.s3Multipart?.key;
+    const size = file?.size;
+
+    if (!key || !size) return;
+
+    setFormData((prevData) => ({
+      ...prevData,
+      sizeFileAPK: formatSize(Number(size)),
+      linkAPK: key,
+    }));
+  };
+
+  const handleUploadScreenshots = async (result: UploadState) => {
+    const file = result.successful?.[0];
+    const key = file?.s3Multipart?.key;
+
+    if (!key) return;
+
+    const newKey = key;
+
+    setFormData((prevData) => {
+      // تأكد أن الرابط غير موجود مسبقًا
+      if (prevData.appScreens.includes(newKey)) {
+        return prevData;
+      }
+
+      return {
+        ...prevData,
+        appScreens: [...prevData.appScreens, newKey],
+      };
+    });
   };
 
   const handleCheckorigin = (): boolean => {
@@ -517,11 +528,13 @@ export default function FormCPUA({ articleId }: pageProps) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               image posts :
             </label>
-            <UploadFile
+            <PageMultipartFileUploader
               title={formData.title}
               randomText={`${articleId}`}
-              fileType={"posts"}
-              onChangeData={handleFormUploadDataImage}
+              fileType="posts"
+              onUploadResult={(result) => {
+                handleUploadImage(result);
+              }}
             />
           </div>
 
@@ -715,11 +728,13 @@ export default function FormCPUA({ articleId }: pageProps) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               OBB :
             </label>
-            <UploadFile
+            <PageMultipartFileUploader
               title={formData.title}
               randomText={`${articleId}`}
-              fileType={"obbs"}
-              onChangeData={handleFormUploadDataOBB}
+              fileType="obbs"
+              onUploadResult={(result) => {
+                handleUploadOBB(result);
+              }}
             />
           </div>
 
@@ -816,11 +831,13 @@ export default function FormCPUA({ articleId }: pageProps) {
                 </button>
               </div>
             )}
-            <UploadFile
+            <PageMultipartFileUploader
               title={formData.title}
               randomText={`${articleId}`}
-              fileType={"scripts"}
-              onChangeData={handleFormUploadDataScript}
+              fileType="scripts"
+              onUploadResult={(result) => {
+                handleUploadScript(result);
+              }}
             />
           </div>
 
@@ -905,12 +922,14 @@ export default function FormCPUA({ articleId }: pageProps) {
                 </button>
               </div>
             )}
-            <UploadFile
+            <PageMultipartFileUploader
               title={formData.title}
               randomText={`${articleId}`}
-              fileType={"original-apks"}
+              fileType="original-apks"
               version={formData.versionOriginal || ""}
-              onChangeData={handleFormUploadOriginalAPK}
+              onUploadResult={(result) => {
+                handleUploadOriginalAPK(result);
+              }}
             />
           </div>
 
@@ -983,13 +1002,15 @@ export default function FormCPUA({ articleId }: pageProps) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               APK :
             </label>
-            <UploadFile
+            <PageMultipartFileUploader
               title={formData.title}
               randomText={`${articleId}`}
-              fileType={"apks"}
+              fileType="apks"
               version={formData.version}
               isMod={formData.isMod}
-              onChangeData={handleFormUploadDataAPK}
+              onUploadResult={(result) => {
+                handleUploadAPK(result);
+              }}
             />
           </div>
 
@@ -1096,11 +1117,13 @@ export default function FormCPUA({ articleId }: pageProps) {
                 </div>
               ))}
             </div>
-            <UploadFile
+            <PageMultipartFileUploader
               title={formData.title}
               randomText={`${articleId}`}
-              fileType={"screenshots"}
-              onChangeData={handleFormUploadDataScreenshots}
+              fileType="screenshots"
+              onUploadResult={(result) => {
+                handleUploadScreenshots(result);
+              }}
             />
           </div>
 
@@ -1246,35 +1269,35 @@ export default function FormCPUA({ articleId }: pageProps) {
       <ModalFormCPUI
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        url={selectedUrlModal}
+        path={selectedUrlModal}
         origin={handleCheckorigin()}
-        onDelete={(deletedUrl) => {
+        onDelete={(deletedPath) => {
           setFormData((prev) => {
             const newData = { ...prev };
 
             // حذف من appScreens إذا كان موجودًا فيها
-            if (newData.appScreens.includes(deletedUrl)) {
+            if (newData.appScreens.includes(deletedPath)) {
               newData.appScreens = newData.appScreens.filter(
-                (url) => url !== deletedUrl
+                (url) => url !== deletedPath
               );
             }
 
-            if (newData.image === deletedUrl) newData.image = "";
+            if (newData.image === deletedPath) newData.image = "";
 
             // مقارنة وإزالة من الروابط الأخرى
-            if (newData.linkAPK === deletedUrl) {
+            if (newData.linkAPK === deletedPath) {
               newData.linkAPK = "";
               newData.sizeFileAPK = "";
             }
-            if (newData.linkOBB === deletedUrl) {
+            if (newData.linkOBB === deletedPath) {
               newData.linkOBB = null;
               newData.sizeFileOBB = null;
             }
-            if (newData.linkScript === deletedUrl) {
+            if (newData.linkScript === deletedPath) {
               newData.linkScript = null;
               newData.sizeFileScript = null;
             }
-            if (newData.linkOriginalAPK === deletedUrl) {
+            if (newData.linkOriginalAPK === deletedPath) {
               newData.linkOriginalAPK = null;
               newData.sizeFileOriginalAPK = null;
             }

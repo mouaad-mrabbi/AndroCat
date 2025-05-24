@@ -28,6 +28,7 @@ import { fetchArticle } from "@/apiCalls/superAdminApiCall";
 import { createPendingUpdateArticle } from "@/apiCalls/adminApiCall";
 import { CreateArticleDto } from "@/utils/dtos";
 import { ArticleType } from "@prisma/client";
+import { DOMAINCDN } from "@/utils/constants";
 
 interface PageparamsProps {
   params: Promise<{ articleId: string }>;
@@ -48,7 +49,7 @@ export default function PageArticle({ params }: PageparamsProps) {
   const [formData, setFormData] = useState<CreateArticleDto>({
     title: "",
     description: "",
-    descriptionMeta:"",
+    descriptionMeta: "",
     image: "",
     developer: "",
     version: "",
@@ -247,7 +248,7 @@ export default function PageArticle({ params }: PageparamsProps) {
     return (
       <Link
         key={key}
-        href={link}
+        href={`${DOMAINCDN}/${link}`}
         title={`Download ${label} ${article.title} Updated to version ${
           key === "original-apk" ? article.versionOriginal : article.version
         }`}
@@ -312,7 +313,7 @@ export default function PageArticle({ params }: PageparamsProps) {
               {/* image square */}
               <div className=" aspect-square h-[136px] min-[500px]:h-[184px] min-[770px]:h-[160px] min-[1200px]:h-[184px]">
                 <Image
-                  src={article.image}
+                  src={`${DOMAINCDN}/${article.image}`}
                   width={90}
                   height={90}
                   alt={article.title || "game"}
@@ -437,18 +438,17 @@ export default function PageArticle({ params }: PageparamsProps) {
           >
             {article.appScreens.map((elem) => (
               <Link
-                href={elem}
+                href={`${DOMAINCDN}/${elem}`}
                 target="_blank"
                 className="rounded-lg bg-black aspect-[650/300]  h-[300px] max-[400px]:h-[125px] max-[500px]:h-[150px] max-[770px]:h-[200px]"
                 key={elem}
               >
                 <Image
-                  src={elem}
-                  width={90}
-                  height={90}
+                  src={`${DOMAINCDN}/${elem}`}
+                  width={190}
+                  height={190}
                   alt={elem}
                   className="object-contain rounded-lg h-full w-full "
-                  priority // To download the image first
                 />
               </Link>
             ))}
@@ -583,7 +583,6 @@ export default function PageArticle({ params }: PageparamsProps) {
                 height={170}
                 alt={article.validatedBy.username}
                 className="object-contain rounded-lg h-full w-full "
-                priority // To download the image first
               />
             </div>
             <p>{article.validatedBy.username}</p>

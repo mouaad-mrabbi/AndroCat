@@ -1,6 +1,8 @@
 User-agent: *
 Disallow: /search
 Disallow: /admin
+Disallow: /download/
+Disallow: /download/*
 
 Allow: /
 Allow: /games/page/
