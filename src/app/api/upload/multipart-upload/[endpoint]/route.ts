@@ -34,9 +34,10 @@ const R2 = new S3Client({
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { endpoint: string } }
+  { params }: { params: Promise<{ endpoint: string }> }
 ) {
-  const endpoint = params.endpoint;
+  const resolvedParams = await params;
+  const endpoint = resolvedParams.endpoint;
   const body = await request.json();
 
   switch (endpoint) {
@@ -69,7 +70,7 @@ async function createMultipartUpload(body: any) {
 
   const command = new CreateMultipartUploadCommand({
     Bucket: R2_BUCKET,
-    Key: `resources/${filename}`,
+    Key: `${filename}`,
     ContentType: type,
   });
 
