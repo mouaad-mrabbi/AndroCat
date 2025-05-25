@@ -15,6 +15,7 @@ const redirects = async () => [
 
 const nextConfig: NextConfig = {
   images: {
+     unoptimized: true,
     domains: ["cdn.androcat.com"],
   },
   redirects,
