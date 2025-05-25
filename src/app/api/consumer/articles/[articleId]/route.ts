@@ -14,6 +14,12 @@ interface Props {
 export async function GET(request: NextRequest, { params }: Props) {
   try {
     const articleId = Number((await params).articleId);
+    if (isNaN(articleId)) {
+      return NextResponse.json(
+        { message: "Invalid article ID" },
+        { status: 400 }
+      );
+    }
 
     const article = await prisma.article.findUnique({
       where: {
@@ -23,7 +29,7 @@ export async function GET(request: NextRequest, { params }: Props) {
       select: {
         id: true,
         title: true,
-        secondTitle:true,
+        secondTitle: true,
         description: true,
         image: true,
         developer: true,

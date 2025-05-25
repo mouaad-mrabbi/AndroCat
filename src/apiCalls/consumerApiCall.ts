@@ -73,7 +73,9 @@ export async function fetchMetadata(articleId: number) {
         averageRating: true,
         ratingCount: true,
         isMod:true,
-        typeMod:true
+        typeMod:true,
+        createdAt:true,
+        updatedAt:true
       },
     });
     if (!article) {

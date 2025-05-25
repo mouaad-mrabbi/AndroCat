@@ -7,75 +7,88 @@ interface ArticlesPageProp {
 }
 
 export async function generateMetadata({ params }: ArticlesPageProp) {
-  const { slug } = await params;
-  const [idPart, ...titleParts] = slug.split("-");
-  const articleId = parseInt(idPart);
+  try {
+    const { slug } = await params;
 
-  const article = await fetchMetadata(articleId);
+    if (!slug || isNaN(Number(slug.split("-")[0]))) {
+      throw new Error("Invalid slug format");
+    }
 
-  return {
-    title: `Download ${article.title} ${article.isMod && article.typeMod} ${
-      article.version
-    } apk for android`,
-    description: `Download ${article.title} ${
-      article.isMod && article.typeMod
-    } ${article.version} ${article.descriptionMeta}`,
-    keywords:
-      [...(article.keywords || []), "games", "apps", "mod", "apk"].join(", ") ||
-      "games, apps, mod, apk",
-    openGraph: {
-      type: "article",
-      url: `${DOMAIN}/${slug}`,
-      title: `Download ${article.title} ${article.isMod && article.typeMod} ${
-        article.version
-      } apk for android`,
-      description: `Download ${article.title} ${
-        article.isMod && article.typeMod
-      } ${article.version} ${article.descriptionMeta}`,
-      images: [
-        {
-          url: `${DOMAINCDN}/${article.image}`,
-          alt: `Download ${article.title} ${article.isMod && article.typeMod} ${
-            article.version
-          } apk for android`,
-          width: 190,
-          height: 190,
+    const [idPart, ...titleParts] = slug.split("-");
+    const articleId = parseInt(idPart);
+    if (isNaN(articleId)) {
+      throw new Error("Invalid articleId from slug");
+    }
+
+    const article = await fetchMetadata(articleId);
+
+    const modType = article.isMod ? article.typeMod : "";
+    const title = `Download ${article.title} ${modType} ${article.version} apk for android`;
+    const description = `Download ${article.title} ${modType} ${article.version} ${article.descriptionMeta}`;
+    const imageUrl = article.image ? `${DOMAINCDN}/${article.image}` : "";
+
+    return {
+      title,
+      description,
+      keywords: (article.keywords?.length
+        ? [...article.keywords, "games", "apps", "mod", "apk"]
+        : ["games", "apps", "mod", "apk"]
+      ).join(", "),
+      openGraph: {
+        type: "article",
+        url: `${DOMAIN}/${slug}`,
+        title,
+        description,
+        images: imageUrl
+          ? [
+              {
+                url: imageUrl,
+                alt: title,
+                width: 190,
+                height: 190,
+              },
+            ]
+          : [],
+        article: {
+          section:
+            article.articleType === "GAME"
+              ? article.gameCategory
+              : article.programCategory,
+          tag: article.keywords,
+          published_time: article.createdAt,
+          modified_time: article.updatedAt,
         },
-      ],
-      article: {
-        section:
-          article.articleType === "GAME"
-            ? article.gameCategory
-            : article.programCategory,
-        tag: ["MOD", "GTA", "Android", "Free Download"],
+        siteName: "AndroCat",
+        site_name: "androcat",
       },
-      siteName: "AndroCat",
-      site_name: "androcat",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `Download ${article.title} ${article.isMod && article.typeMod} ${
-        article.version
-      } apk for android`,
-      description: `Download ${article.title} ${
-        article.isMod && article.typeMod
-      } ${article.version} ${article.descriptionMeta}`,
-      image: `${DOMAINCDN}/${article.image}`,
-      creator: "@YourTwitterHandle",
-      site: "@YourSiteTwitterHandle",
-    },
-    alternates: {
-      canonical: `${DOMAIN}/${slug}`,
-    },
-    robots: {
-      index: true,
-      follow: true,
-    },
-    meta: {
-      "apple-mobile-web-app-capable": "yes",
-      "apple-mobile-web-app-status-bar-style": "default",
-    },
-  };
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: imageUrl ? [imageUrl] : [],
+        creator: "@YourTwitterHandle",
+        site: "@YourSiteTwitterHandle",
+      },
+      alternates: {
+        canonical: `${DOMAIN}/${slug}`,
+      },
+      robots: {
+        index: true,
+        follow: true,
+      },
+      meta: {
+        "apple-mobile-web-app-capable": "yes",
+        "apple-mobile-web-app-status-bar-style": "default",
+      },
+    };
+  } catch {
+    return {
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
 }
 
 export default async function ArticlePage({ params }: ArticlesPageProp) {

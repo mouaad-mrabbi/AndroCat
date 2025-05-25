@@ -15,7 +15,7 @@ const redirects = async () => [
 
 const nextConfig: NextConfig = {
   images: {
-     unoptimized: true,
+     unoptimized: true,// <--- هذا هو المفتاح لمنع المرور عبر /_next/image
     domains: ["cdn.androcat.com"],
   },
   redirects,

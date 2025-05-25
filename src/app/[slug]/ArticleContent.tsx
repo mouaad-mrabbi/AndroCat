@@ -31,8 +31,14 @@ export async function ArticleContent({ slug }: { slug: string }) {
     const isMobile =
       /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(userAgent);
 
+    if (!slug || isNaN(Number(slug.split("-")[0]))) {
+      throw new Error("Invalid slug format");
+    }
     const [idPart, ...titleParts] = slug.split("-");
     const articleId = parseInt(idPart);
+    if (isNaN(articleId)) {
+      throw new Error("Invalid articleId from slug");
+    }
 
     const article = await fetchArticleById(articleId);
 
@@ -56,7 +62,10 @@ export async function ArticleContent({ slug }: { slug: string }) {
       } ${article.version} ${article.descriptionMeta}`,
       url: `${DOMAIN}/${slug}`,
       image: `${DOMAINCDN}/${article.image}`,
-      keywords: [...(article.keywords || []), "games", "apps", "mod", "apk"].join(", ")|| "games, apps, mod, apk",
+      keywords:
+        [...(article.keywords || []), "games", "apps", "mod", "apk"].join(
+          ", "
+        ) || "games, apps, mod, apk",
       developer: article.developer,
       applicationCategory: category,
       operatingSystem: "Android",
