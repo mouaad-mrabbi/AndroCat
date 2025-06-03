@@ -1,8 +1,7 @@
 User-agent: *
 Disallow: /search
-Disallow: /admin
+Disallow: /admin/
 Disallow: /download/
-Disallow: /download/*
 
 Allow: /
 Allow: /games/page/
@@ -11,5 +10,4 @@ Allow: /games/page/*
 Allow: /programs/page/*
 Allow: /*
 
-# إذا أضفت لاحقًا sitemap.xml:
-# Sitemap: https://androcat.com/sitemap.xml
+Sitemap: https://androcat.com/sitemap.xml

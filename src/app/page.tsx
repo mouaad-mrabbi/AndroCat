@@ -8,19 +8,19 @@ export const metadata = {
   description:
     "AndroCat offers free Android games, premium MOD APKs, and unlocked apps. Enjoy fast, safe downloads of your favorite APKs with no viruses and high-speed performance.",
   keywords: [
-    "games for android",
-    "programs for android",
-    "mod apk",
     "androcat",
-    "android apps",
-    "free android games",
-    "MOD APK download",
-    "apk downloader",
+    "games",
+    "programs",
+    "android",
+    "mod",
+    "apk",
+    "apps",
+    "free",
+    "downloader",
   ],
   alternates: {
     canonical: `${DOMAIN}`,
   },
-
   openGraph: {
     type: "website",
     url: `${DOMAIN}`,
@@ -76,7 +76,6 @@ const Home = () => {
         />
       </Head>
 
-      {/* محتوى الصفحة */}
       <div>
         <SwiperCarousel />
         <SectionSep sectionTitle={"GAME"} />

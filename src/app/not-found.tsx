@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 export default function NotFoundPage() {
   return (
     <div className="flex gap-8  max-[770px]:flex-col mb-52 max-[500px]:mb-5 max-[770px]:mb-28 p-7 max-[500px]:p-2">

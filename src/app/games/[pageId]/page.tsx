@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: ArticlesPageProp) {
     description:
       "Download the latest modded Android games APK for free. Enjoy daily updates with the most popular, top-rated, and exclusive games available for Android devices.",
     keywords:
-      "Modded Android Games, Free APK Download, Latest Modded APK, Free Android Games, Android APK Download, Popular Modded Games, APK Games for Android, Daily Game Updates, Best Modded Android Games, Free Modded Games APK",
+      "modded, mod, latest modded APK, Free Android Games, Android APK Download, hack, Best Modded Games",
     alternates: {
       canonical: `${DOMAIN}/games`,
       types: {
@@ -68,7 +68,7 @@ export default async function GamesPage({ params }: ArticlesPageProp) {
         "In this section, you can download the latest cool and popular games. We also have daily updates of selected games mod for Android.",
       url: `${DOMAIN}/games`,
       keywords:
-        "mod, modded games for free, play free of viruses, hack, modded applications",
+        "modded, mod, latest modded APK, Free Android Games, Android APK Download, hack, Best Modded Games",
     };
 
     return (

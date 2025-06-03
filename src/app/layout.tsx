@@ -23,7 +23,6 @@ export const metadata = {
   other: {
     author: "MOUAAD MRABBI",
     copyright: "© 2025 AndroCat. All rights reserved.",
-     monetag: 'd08006823b80598a8e946d1ff465a0b2',
   },
 };
 
@@ -46,7 +45,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <Head>
-        {/* Organization Schema */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

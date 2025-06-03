@@ -31,20 +31,32 @@ export const config = {
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
+  const url = request.nextUrl.pathname;
+
+  // ✅ تجاهل الملفات ذات الامتدادات المحددة
+  if (
+    url.endsWith(".gz") ||
+    url.endsWith(".tar.gz") ||
+    url.endsWith(".zip") ||
+    url.endsWith(".sql")
+  ) {
+    return NextResponse.next();
+  }
+
   const jwtToken = request.cookies.get("jwtToken");
   const token = jwtToken ? jwtToken.value : null;
 
   if (!token) {
     if (
-      !request.nextUrl.pathname.startsWith("/admin/login") &&
-      !request.nextUrl.pathname.startsWith("/admin/register")
+      !url.startsWith("/admin/login") &&
+      !url.startsWith("/admin/register")
     ) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
   } else {
     if (
-      request.nextUrl.pathname === "/admin/login" ||
-      request.nextUrl.pathname === "/admin/register"
+      url === "/admin/login" ||
+      url === "/admin/register"
     ) {
       return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     }
@@ -61,6 +73,7 @@ export const config = {
     "/admin/login",
   ],
 };
+
 
 /* export async function middleware(request: NextRequest) {
   const jwtToken = request.cookies.get("jwtToken");
