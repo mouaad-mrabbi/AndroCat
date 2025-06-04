@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { RiPlayListAddLine } from "react-icons/ri";
 import { GrTextAlignFull } from "react-icons/gr";
 

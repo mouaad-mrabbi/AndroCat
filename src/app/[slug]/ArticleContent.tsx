@@ -394,10 +394,10 @@ export async function ArticleContent({ slug }: { slug: string }) {
           {/* Additional Information */}
           <div className="grid grid-cols-2 max-[1000px]:grid-cols-1 gap-8 bg-[#1b1d1f] p-8 mx-7 max-[770px]:mx-0 ">
             <div>
-              <h2 className="mb-2 font-bold max-[770px]:text-xl max-[500px]:text-center">
+              <h3 className="mb-2 font-bold max-[770px]:text-xl max-[500px]:text-center">
                 <span className="sr-only">{article.title} APK – </span>
                 Additional Information:
-              </h2>
+              </h3>
               <div className="grid grid-cols-4 gap-4 max-[700px]:grid-cols-2">
                 {[
                   { label: "Categories", value: category },
@@ -414,10 +414,10 @@ export async function ArticleContent({ slug }: { slug: string }) {
             </div>
 
             <div className="max-[500px]:text-center ">
-              <h2 className="mb-2 font-bold ">
+              <h3 className="mb-2 font-bold ">
                 <span className="sr-only">{article.title} APK –</span>
                 Fast and secure, no worries:
-              </h2>
+              </h3>
 
               <p className="text-sm">
                 Download the latest version of <strong>{article.title}</strong>{" "}
