@@ -37,10 +37,14 @@ export async function fetchArticlesCount(articleType?: "GAME" | "PROGRAM") {
     );
   }
 }
-
-export async function fetchArticleById(articleId: number): Promise<Article> {
+export interface Paragraph {
+  paragraphs?: { title?: string; content: string }[];
+}
+export async function fetchArticleById(
+  articleId: number
+): Promise<Article & Paragraph> {
   try {
-    const response = await axios.get<Article>(
+    const response = await axios.get<Article & Paragraph>(
       `${DOMAIN}/api/consumer/articles/${articleId}`
     );
     return response.data;
@@ -66,16 +70,16 @@ export async function fetchMetadata(articleId: number) {
         keywords: true,
         image: true,
         articleType: true,
-        gameCategory:true,
-        programCategory:true,
+        gameCategory: true,
+        programCategory: true,
         developer: true,
         version: true,
         averageRating: true,
         ratingCount: true,
-        isMod:true,
-        typeMod:true,
-        createdAt:true,
-        updatedAt:true
+        isMod: true,
+        typeMod: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
     if (!article) {
@@ -124,7 +128,7 @@ export async function sendRatingToAPI(value: number, articleId: number) {
 //Download Details
 export async function getDownloadData(
   articleId: string,
-  downloadType: "apk" | "obb" | "script"|"original-apk"
+  downloadType: "apk" | "obb" | "script" | "original-apk"
 ) {
   try {
     const response = await axios.get(
@@ -145,9 +149,12 @@ export async function getTopArticles(
   articleType: "GAME" | "PROGRAM"
 ): Promise<allArticle[]> {
   try {
-    const response = await axios.get(`${DOMAIN}/api/consumer/articles/topArticles`, {
-      params: { articleType },
-    });
+    const response = await axios.get(
+      `${DOMAIN}/api/consumer/articles/topArticles`,
+      {
+        params: { articleType },
+      }
+    );
 
     return response.data;
   } catch /* (error: any) */ {

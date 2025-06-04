@@ -8,61 +8,57 @@ interface Props {
   title: string;
   isMod: boolean;
   typeMod?: string;
+  paragraphs?: {
+    title?: string;
+    content: string;
+  }[];
 }
 
-export default function Spoiler({ title, description, isMod, typeMod }: Props) {
-  const [vanish, setVanish] = useState<string>("hidden");
-
-  const textRef = useRef<HTMLParagraphElement>(null);
-  const [isClamped, setIsClamped] = useState(false);
-  useEffect(() => {
-    const element = textRef.current;
-    if (!element) return;
-
-    const checkClamping = () => {
-      setIsClamped(element.scrollHeight > element.clientHeight);
-    };
-
-    // Initial check on load
-    checkClamping();
-
-    // Watch for size changes
-    const resizeObserver = new ResizeObserver(checkClamping);
-    resizeObserver.observe(element);
-
-    return () => resizeObserver.disconnect();
-  }, []);
+export default function Spoiler({
+  title,
+  description,
+  isMod,
+  typeMod,
+  paragraphs,
+}: Props) {
+  const [expanded, setExpanded] = useState(false);
 
   return (
     <div>
-      <p
-        itemProp="description"
-        ref={textRef}
-        className={
-          vanish === "hidden"
-            ? "line-clamp-4 font-bold"
-            : "line-clamp-none font-bold"
-        }
+      <div
+        className={`transition-all duration-300 ${
+          !expanded ? "line-clamp-4 overflow-hidden" : ""
+        }`}
       >
-        {title} {isMod && <span>({typeMod})</span>}{" "}
-        <span className="font-normal ">{description}</span>
-      </p>
+        <p className="font-bold text-justify">
+          {title} {isMod && <span>({typeMod})</span>}{" "}
+          <span className="font-normal">{description}</span>
+        </p>
+
+        {paragraphs?.map((p, index) => (
+          <div key={index} className="mt-4">
+            {p.title && (
+              <h2 className="mb-2 text-2xl font-bold max-[770px]:text-xl text-center">
+                {p.title}
+              </h2>
+            )}
+            <p className="text-justify">{p.content}</p>
+          </div>
+        ))}
+      </div>
+
       <button
-        className={isClamped || vanish === "visible" ? " block" : "hidden"}
-        onClick={() => {
-          vanish === "hidden" ? setVanish("visible") : setVanish("hidden");
-        }}
+        onClick={() => setExpanded(!expanded)}
+        className="mt-2 text-green-500 flex items-center gap-2"
       >
-        {vanish === "hidden" ? (
-          <div className="flex items-center gap-2 text-green-500">
-            <RiPlayListAddLine />
-            <span>Full description</span>
-          </div>
+        {expanded ? (
+          <>
+            <GrTextAlignFull /> Hide description
+          </>
         ) : (
-          <div className="flex items-center gap-2 text-green-500">
-            <GrTextAlignFull />
-            <span>Hide description</span>
-          </div>
+          <>
+            <RiPlayListAddLine /> Full description
+          </>
         )}
       </button>
     </div>

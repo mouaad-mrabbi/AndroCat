@@ -41,6 +41,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
     }
 
     const article = await fetchArticleById(articleId);
+    console.log(article);
 
     const capitalize = (str: any) =>
       str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -281,6 +282,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
                       {...(article.isMod && {
                         typeMod: article.typeMod ?? undefined,
                       })}
+                      paragraphs={article.paragraphs}
                     />
                   </div>
                 </div>
@@ -320,6 +322,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
                   {...(article.isMod && {
                     typeMod: article.typeMod ?? undefined,
                   })}
+                  paragraphs={article.paragraphs}
                 />
               </div>
             </div>
