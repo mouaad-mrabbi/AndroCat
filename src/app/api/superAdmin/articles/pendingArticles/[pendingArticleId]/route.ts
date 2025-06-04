@@ -61,12 +61,15 @@ export async function PUT(request: NextRequest, { params }: Props) {
         linkAPK: true,
         linkOBB: true,
         linkScript: true,
-        linkOriginalAPK:true,
+        linkOriginalAPK: true,
         appScreens: true,
       },
     });
     if (!article) {
-      return NextResponse.json({ message: "Article not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Article not found" },
+        { status: 404 }
+      );
     }
 
     const newArticle = await prisma.article.update({
@@ -74,18 +77,18 @@ export async function PUT(request: NextRequest, { params }: Props) {
       select: {
         id: true,
         title: true,
-        secondTitle:true,
+        secondTitle: true,
         description: true,
-        descriptionMeta:true,
+        descriptionMeta: true,
         image: true,
         developer: true,
         version: true,
-        versionOriginal:true,
+        versionOriginal: true,
         androidVer: true,
 
         articleType: true,
         gameCategory: true,
-        programCategory:true,
+        programCategory: true,
 
         OBB: true,
         Script: true,
@@ -115,13 +118,13 @@ export async function PUT(request: NextRequest, { params }: Props) {
       },
       data: {
         title: pendingArticle.title,
-        secondTitle:pendingArticle.secondTitle,
+        secondTitle: pendingArticle.secondTitle,
         description: pendingArticle.description,
-        descriptionMeta:pendingArticle.descriptionMeta,
+        descriptionMeta: pendingArticle.descriptionMeta,
         image: pendingArticle.image,
         developer: pendingArticle.developer,
         version: pendingArticle.version,
-        versionOriginal:pendingArticle.versionOriginal,
+        versionOriginal: pendingArticle.versionOriginal,
         androidVer: pendingArticle.androidVer,
 
         articleType: pendingArticle.articleType,
@@ -130,18 +133,24 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
         OBB: pendingArticle.OBB,
         Script: pendingArticle.Script,
-        OriginalAPK:pendingArticle.OriginalAPK,
+        OriginalAPK: pendingArticle.OriginalAPK,
 
         linkAPK: pendingArticle.linkAPK,
         linkOBB: pendingArticle.OBB ? pendingArticle.linkOBB : null,
         linkScript: pendingArticle.Script ? pendingArticle.linkScript : null,
-        linkOriginalAPK: pendingArticle.OriginalAPK ? pendingArticle.linkOriginalAPK : null,
+        linkOriginalAPK: pendingArticle.OriginalAPK
+          ? pendingArticle.linkOriginalAPK
+          : null,
         linkVideo: pendingArticle.linkVideo,
 
         sizeFileAPK: pendingArticle.sizeFileAPK,
         sizeFileOBB: pendingArticle.OBB ? pendingArticle.sizeFileOBB : null,
-        sizeFileScript: pendingArticle.Script ? pendingArticle.sizeFileScript : null,
-        sizeFileOriginalAPK: pendingArticle.OriginalAPK ? pendingArticle.sizeFileOriginalAPK : null,
+        sizeFileScript: pendingArticle.Script
+          ? pendingArticle.sizeFileScript
+          : null,
+        sizeFileOriginalAPK: pendingArticle.OriginalAPK
+          ? pendingArticle.sizeFileOriginalAPK
+          : null,
 
         appScreens: pendingArticle.appScreens,
         keywords: pendingArticle.keywords,
@@ -163,6 +172,23 @@ export async function PUT(request: NextRequest, { params }: Props) {
       },
     });
 
+    const pendingParagraphs = await prisma.pendingArticleParagraph.findMany({
+      where: { pendingArticleId },
+    });
+    await prisma.articleParagraph.deleteMany({
+      where: { articleId: pendingArticle.articleId },
+    });
+    if (pendingParagraphs.length > 0) {
+      await prisma.articleParagraph.createMany({
+        data: pendingParagraphs.map((p, index) => ({
+          articleId: pendingArticle.articleId,
+          title: p.title,
+          content: p.content,
+          order: index,
+        })),
+      });
+    }
+
     if (article.image !== newArticle.image) {
       await deleteFile(article.image);
     }
@@ -174,8 +200,11 @@ export async function PUT(request: NextRequest, { params }: Props) {
     }
     if (article.linkScript !== newArticle.linkScript && article.linkScript) {
       await deleteFile(article.linkScript);
-    }   
-     if (article.linkOriginalAPK !== newArticle.linkOriginalAPK && article.linkOriginalAPK) {
+    }
+    if (
+      article.linkOriginalAPK !== newArticle.linkOriginalAPK &&
+      article.linkOriginalAPK
+    ) {
       await deleteFile(article.linkOriginalAPK);
     }
     await Promise.all(

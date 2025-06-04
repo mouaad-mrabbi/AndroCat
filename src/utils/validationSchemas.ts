@@ -68,6 +68,16 @@ export const createArticleSchema = z
 
     ratedFor: z.number().min(1).max(20),
     installs: z.string().min(1).max(20),
+
+    // ✅ الفقرات (اختياري لكن يجب أن تكون منظمة إذا وُجدت)
+    paragraphs: z
+      .array(
+        z.object({
+          title: z.string().optional(),
+          content: z.string().min(5),
+        })
+      )
+      .optional(),
   })
   .superRefine((data, ctx) => {
     //obb
@@ -288,6 +298,16 @@ export const updateArticleSchema = z
 
     ratedFor: z.number().min(1).max(20).optional(),
     installs: z.string().min(1).max(20).optional(),
+
+    // ✅ الفقرات (اختياري لكن يجب أن تكون منظمة إذا وُجدت)
+    paragraphs: z
+      .array(
+        z.object({
+          title: z.string().optional(),
+          content: z.string().min(5),
+        })
+      )
+      .optional(),
   })
   .superRefine((data, ctx) => {
     // OBB

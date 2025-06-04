@@ -60,6 +60,11 @@ export interface CreateArticleDto {
 
   createdById: number;
   createdAt?: string | Date;
+
+  paragraphs?: {
+    title?: string;
+    content: string;
+  }[];
 }
 
 export interface UpdateArticleDto {
@@ -103,4 +108,9 @@ export interface UpdateArticleDto {
 
   createdById?: number;
   createdAt?: string | Date;
+
+  paragraphs?: {
+    title?: string;
+    content: string;
+  }[];
 }

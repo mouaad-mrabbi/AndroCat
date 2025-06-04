@@ -50,8 +50,8 @@ export async function GET(request: NextRequest) {
             title: true,
             image: true,
             developer: true,
-            isMod:true,
-            typeMod:true
+            isMod: true,
+            typeMod: true,
           },
         },
       },
@@ -64,7 +64,10 @@ export async function GET(request: NextRequest) {
       !userWithArticles.pendingArticles ||
       userWithArticles.pendingArticles.length === 0
     ) {
-      return NextResponse.json({ message: "No Articles found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "No Articles found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(userWithArticles.pendingArticles, { status: 200 });
@@ -79,7 +82,7 @@ export async function GET(request: NextRequest) {
 /**
  *  @method  POST
  *  @route   ~/api/admin/pendingArticles
- *  @desc    Create New Article
+ *  @desc    Create New pending Articles
  *  @access  private (only user himself can create his Articles | OWNER can create any users data)
  */
 export async function POST(request: NextRequest) {
@@ -112,55 +115,72 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const newPendingArticle: PendingArticle = await prisma.pendingArticle.create({
-      data: {
-        status: "CREATE",
-        title: body.title,
-        secondTitle:body.secondTitle,
-        description: body.description,
-        descriptionMeta:body.descriptionMeta,
-        image: body.image,
-        developer: body.developer,
-        version: body.version,
-        versionOriginal: body.OriginalAPK ? body.versionOriginal : null,
-        androidVer: body.androidVer,
+    const newPendingArticle: PendingArticle =
+      await prisma.pendingArticle.create({
+        data: {
+          status: "CREATE",
+          title: body.title,
+          secondTitle: body.secondTitle,
+          description: body.description,
+          descriptionMeta: body.descriptionMeta,
+          image: body.image,
+          developer: body.developer,
+          version: body.version,
+          versionOriginal: body.OriginalAPK ? body.versionOriginal : null,
+          androidVer: body.androidVer,
 
-        articleType: body.articleType,
-        gameCategory:body.articleType==="GAME"? body.gameCategory:null,
-        programCategory:body.articleType==="PROGRAM"? body.programCategory:null,
+          articleType: body.articleType,
+          gameCategory: body.articleType === "GAME" ? body.gameCategory : null,
+          programCategory:
+            body.articleType === "PROGRAM" ? body.programCategory : null,
 
-        OBB: body.OBB,
-        Script: body.Script,
-        OriginalAPK:body.OriginalAPK,
+          OBB: body.OBB,
+          Script: body.Script,
+          OriginalAPK: body.OriginalAPK,
 
-        linkAPK: body.linkAPK,
-        linkOBB: body.OBB ? body.linkOBB : null,
-        linkScript: body.Script ? body.linkScript : null,
-        linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
-        linkVideo: body.linkVideo,
+          linkAPK: body.linkAPK,
+          linkOBB: body.OBB ? body.linkOBB : null,
+          linkScript: body.Script ? body.linkScript : null,
+          linkOriginalAPK: body.OriginalAPK ? body.linkOriginalAPK : null,
+          linkVideo: body.linkVideo,
 
-        sizeFileAPK: body.sizeFileAPK,
-        sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
-        sizeFileScript: body.Script ? body.sizeFileScript : null,
-        sizeFileOriginalAPK: body.OriginalAPK ? body.sizeFileOriginalAPK : null,
-        
-        appScreens: body.appScreens,
-        keywords: body.keywords,
+          sizeFileAPK: body.sizeFileAPK,
+          sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
+          sizeFileScript: body.Script ? body.sizeFileScript : null,
+          sizeFileOriginalAPK: body.OriginalAPK
+            ? body.sizeFileOriginalAPK
+            : null,
 
-        isMod: body.isMod,
-        typeMod: body.isMod ? body.typeMod : null,
+          appScreens: body.appScreens,
+          keywords: body.keywords,
 
-        ratedFor: body.ratedFor,
-        installs: body.installs,
+          isMod: body.isMod,
+          typeMod: body.isMod ? body.typeMod : null,
 
-        createdById: userFromToken.id,
-      },
-    });
+          ratedFor: body.ratedFor,
+          installs: body.installs,
+
+          createdById: userFromToken.id,
+
+          // ✅ إضافة الفقرات
+          paragraphs: {
+            create: body.paragraphs?.map((p,index) => ({
+              title: p.title,
+              content: p.content,
+              order: index,
+            })),
+          },
+        },
+
+        include: {
+          paragraphs: true, // إذا أردت إرجاع الفقرات في الرد
+        },
+      });
 
     return NextResponse.json(newPendingArticle, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { message: "internal server error",error },
+      { message: "internal server error", error },
       { status: 500 }
     );
   }

@@ -100,6 +100,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         validatedBy: { select: { profile: true, username: true } },
 
         pendingArticle: true,
+        paragraphs:true,
       },
     });
     if (!article) {

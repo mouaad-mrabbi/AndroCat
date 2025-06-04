@@ -15,9 +15,9 @@ interface PendingArticle {
   status: ActionType;
   checking: boolean;
   title: string;
-  secondTitle?:string,
+  secondTitle?: string;
   description: string;
-  descriptionMeta:string;
+  descriptionMeta: string;
   image: string;
   developer: string;
   version: string;
@@ -52,6 +52,7 @@ interface PendingArticle {
   createdById: number;
   createdBy: User;
   atricleId?: number | null;
+  paragraphs: []
 }
 
 //create pending Article (CREATE)
@@ -146,7 +147,7 @@ export async function createPendingUpdateArticle(
   formData: CreateArticleDto,
   statusType: "UPDATE" | "DELETE"
 ) {
-  console.log(formData)
+  console.log(formData);
   const response = await axios.post(
     `${DOMAIN}/api/admin/pendingArticles/articles/${articleId}`,
     formData,
@@ -184,7 +185,9 @@ export async function getArticleCreateBy(
 }
 
 //delete my pending article
-export async function deleteArticleCreatedBy(pendingArticleId: number): Promise<string> {
+export async function deleteArticleCreatedBy(
+  pendingArticleId: number
+): Promise<string> {
   try {
     const response = await axios.delete(
       `${DOMAIN}/api/admin/pendingArticles/${pendingArticleId}`,

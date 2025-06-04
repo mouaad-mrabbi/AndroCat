@@ -182,9 +182,9 @@ export async function ArticleContent({ slug }: { slug: string }) {
                     />
                   </div>
                   {/* developer */}
-                  <h2 className="text-sm text-[#b2b2b2]  lg:hidden my-4">
+                  <p className="text-sm text-[#b2b2b2]  lg:hidden my-4">
                     {article.developer}
-                  </h2>
+                  </p>
                 </div>
                 {/* center */}
                 <div className=" ml-8 max-[770px]:ml-4">
@@ -328,9 +328,13 @@ export async function ArticleContent({ slug }: { slug: string }) {
 
             {/* Screenshots */}
             <div className="p-6">
-              <p className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center ">
+              <h2 className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center ">
+                <span className="sr-only">
+                  {article.title} {article.isMod && `${article.typeMod} `}
+                  APK –
+                </span>
                 Screenshots
-              </p>
+              </h2>
               <div
                 className="flex gap-4 overflow-x-scroll mb-4 select-none"
                 style={{ scrollbarWidth: "none" }}
@@ -376,15 +380,21 @@ export async function ArticleContent({ slug }: { slug: string }) {
             id="downloads"
             className="flex flex-col gap-8 bg-[#292c2f] p-8 mx-7 max-[770px]:mx-0"
           >
+            <h2 className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center sr-only">
+              {article.title} v{article.version}{" "}
+              {article.isMod ? article.typeMod + " " : ""}– Download
+            </h2>
+
             {downloadLinks.map(renderDownloadLink)}
           </div>
 
           {/* Additional Information */}
           <div className="grid grid-cols-2 max-[1000px]:grid-cols-1 gap-8 bg-[#1b1d1f] p-8 mx-7 max-[770px]:mx-0 ">
             <div>
-              <p className="mb-2  font-bold  max-[770px]:text-xl max-[500px]:text-center">
+              <h2 className="mb-2 font-bold max-[770px]:text-xl max-[500px]:text-center">
+                <span className="sr-only">{article.title} APK – </span>
                 Additional Information:
-              </p>
+              </h2>
               <div className="grid grid-cols-4 gap-4 max-[700px]:grid-cols-2">
                 {[
                   { label: "Categories", value: category },
@@ -401,11 +411,14 @@ export async function ArticleContent({ slug }: { slug: string }) {
             </div>
 
             <div className="max-[500px]:text-center ">
-              <p className="mb-2 font-bold">Fast and secure, no worries:</p>
+              <h2 className="mb-2 font-bold ">
+                <span className="sr-only">{article.title} APK –</span>
+                Fast and secure, no worries:
+              </h2>
 
               <p className="text-sm">
-                Download the latest version of {article.title} (
-                {article.isMod && article.typeMod + "/"}
+                Download the latest version of <strong>{article.title}</strong>{" "}
+                ({article.isMod && article.typeMod + "/"}
                 {article.articleType}).apk quickly and easily — it's fast, free,
                 secure, and requires no registration
               </p>

@@ -46,13 +46,13 @@ export async function GET(request: NextRequest, { params }: Props) {
       select: {
         id: true,
         title: true,
-        secondTitle:true,
+        secondTitle: true,
         description: true,
-        descriptionMeta:true,
+        descriptionMeta: true,
         image: true,
         developer: true,
         version: true,
-        versionOriginal:true,
+        versionOriginal: true,
         androidVer: true,
         articleType: true,
         gameCategory: true,
@@ -99,10 +99,14 @@ export async function GET(request: NextRequest, { params }: Props) {
         validatedBy: { select: { profile: true, username: true } },
 
         pendingArticle: true,
+        paragraphs: { select: { title: true, content: true } },
       },
     });
     if (!article) {
-      return NextResponse.json({ message: "article not found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "article not found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(article, { status: 200 });

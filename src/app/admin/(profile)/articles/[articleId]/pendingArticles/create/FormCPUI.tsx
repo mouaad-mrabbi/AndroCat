@@ -1,11 +1,16 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useRouter } from "next/navigation";
 import { ModalFormCPUI } from "./ModalFormCPUI";
 import { CreateArticleDto } from "@/utils/dtos";
-import { ArticleType, GameCategories, ProgramCategories } from "@prisma/client";
+import {
+  ArticleType,
+  GameCategories,
+  PendingArticleParagraph,
+  ProgramCategories,
+} from "@prisma/client";
 import {
   createPendingUpdateArticle,
   getArticleCreateBy,
@@ -18,7 +23,7 @@ interface pageProps {
   articleId: number;
 }
 
-//FormCreatePendingUpdateArticle (FormCPUA)
+//Form Create Pending Article for Update  (FormCPUA)
 export default function FormCPUA({ articleId }: pageProps) {
   const [formData, setFormData] = useState<CreateArticleDto>({
     title: "",
@@ -52,6 +57,7 @@ export default function FormCPUA({ articleId }: pageProps) {
     ratedFor: 0,
     installs: "",
     createdById: 0,
+    paragraphs: [],
   });
   const [formDataOrigin, setFormDataOrigin] = useState<CreateArticleDto>({
     title: "",
@@ -86,17 +92,13 @@ export default function FormCPUA({ articleId }: pageProps) {
     installs: "",
     createdById: 0,
   });
-
   const [showModal, setShowModal] = useState(false);
   const [selectedUrlModal, setSelectedUrlModal] = useState<string | null>(null);
-
   const [newKeyword, setNewKeyword] = useState("");
   const [newAppScreen, setNewAppScreen] = useState("");
-  const recaptchaRef = useRef<ReCAPTCHA>(null);
-
   const router = useRouter();
-
   const [isLoading, setIsLoading] = useState(true);
+  const [collapsedParagraphs, setCollapsedParagraphs] = useState<boolean[]>([]);
 
   useEffect(() => {
     if (!articleId) return;
@@ -136,6 +138,7 @@ export default function FormCPUA({ articleId }: pageProps) {
           ratedFor,
           installs,
           createdById,
+          paragraphs,
         } = article;
         setFormData({
           title,
@@ -169,6 +172,7 @@ export default function FormCPUA({ articleId }: pageProps) {
           ratedFor,
           installs,
           createdById,
+          paragraphs,
         });
         setFormDataOrigin({
           title,
@@ -274,16 +278,6 @@ export default function FormCPUA({ articleId }: pageProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
-    /*     const captchaValue = recaptchaRef.current?.getValue();
-    if (!captchaValue) {
-      toast.error("Please complete the ReCAPTCHA", {
-        position: "top-right",
-        autoClose: 10000,
-        theme: "colored",
-      });
-      return;
-    } */
 
     try {
       const response = await createPendingUpdateArticle(
@@ -436,6 +430,38 @@ export default function FormCPUA({ articleId }: pageProps) {
     return allLinks.includes(selectedUrlModal);
   };
 
+  const handleParagraphChange = (
+    index: number,
+    field: keyof PendingArticleParagraph,
+    value: string | number
+  ) => {
+    const newParagraphs = [...(formData.paragraphs ?? [])];
+    newParagraphs[index] = {
+      ...newParagraphs[index],
+      [field]: value,
+    };
+    setFormData((prev) => ({ ...prev, paragraphs: newParagraphs }));
+  };
+
+  const addParagraph = () => {
+    setFormData((prev) => ({
+      ...prev,
+      paragraphs: [...(prev.paragraphs ?? []), { title: "", content: "" }],
+    }));
+    setCollapsedParagraphs((prev) => [...prev, false]); // الافتراضي: غير مصغّر
+  };
+
+  const removeParagraph = (index: number) => {
+    const newParagraphs = [...(formData.paragraphs ?? [])];
+    newParagraphs.splice(index, 1);
+
+    const newCollapsed = [...collapsedParagraphs];
+    newCollapsed.splice(index, 1);
+
+    setFormData((prev) => ({ ...prev, paragraphs: newParagraphs }));
+    setCollapsedParagraphs(newCollapsed);
+  };
+
   return (
     <div className="min-h-screen   py-8">
       <div className="max-w-2xl mx-auto  p-6 rounded-lg shadow-md">
@@ -521,6 +547,88 @@ export default function FormCPUA({ articleId }: pageProps) {
       dark:focus:border-indigo-500"
               /* required */
             />
+          </div>
+
+          {/* Paragraphs */}
+          <div className="space-y-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Paragraphs:
+            </label>
+
+            {formData.paragraphs?.map((paragraph, index) => (
+              <div
+                key={index}
+                className="border p-4 rounded-md space-y-2 bg-gray-100 dark:bg-gray-800"
+              >
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-medium">
+                    {paragraph.title || `Paragraph ${index + 1}`}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCollapsedParagraphs((prev) => {
+                        const newState = [...prev];
+                        newState[index] = !newState[index];
+                        return newState;
+                      })
+                    }
+                    className="text-blue-600 text-xs hover:underline"
+                  >
+                    {collapsedParagraphs[index]
+                      ? "Show Details"
+                      : "Hide Details"}
+                  </button>
+                </div>
+
+                {!collapsedParagraphs[index] && (
+                  <>
+                    <div>
+                      <label className="text-sm">Title (optional):</label>
+                      <input
+                        type="text"
+                        value={paragraph.title || ""}
+                        onChange={(e) =>
+                          handleParagraphChange(index, "title", e.target.value)
+                        }
+                        className="w-full mt-1 px-2 py-1 rounded border dark:bg-gray-700 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm">Content:</label>
+                      <textarea
+                        required
+                        value={paragraph.content}
+                        onChange={(e) =>
+                          handleParagraphChange(
+                            index,
+                            "content",
+                            e.target.value
+                          )
+                        }
+                        className="w-full mt-1 px-2 py-1 rounded border dark:bg-gray-700 dark:text-white"
+                      />
+                    </div>
+                  </>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => removeParagraph(index)}
+                  className="text-red-600 text-sm hover:underline"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={addParagraph}
+              className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 w-full"
+            >
+              + Add Paragraph
+            </button>
           </div>
 
           {/* image posts Upload */}
@@ -1246,13 +1354,6 @@ export default function FormCPUA({ articleId }: pageProps) {
               /* required */
             />
           </div>
-
-          {/* ReCAPTCHA */}
-          <ReCAPTCHA
-            ref={recaptchaRef}
-            sitekey={"6LfSd9gqAAAAAIJn7lHYKyxRBUznWWARoe8PTyAW"} // استبدل بمفتاحك من Google
-          />
-
           {/* Submit Button */}
           <div>
             <button

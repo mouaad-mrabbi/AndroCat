@@ -50,6 +50,9 @@ export async function GET(request: NextRequest, { params }: Props) {
         createdBy: {
           select: { username: true, profile: true },
         },
+        paragraphs:{
+          select:{title:true,content:true}
+        }
       },
     });
     if (!pendingArticle) {
@@ -140,7 +143,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
         title: body.title,
         secondTitle: body.secondTitle,
         description: body.description,
-        descriptionMeta:body.descriptionMeta,
+        descriptionMeta: body.descriptionMeta,
         image: body.image,
         developer: body.developer,
         version: body.version,
@@ -198,6 +201,23 @@ export async function PUT(request: NextRequest, { params }: Props) {
         installs: body.installs,
       },
     });
+
+    await prisma.pendingArticleParagraph.deleteMany({
+      where: {
+        pendingArticleId,
+      },
+    });
+
+    if (body.paragraphs && body.paragraphs.length > 0) {
+      await prisma.pendingArticleParagraph.createMany({
+        data: body.paragraphs.map((p,index) => ({
+          pendingArticleId,
+          title: p.title,
+          content: p.content,
+          order: index,
+        })),
+      });
+    }
 
     return NextResponse.json(updatedPendingArticle, { status: 200 });
   } catch (error) {
@@ -289,11 +309,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
         (screen) => !article.appScreens.includes(screen)
       );
 
-      await Promise.all(
-        screensToDelete.map((screen) =>
-          deleteFile(screen)
-        )
-      );
+      await Promise.all(screensToDelete.map((screen) => deleteFile(screen)));
     } else {
       const fileLinks = [
         pendingArticle.image,
@@ -304,9 +320,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
         ...pendingArticle.appScreens,
       ].filter((url): url is string => !!url);
 
-      await Promise.all(
-        fileLinks.map((url) => deleteFile(url))
-      );
+      await Promise.all(fileLinks.map((url) => deleteFile(url)));
     }
 
     return NextResponse.json(

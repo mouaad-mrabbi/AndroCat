@@ -118,18 +118,18 @@ export async function POST(request: NextRequest, { params }: Props) {
       select: {
         id: true,
         title: true,
-        secondTitle:true,
+        secondTitle: true,
         description: true,
-        descriptionMeta:true,
+        descriptionMeta: true,
         image: true,
         developer: true,
         version: true,
-        versionOriginal:true,
+        versionOriginal: true,
         androidVer: true,
 
         articleType: true,
         gameCategory: true,
-        programCategory:true,
+        programCategory: true,
 
         OBB: true,
         Script: true,
@@ -160,33 +160,39 @@ export async function POST(request: NextRequest, { params }: Props) {
       },
       data: {
         title: pendingArticle.title,
-        secondTitle:pendingArticle.secondTitle,
+        secondTitle: pendingArticle.secondTitle,
         description: pendingArticle.description,
-        descriptionMeta:pendingArticle.descriptionMeta,
+        descriptionMeta: pendingArticle.descriptionMeta,
         image: pendingArticle.image,
         developer: pendingArticle.developer,
         version: pendingArticle.version,
-        versionOriginal:pendingArticle.versionOriginal,
+        versionOriginal: pendingArticle.versionOriginal,
         androidVer: pendingArticle.androidVer,
 
         articleType: pendingArticle.articleType,
         gameCategory: pendingArticle.gameCategory,
-        programCategory:pendingArticle.programCategory,
+        programCategory: pendingArticle.programCategory,
 
         OBB: pendingArticle.OBB,
         Script: pendingArticle.Script,
-        OriginalAPK:pendingArticle.OriginalAPK,
+        OriginalAPK: pendingArticle.OriginalAPK,
 
         linkAPK: pendingArticle.linkAPK,
         linkOBB: pendingArticle.OBB ? pendingArticle.linkOBB : null,
         linkVideo: pendingArticle.linkVideo,
         linkScript: pendingArticle.Script ? pendingArticle.linkScript : null,
-        linkOriginalAPK: pendingArticle.OriginalAPK ? pendingArticle.linkOriginalAPK : null,
+        linkOriginalAPK: pendingArticle.OriginalAPK
+          ? pendingArticle.linkOriginalAPK
+          : null,
 
         sizeFileAPK: pendingArticle.sizeFileAPK,
         sizeFileOBB: pendingArticle.OBB ? pendingArticle.sizeFileOBB : null,
-        sizeFileScript: pendingArticle.Script ? pendingArticle.sizeFileScript : null,
-        sizeFileOriginalAPK: pendingArticle.OriginalAPK ? pendingArticle.sizeFileOriginalAPK : null,
+        sizeFileScript: pendingArticle.Script
+          ? pendingArticle.sizeFileScript
+          : null,
+        sizeFileOriginalAPK: pendingArticle.OriginalAPK
+          ? pendingArticle.sizeFileOriginalAPK
+          : null,
 
         appScreens: pendingArticle.appScreens,
         keywords: pendingArticle.keywords,
@@ -208,6 +214,21 @@ export async function POST(request: NextRequest, { params }: Props) {
       },
     });
 
+    const pendingParagraphs = await prisma.pendingArticleParagraph.findMany({
+      where: { pendingArticleId },
+    });
+
+    if (pendingParagraphs.length > 0) {
+      await prisma.articleParagraph.createMany({
+        data: pendingParagraphs.map((p,index) => ({
+          articleId: newArticle.id,
+          title: p.title,
+          content: p.content,
+          order: index,
+        })),
+      });
+    }
+
     await prisma.pendingArticle.delete({ where: { id: pendingArticleId } });
 
     await renameFile(
@@ -221,12 +242,8 @@ export async function POST(request: NextRequest, { params }: Props) {
     await prisma.article.update({
       where: { id: newArticle.id },
       data: {
-        image: `posts/${newArticle.id}/${newArticle.image
-          .split("/")
-          .pop()}`,
-        linkAPK: `apks/${newArticle.id}/${newArticle.linkAPK
-          .split("/")
-          .pop()}`,
+        image: `posts/${newArticle.id}/${newArticle.image.split("/").pop()}`,
+        linkAPK: `apks/${newArticle.id}/${newArticle.linkAPK.split("/").pop()}`,
       },
       select: { id: true, image: true, linkAPK: true },
     });
@@ -264,14 +281,16 @@ export async function POST(request: NextRequest, { params }: Props) {
     if (newArticle.OriginalAPK && newArticle.linkOriginalAPK) {
       await renameFile(
         newArticle.linkOriginalAPK,
-        `original-apks/${newArticle.id}/${newArticle.linkOriginalAPK.split("/").pop()}`
+        `original-apks/${newArticle.id}/${newArticle.linkOriginalAPK
+          .split("/")
+          .pop()}`
       );
       await prisma.article.update({
         where: { id: newArticle.id },
         data: {
-          linkOriginalAPK: `original-apks/${newArticle.id}/${newArticle.linkOriginalAPK
-            .split("/")
-            .pop()}`,
+          linkOriginalAPK: `original-apks/${
+            newArticle.id
+          }/${newArticle.linkOriginalAPK.split("/").pop()}`,
         },
         select: { id: true, linkOriginalAPK: true },
       });

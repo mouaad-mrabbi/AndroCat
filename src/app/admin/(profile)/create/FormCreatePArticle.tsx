@@ -3,9 +3,13 @@ import { useState, useRef, ChangeEvent, useEffect } from "react";
 import { CreateArticleDto } from "@/utils/dtos";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
-import { ArticleType, GameCategories, ProgramCategories } from "@prisma/client";
+import {
+  ArticleType,
+  GameCategories,
+  PendingArticleParagraph,
+  ProgramCategories,
+} from "@prisma/client";
 import { createPendingArticles } from "@/apiCalls/adminApiCall";
-import UploadFile from "@/components/uploadFile";
 import { ModalForm } from "@/components/modalForm";
 import PageMultipartFileUploader, {
   UploadState,
@@ -45,18 +49,16 @@ const FormCreatePArticle = () => {
     ratedFor: 0,
     installs: "",
     createdById: 0,
-    createdAt: new Date(),
+    paragraphs: [],
   });
-
   const [newKeyword, setNewKeyword] = useState("");
   const [newAppScreen, setNewAppScreen] = useState("");
   const recaptchaRef = useRef<ReCAPTCHA>(null);
   const [randomText, setRandomText] = useState<string>("");
-
   const [showModal, setShowModal] = useState(false);
   const [selectedUrlModal, setSelectedUrlModal] = useState<string | null>(null);
-
   const [isLoading, setIsLoading] = useState(false);
+  const [collapsedParagraphs, setCollapsedParagraphs] = useState<boolean[]>([]);
 
   const generateRandomText = () => {
     const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -136,17 +138,6 @@ const FormCreatePArticle = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-
-    /*     const captchaValue = recaptchaRef.current?.getValue();
-    if (!captchaValue) {
-      toast.error("Please complete the ReCAPTCHA", {
-        position: "top-right",
-        autoClose: 10000,
-        theme: "colored",
-      });
-      return;
-    } */
-
     try {
       const status = await createPendingArticles(formData);
 
@@ -183,7 +174,7 @@ const FormCreatePArticle = () => {
           ratedFor: 0,
           installs: "",
           createdById: 0,
-          createdAt: new Date(),
+          paragraphs: [],
         });
       }
 
@@ -315,6 +306,38 @@ const FormCreatePArticle = () => {
     });
   };
 
+  const handleParagraphChange = (
+    index: number,
+    field: keyof PendingArticleParagraph,
+    value: string | number
+  ) => {
+    const newParagraphs = [...(formData.paragraphs ?? [])];
+    newParagraphs[index] = {
+      ...newParagraphs[index],
+      [field]: value,
+    };
+    setFormData((prev) => ({ ...prev, paragraphs: newParagraphs }));
+  };
+
+  const addParagraph = () => {
+    setFormData((prev) => ({
+      ...prev,
+      paragraphs: [...(prev.paragraphs ?? []), { title: "", content: "" }],
+    }));
+    setCollapsedParagraphs((prev) => [...prev, false]); // الافتراضي: غير مصغّر
+  };
+
+  const removeParagraph = (index: number) => {
+    const newParagraphs = [...(formData.paragraphs ?? [])];
+    newParagraphs.splice(index, 1);
+
+    const newCollapsed = [...collapsedParagraphs];
+    newCollapsed.splice(index, 1);
+
+    setFormData((prev) => ({ ...prev, paragraphs: newParagraphs }));
+    setCollapsedParagraphs(newCollapsed);
+  };
+
   return (
     <div className="min-h-screen   py-8">
       <div className="max-w-2xl mx-auto  p-6 rounded-lg shadow-md">
@@ -400,6 +423,88 @@ const FormCreatePArticle = () => {
       dark:focus:border-indigo-500"
               /* required */
             />
+          </div>
+
+          {/* Paragraphs */}
+          <div className="space-y-4">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Paragraphs:
+            </label>
+
+            {formData.paragraphs?.map((paragraph, index) => (
+              <div
+                key={index}
+                className="border p-4 rounded-md space-y-2 bg-gray-100 dark:bg-gray-800"
+              >
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-medium">
+                    {paragraph.title || `Paragraph ${index + 1}`}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setCollapsedParagraphs((prev) => {
+                        const newState = [...prev];
+                        newState[index] = !newState[index];
+                        return newState;
+                      })
+                    }
+                    className="text-blue-600 text-xs hover:underline"
+                  >
+                    {collapsedParagraphs[index]
+                      ? "Show Details"
+                      : "Hide Details"}
+                  </button>
+                </div>
+
+                {!collapsedParagraphs[index] && (
+                  <>
+                    <div>
+                      <label className="text-sm">Title (optional):</label>
+                      <input
+                        type="text"
+                        value={paragraph.title || ""}
+                        onChange={(e) =>
+                          handleParagraphChange(index, "title", e.target.value)
+                        }
+                        className="w-full mt-1 px-2 py-1 rounded border dark:bg-gray-700 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-sm">Content:</label>
+                      <textarea
+                        required
+                        value={paragraph.content}
+                        onChange={(e) =>
+                          handleParagraphChange(
+                            index,
+                            "content",
+                            e.target.value
+                          )
+                        }
+                        className="w-full mt-1 px-2 py-1 rounded border dark:bg-gray-700 dark:text-white"
+                      />
+                    </div>
+                  </>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => removeParagraph(index)}
+                  className="text-red-600 text-sm hover:underline"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={addParagraph}
+              className="mt-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 w-full"
+            >
+              + Add Paragraph
+            </button>
           </div>
 
           {/* image posts Upload */}
@@ -601,80 +706,84 @@ const FormCreatePArticle = () => {
               className="mt-1 dark:accent-indigo-500"
             />
           </div>
-
-          {/* Upload OBB File */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              OBB :
-            </label>
-            {formData.linkOBB && (
+          {/* Show Details if OBB true.*/}
+          {formData.OBB && (
+            <>
+              {/* Upload OBB File */}
               <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUrlModal(formData.linkOBB ?? null); // <-- التعديل هنا
-                    setShowModal(true);
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  OBB :
+                </label>
+                {formData.linkOBB && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedUrlModal(formData.linkOBB ?? null); // <-- التعديل هنا
+                        setShowModal(true);
+                      }}
+                      className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                    >
+                      <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                        {formData.linkOBB}
+                      </p>
+                    </button>
+                  </div>
+                )}
+
+                <PageMultipartFileUploader
+                  title={formData.title}
+                  randomText={randomText}
+                  fileType="obbs"
+                  onUploadResult={(result) => {
+                    handleUploadOBB(result);
                   }}
-                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
-                >
-                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
-                    {formData.linkOBB}
-                  </p>
-                </button>
+                />
               </div>
-            )}
 
-            <PageMultipartFileUploader
-              title={formData.title}
-              randomText={randomText}
-              fileType="obbs"
-              onUploadResult={(result) => {
-                handleUploadOBB(result);
-              }}
-            />
-          </div>
-
-          {/* Link OBB */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Link OBB:
-            </label>
-            <input
-              type="text"
-              name="linkOBB"
-              value={formData.linkOBB || ""}
-              onChange={handleChange}
-              disabled={!formData.OBB}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Link OBB */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Link OBB:
+                </label>
+                <input
+                  type="text"
+                  name="linkOBB"
+                  value={formData.linkOBB || ""}
+                  onChange={handleChange}
+                  disabled={!formData.OBB}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
       dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
       dark:focus:border-indigo-500
       ${
         !formData.OBB ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed" : ""
       }`}
-            />
-          </div>
+                />
+              </div>
 
-          {/* Size File OBB */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Size File OBB:
-            </label>
-            <input
-              type="text"
-              name="sizeFileOBB"
-              value={formData.sizeFileOBB || ""}
-              onChange={handleChange}
-              disabled={!formData.OBB}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Size File OBB */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Size File OBB:
+                </label>
+                <input
+                  type="text"
+                  name="sizeFileOBB"
+                  value={formData.sizeFileOBB || ""}
+                  onChange={handleChange}
+                  disabled={!formData.OBB}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
       dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
       dark:focus:border-indigo-500
       ${
         !formData.OBB ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed" : ""
       }`}
-            />
-          </div>
+                />
+              </div>
+            </>
+          )}
 
           {/* Script */}
           <div>
@@ -689,50 +798,52 @@ const FormCreatePArticle = () => {
               className="mt-1 dark:accent-indigo-500"
             />
           </div>
-
-          {/* File Script Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Script :
-            </label>
-            {formData.linkScript && (
+          {/* Show Details if Script true.*/}
+          {formData.Script && (
+            <>
+              {/* File Script Upload */}
               <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUrlModal(formData.linkScript ?? null); // <-- التعديل هنا
-                    setShowModal(true);
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Script :
+                </label>
+                {formData.linkScript && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedUrlModal(formData.linkScript ?? null); // <-- التعديل هنا
+                        setShowModal(true);
+                      }}
+                      className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                    >
+                      <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                        {formData.linkScript}
+                      </p>
+                    </button>
+                  </div>
+                )}
+                <PageMultipartFileUploader
+                  title={formData.title}
+                  randomText={randomText}
+                  fileType="scripts"
+                  onUploadResult={(result) => {
+                    handleUploadScript(result);
                   }}
-                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
-                >
-                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
-                    {formData.linkScript}
-                  </p>
-                </button>
+                />
               </div>
-            )}
-            <PageMultipartFileUploader
-              title={formData.title}
-              randomText={randomText}
-              fileType="scripts"
-              onUploadResult={(result) => {
-                handleUploadScript(result);
-              }}
-            />
-          </div>
 
-          {/* Link Script */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Link Script:
-            </label>
-            <input
-              type="text"
-              name="linkScript"
-              value={formData.linkScript || ""}
-              onChange={handleChange}
-              disabled={!formData.Script}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Link Script */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Link Script:
+                </label>
+                <input
+                  type="text"
+                  name="linkScript"
+                  value={formData.linkScript || ""}
+                  onChange={handleChange}
+                  disabled={!formData.Script}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
       dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
       dark:focus:border-indigo-500
@@ -741,21 +852,21 @@ const FormCreatePArticle = () => {
           ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
           : ""
       }`}
-            />
-          </div>
+                />
+              </div>
 
-          {/* Size File Script */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Size File Script:
-            </label>
-            <input
-              type="text"
-              name="sizeFileScript"
-              value={formData.sizeFileScript || ""}
-              onChange={handleChange}
-              disabled={!formData.Script}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Size File Script */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Size File Script:
+                </label>
+                <input
+                  type="text"
+                  name="sizeFileScript"
+                  value={formData.sizeFileScript || ""}
+                  onChange={handleChange}
+                  disabled={!formData.Script}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
       dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
       dark:focus:border-indigo-500
@@ -764,8 +875,10 @@ const FormCreatePArticle = () => {
           ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
           : ""
       }`}
-            />
-          </div>
+                />
+              </div>
+            </>
+          )}
 
           {/* OriginalAPK */}
           <div>
@@ -780,51 +893,53 @@ const FormCreatePArticle = () => {
               className="mt-1 dark:accent-indigo-500"
             />
           </div>
-
-          {/* Upload OriginalAPK File */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              OriginalAPK :
-            </label>
-            {formData.linkOriginalAPK && (
+          {/* Show Details if OriginalAPK true.*/}
+          {formData.OriginalAPK && (
+            <>
+              {/* Upload OriginalAPK File */}
               <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUrlModal(formData.linkOriginalAPK ?? null);
-                    setShowModal(true);
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  OriginalAPK :
+                </label>
+                {formData.linkOriginalAPK && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedUrlModal(formData.linkOriginalAPK ?? null);
+                        setShowModal(true);
+                      }}
+                      className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                    >
+                      <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                        {formData.linkOriginalAPK}
+                      </p>
+                    </button>
+                  </div>
+                )}
+                <PageMultipartFileUploader
+                  title={formData.title}
+                  randomText={randomText}
+                  fileType="original-apks"
+                  version={formData.versionOriginal || ""}
+                  onUploadResult={(result) => {
+                    handleUploadOriginalAPK(result);
                   }}
-                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
-                >
-                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
-                    {formData.linkOriginalAPK}
-                  </p>
-                </button>
+                />
               </div>
-            )}
-            <PageMultipartFileUploader
-              title={formData.title}
-              randomText={randomText}
-              fileType="original-apks"
-              version={formData.versionOriginal||""}
-              onUploadResult={(result) => {
-                handleUploadOriginalAPK(result);
-              }}
-            />
-          </div>
 
-          {/* Link OriginalAPK */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Link OriginalAPK:
-            </label>
-            <input
-              type="text"
-              name="linkOriginalAPK"
-              value={formData.linkOriginalAPK || ""}
-              onChange={handleChange}
-              disabled={!formData.OriginalAPK}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Link OriginalAPK */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Link OriginalAPK:
+                </label>
+                <input
+                  type="text"
+                  name="linkOriginalAPK"
+                  value={formData.linkOriginalAPK || ""}
+                  onChange={handleChange}
+                  disabled={!formData.OriginalAPK}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
       dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
       dark:focus:border-indigo-500
@@ -833,21 +948,21 @@ const FormCreatePArticle = () => {
           ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
           : ""
       }`}
-            />
-          </div>
+                />
+              </div>
 
-          {/* Size File OriginalAPK */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Size File OriginalAPK:
-            </label>
-            <input
-              type="text"
-              name="sizeFileOriginalAPK"
-              value={formData.sizeFileOriginalAPK || ""}
-              onChange={handleChange}
-              disabled={!formData.OriginalAPK}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Size File OriginalAPK */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Size File OriginalAPK:
+                </label>
+                <input
+                  type="text"
+                  name="sizeFileOriginalAPK"
+                  value={formData.sizeFileOriginalAPK || ""}
+                  onChange={handleChange}
+                  disabled={!formData.OriginalAPK}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
       dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
       dark:focus:border-indigo-500
@@ -856,26 +971,28 @@ const FormCreatePArticle = () => {
           ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
           : ""
       }`}
-            />
-          </div>
+                />
+              </div>
 
-          {/* versionOriginal */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              versionOriginal:
-            </label>
-            <input
-              type="text"
-              name="versionOriginal"
-              value={formData.versionOriginal || ""}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* versionOriginal */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  versionOriginal:
+                </label>
+                <input
+                  type="text"
+                  name="versionOriginal"
+                  value={formData.versionOriginal || ""}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
       focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
       dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
       dark:focus:border-indigo-500"
-              /* required */
-            />
-          </div>
+                  /* required */
+                />
+              </div>
+            </>
+          )}
 
           {/* Upload APK File */}
           <div>
@@ -1128,12 +1245,6 @@ const FormCreatePArticle = () => {
               /* required */
             />
           </div>
-
-          {/* ReCAPTCHA */}
-          <ReCAPTCHA
-            ref={recaptchaRef}
-            sitekey={"6LfSd9gqAAAAAIJn7lHYKyxRBUznWWARoe8PTyAW"} // استبدل بمفتاحك من Google
-          />
 
           {/* Submit Button */}
           <div>

@@ -152,6 +152,7 @@ model Article {
 
   pendingArticle PendingArticle?
   ratings        ArticleRating[]
+  paragraphs ArticleParagraph[]
 }
 
 model ArticleRating {
@@ -229,6 +230,7 @@ model PendingArticle {
   article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   rejected RejectedPendingArticle?
+  paragraphs PendingArticleParagraph[]
 }
 
 model RejectedPendingArticle {
@@ -242,4 +244,26 @@ model RejectedPendingArticle {
   rejectedBy   User     @relation("RejectedBy", fields: [rejectedById], references: [id])
 
   reason String
+}
+
+//
+
+model ArticleParagraph {
+  id         Int      @id @default(autoincrement())
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId  Int
+
+  title      String?
+  content    String
+  order      Int
+}
+
+model PendingArticleParagraph {
+  id              Int             @id @default(autoincrement())
+  pendingArticle  PendingArticle @relation(fields: [pendingArticleId], references: [id], onDelete: Cascade)
+  pendingArticleId Int
+
+  title      String?
+  content    String
+  order      Int
 }
