@@ -43,12 +43,13 @@ export async function GET(request: NextRequest, { params }: Props) {
         select: {
           id: true,
           title: true,
-          secondTitle:true,
+          secondTitle: true,
           image: true,
           androidVer: true,
           linkAPK: true,
           sizeFileAPK: true,
-          isMod:true,
+          isMod: true,
+          typeMod: true,
         },
       });
       if (!article) {
@@ -65,12 +66,13 @@ export async function GET(request: NextRequest, { params }: Props) {
         select: {
           id: true,
           title: true,
-          secondTitle:true,
+          secondTitle: true,
           image: true,
           androidVer: true,
           linkOBB: true,
           sizeFileOBB: true,
-          isMod:true,
+          isMod: true,
+          typeMod: true,
         },
       });
       if (!article) {
@@ -87,12 +89,13 @@ export async function GET(request: NextRequest, { params }: Props) {
         select: {
           id: true,
           title: true,
-          secondTitle:true,
+          secondTitle: true,
           image: true,
           androidVer: true,
           linkScript: true,
           sizeFileScript: true,
-          isMod:true,
+          isMod: true,
+          typeMod: true,
         },
       });
       if (!article) {
@@ -109,13 +112,12 @@ export async function GET(request: NextRequest, { params }: Props) {
         select: {
           id: true,
           title: true,
-          secondTitle:true,
+          secondTitle: true,
           image: true,
           androidVer: true,
-          versionOriginal:true,
+          versionOriginal: true,
           linkOriginalAPK: true,
           sizeFileOriginalAPK: true,
-          isMod:true,
         },
       });
       if (!article) {

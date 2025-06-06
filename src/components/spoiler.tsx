@@ -4,8 +4,9 @@ import { RiPlayListAddLine } from "react-icons/ri";
 import { GrTextAlignFull } from "react-icons/gr";
 
 interface Props {
-  description: string;
   title: string;
+  secondTitle?: string | null;
+  description: string;
   isMod: boolean;
   typeMod?: string;
   paragraphs?: {
@@ -16,6 +17,7 @@ interface Props {
 
 export default function Spoiler({
   title,
+  secondTitle,
   description,
   isMod,
   typeMod,
@@ -30,9 +32,12 @@ export default function Spoiler({
           !expanded ? "line-clamp-4 overflow-hidden" : ""
         }`}
       >
-        <p className="font-bold text-justify">
-          {title} {isMod && <span>({typeMod})</span>}{" "}
-          <span className="font-normal">{description}</span>
+        <p className="text-justify">
+          <strong className="font-bold">
+            {title}
+            {secondTitle && secondTitle} ({isMod && typeMod})
+          </strong>{" "}
+          - <span>{description}</span>
         </p>
 
         {paragraphs?.map((p, index) => (

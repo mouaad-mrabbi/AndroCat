@@ -288,11 +288,11 @@ export async function ArticleContent({ slug }: { slug: string }) {
               {/* 4 */}
               <div
                 className="
-            lg:col-start-2 lg:row-start-3 lg:col-span-1
-            min-[770px]:col-start-2 min-[770px]:row-start-4
-            col-span-3 row-start-4 
-            order-5
-          "
+                  lg:col-start-2 lg:row-start-3 lg:col-span-1
+                  min-[770px]:col-start-2 min-[770px]:row-start-4
+                  col-span-3 row-start-4 
+                  order-5
+                "
               >
                 <Spoiler
                   title={article.title}
@@ -302,6 +302,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
                     typeMod: article.typeMod ?? undefined,
                   })}
                   paragraphs={article.paragraphs}
+                  secondTitle={article.secondTitle}
                 />
               </div>
             </div>

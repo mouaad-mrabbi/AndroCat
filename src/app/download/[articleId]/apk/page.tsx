@@ -36,8 +36,8 @@ export default async function DownloadAPKPage({ params }: ArticlesPageProp) {
           {/* Back Window */}
           <Link
             href={`/${article.id}-${cleanTitle}${
-                article.isMod ? "-mod" : ""
-              }-apk-android-download`}
+              article.isMod ? "-mod" : ""
+            }-apk-android-download`}
             className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-500/50"
           >
             <IoArrowBack />
@@ -59,7 +59,7 @@ export default async function DownloadAPKPage({ params }: ArticlesPageProp) {
             <p className="text-[1.25rem] text-center font-bold mb-9">
               Download <span>{article.title}</span>{" "}
               {article.isMod && <span>({article.typeMod})</span>}{" "}
-              <span>{article.version}</span> free on Android
+              <span>{article.version}</span> apk for Android
             </p>
 
             <div className="flex items-center gap-2 text-sm text-gray-500 font-bold mb-4">
