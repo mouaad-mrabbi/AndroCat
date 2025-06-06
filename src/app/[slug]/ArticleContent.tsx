@@ -57,9 +57,9 @@ export async function ArticleContent({ slug }: { slug: string }) {
       name: `Download ${article.title} ${article.isMod && article.typeMod} ${
         article.version
       } apk for android`,
-      description: `Download ${article.title} ${
-        article.isMod && article.typeMod
-      } ${article.version} ${article.descriptionMeta}`,
+      description: `${article.title} (${article.isMod && article.typeMod}) - ${
+        article.descriptionMeta
+      }`,
       url: `${DOMAIN}/${slug}`,
       image: `${DOMAINCDN}/${article.image}`,
       keywords:
@@ -150,7 +150,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
           />
         </Head>
         <div className="min-w-[320px]">
-          {/*       ads remove    <InterstitialAd /> */}
+          {/*ads remove    <InterstitialAd /> */}
 
           <Toolbar
             local={"home"}
@@ -158,11 +158,11 @@ export async function ArticleContent({ slug }: { slug: string }) {
             scndLocal={`${article.title}`}
           />
           {/* content */}
-          <div className="bg-[#1b1d1f] max-[770px]:bg-transparent m-7 max-[770px]:m-0 ">
+          <div className="bg-[#1b1d1f] max-[770px]:bg-transparent m-7 max-[770px]:m-0">
             <div
               className="
                 grid gap-4 p-6
-                grid-cols-[minmax(0,184px)_minmax(0,1fr)]
+                grid-cols-[minmax(0,auto)_minmax(0,1fr)]
                 min-[770px]:grid-cols-[minmax(0,auto)_minmax(0,1fr)]
                 lg:grid-cols-[minmax(0,auto)_minmax(0,1fr)_minmax(0,208px)]
               "
@@ -170,11 +170,11 @@ export async function ArticleContent({ slug }: { slug: string }) {
               {/* 1 */}
               <div
                 className="
-            lg:col-start-1 lg:row-start-1 lg:row-span-3
-            min-[770px]:row-span-4 min-[770px]:col-start-1 min-[770px]:row-start-1
-            row-span-2 col-start-1 row-start-2
-            order-1
-          "
+                  lg:col-start-1 lg:row-start-1 lg:row-span-3
+                  min-[770px]:row-span-4 min-[770px]:col-start-1 min-[770px]:row-start-1
+                  row-span-2 col-start-1 row-start-2
+                  order-1
+                "
               >
                 {/* image square */}
                 <Image
@@ -210,11 +210,11 @@ export async function ArticleContent({ slug }: { slug: string }) {
               {/* 3 */}
               <div
                 className="
-            lg:col-start-2 lg:row-start-2 lg:col-span-1
-            min-[770px]:col-start-2 min-[770px]:row-start-2 min-[770px]:col-span-3
-            col-span-2 col-start-2 row-start-2
-            order-3
-          "
+                  lg:col-start-2 lg:row-start-2 lg:col-span-1
+                  min-[770px]:col-start-2 min-[770px]:row-start-2 min-[770px]:col-span-3
+                  col-span-2 col-start-2 row-start-2
+                  order-3
+                "
               >
                 {/* developer */}
                 <p className="text-sm text-[#b2b2b2] mb-2.5 max-lg:hidden">
@@ -250,13 +250,13 @@ export async function ArticleContent({ slug }: { slug: string }) {
               {/* 5 */}
               <div
                 className="
-          max-[770px]:bg-transparent
-            max-lg:bg-[#55585b] max-lg:rounded-full max-lg:p-2 
-            lg:row-start-1 lg:row-span-3 lg:col-span-1 lg:col-start-3
-            min-[770px]:col-start-2 min-[770px]:row-start-3 min-[770px]:col-span-3
-            col-span-2 col-start-2 row-start-3
-            order-4 h-max  
-          "
+                  max-[770px]:bg-transparent
+                  max-lg:bg-[#55585b] max-lg:rounded-full max-lg:p-2 
+                  lg:row-start-1 lg:row-span-3 lg:col-span-1 lg:col-start-3
+                  min-[770px]:col-start-2 min-[770px]:row-start-3 min-[770px]:col-span-3
+                  col-span-2 col-start-2 row-start-3
+                  order-4 h-max  
+                "
               >
                 {/* Downloads */}
                 <div className="flex flex-col gap-6 items-center max-lg:flex-row">
@@ -264,8 +264,8 @@ export async function ArticleContent({ slug }: { slug: string }) {
                     <Link
                       href="#downloads"
                       title="downloads"
-                      className="w-52 px-4 py-3 uppercase bg-green-500 leading-relaxed font-bold rounded-full
-                  shadow-xl shadow-green-500/20 text-nowrap"
+                      className="w-52 px-4 py-3 uppercase font-bold rounded-full text-center
+                        bg-green-500 shadow-xl shadow-green-500/20"
                     >
                       Downloads
                     </Link>
@@ -273,8 +273,8 @@ export async function ArticleContent({ slug }: { slug: string }) {
                     <Link
                       href={`/download/${article.id}/apk`}
                       title={`Download APK ${article.title} Updated to version ${article.version}`}
-                      className="w-52 px-4 py-3 uppercase bg-green-500 font-bold rounded-full 
-                  shadow-xl shadow-green-500/20 text-nowrap"
+                      className="w-52 px-4 py-3 uppercase font-bold rounded-full text-sm text-ellipsis whitespace-nowrap text-center
+                        bg-green-500 shadow-xl shadow-green-500/20 overflow-hidden"
                     >
                       Download({article.sizeFileAPK})
                     </Link>
