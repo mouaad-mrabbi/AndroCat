@@ -159,161 +159,141 @@ export async function ArticleContent({ slug }: { slug: string }) {
           />
           {/* content */}
           <div className="bg-[#1b1d1f] max-[770px]:bg-transparent m-7 max-[770px]:m-0 ">
-            <div className="flex max-[770px]:flex-col p-6">
-              {/* title */}
-              <h1 className="text-[1.5rem] font-bold min-[770px]:hidden mb-4">
-                Download <span>{article.title}</span>{" "}
-                {article.isMod && <span>({article.typeMod})</span>}{" "}
-                <span>{article.version}</span> APK for Android
-              </h1>
-
-              <div className="flex">
-                {/* left */}
-                <div>
-                  {/* image square */}
-                  <div className=" aspect-square h-[136px] min-[500px]:h-[184px] min-[770px]:h-[160px] min-[1200px]:h-[184px]">
-                    <Image
-                      src={`${DOMAINCDN}/${article.image}`}
-                      width={190}
-                      height={190}
-                      alt={`${article.title} ${article.isMod ? "mod" : ""} apk`}
-                      className="aspect-square w-full rounded-2xl object-cover"
-                      priority
-                    />
-                  </div>
-                  {/* developer */}
-                  <p className="text-sm text-[#b2b2b2]  lg:hidden my-4">
-                    {article.developer}
-                  </p>
-                </div>
-                {/* center */}
-                <div className=" ml-8 max-[770px]:ml-4">
-                  <div>
-                    {/* title */}
-                    <p className="text-[1.65rem] font-bold max-[770px]:hidden">
-                      Download <span>{article.title}</span>{" "}
-                      {article.isMod && <span>({article.typeMod})</span>}{" "}
-                      <span>{article.version}</span> APK for Android
-                    </p>
-                    {/* developer */}
-                    <p className="text-sm text-[#b2b2b2] my-2.5 max-lg:hidden">
-                      {article.developer}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4  mb-4 max-lg:hidden">
-                    <Star rating={article.averageRating} />
-                    <p className="font-bold">
-                      {article.averageRating}{" "}
-                      <span className="text-sm font-normal">
-                        ({article.ratingCount})
-                      </span>
-                    </p>
-                  </div>
-
-                  <div>
-                    <ul className="flex gap-4 text-sm  text-[#b2b2b2] max-[770px]:flex-col max-[770px]:gap-2">
-                      <li className="flex items-center gap-2">
-                        <FaAndroid />
-                        <span>Android {article.androidVer} +</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <TbVersionsFilled />
-                        <span>Version: {article.version}</span>
-                      </li>
-                      <li className="flex items-center gap-2">
-                        <ImDatabase />
-                        <span>{article.sizeFileAPK}</span>
-                      </li>
-                    </ul>
-                    {/* Downloads */}
-                    <div className="h-12  w-full mt-5 max-[500px]:mt-2 max-[500px]:h-10 min-[770px]:hidden ">
-                      {article.OBB || article.Script ? (
-                        <Link
-                          href="#downloads"
-                          title="downloads"
-                          className="box-border h-full flex items-center justify-center px-4 uppercase bg-green-500 leading-relaxed font-bold rounded-full text-nowrap"
-                        >
-                          Downloads
-                        </Link>
-                      ) : (
-                        <Link
-                          href={`/download/${article.id}/apk`}
-                          title={`Download APK ${article.title} Updated to version ${article.version}`}
-                          className="box-border h-full flex items-center px-4 uppercase bg-green-500 leading-relaxed font-bold 
-                      rounded-full shadow-xl shadow-green-500/20 text-nowrap max-[340px]:text-[10px] max-[500px]:text-xs "
-                        >
-                          Download ({article.sizeFileAPK})
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Downloads */}
-                  <div className="flex gap-6 items-center p-2 mt-6 w-full h-16 rounded-full bg-[#55585b] lg:hidden max-[770px]:hidden">
-                    {article.OBB || article.Script ? (
-                      <Link
-                        href="#downloads"
-                        title="downloads"
-                        className="box-border h-full flex items-center px-4 uppercase bg-green-500 leading-relaxed font-bold rounded-full text-nowrap"
-                      >
-                        Downloads
-                      </Link>
-                    ) : (
-                      <Link
-                        href={`/download/${article.id}/apk`}
-                        title={`Download APK ${article.title} Updated to version ${article.version}`}
-                        className="box-border h-full flex items-center px-4 uppercase bg-green-500 leading-relaxed font-bold rounded-full text-nowrap"
-                      >
-                        Download ({article.sizeFileAPK})
-                      </Link>
-                    )}
-
-                    <p className="text-sm text-white text-center">
-                      Updated to version {article.version}!
-                    </p>
-                  </div>
-
-                  <div className=" max-[770px]:hidden mt-6">
-                    <Spoiler
-                      title={article.title}
-                      description={article.description}
-                      isMod={article.isMod}
-                      {...(article.isMod && {
-                        typeMod: article.typeMod ?? undefined,
-                      })}
-                      paragraphs={article.paragraphs}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* right */}
-              <div className=" w-52 ml-8 flex flex-col max-lg:hidden">
-                {article.OBB || article.Script ? (
-                  <Link
-                    href="#downloads"
-                    title="downloads"
-                    className="box-border p-4 uppercase bg-green-500 leading-relaxed font-bold rounded-full 
-                  shadow-xl shadow-green-500/20 text-nowrap text-center"
-                  >
-                    Downloads
-                  </Link>
-                ) : (
-                  <Link
-                    href={`/download/${article.id}/apk`}
-                    title={`Download APK ${article.title} Updated to version ${article.version}`}
-                    className="box-border p-4 uppercase bg-green-500 leading-relaxed font-bold rounded-full shadow-xl shadow-green-500/20 text-nowrap"
-                  >
-                    Download ({article.sizeFileAPK})
-                  </Link>
-                )}
-                <p className="text-sm text-[#b2b2b2] text-center pt-2.5">
-                  Updated to version {article.version}!
+            <div
+              className="
+                grid gap-4 p-6
+                grid-cols-[minmax(0,184px)_minmax(0,1fr)]
+                min-[770px]:grid-cols-[minmax(0,auto)_minmax(0,1fr)]
+                lg:grid-cols-[minmax(0,auto)_minmax(0,1fr)_minmax(0,208px)]
+              "
+            >
+              {/* 1 */}
+              <div
+                className="
+            lg:col-start-1 lg:row-start-1 lg:row-span-3
+            min-[770px]:row-span-4 min-[770px]:col-start-1 min-[770px]:row-start-1
+            row-span-2 col-start-1 row-start-2
+            order-1
+          "
+              >
+                {/* image square */}
+                <Image
+                  src={`${DOMAINCDN}/${article.image}`}
+                  width={190}
+                  height={190}
+                  alt={`${article.title} ${article.isMod ? "mod" : ""} apk`}
+                  className="w-[136px] min-[500px]:w-[184px] min-[770px]:w-[160px] min-[1200px]:w-[184px] aspect-square rounded-2xl object-cover"
+                  priority
+                />
+                {/* developer */}
+                <p className="text-sm text-[#b2b2b2]  lg:hidden mt-4">
+                  {article.developer}
                 </p>
               </div>
 
-              {/* description */}
-              <div className=" min-[770px]:hidden">
+              {/* 2 */}
+              <div
+                className="
+            lg:col-start-2 lg:row-start-1 lg:col-span-1
+            min-[770px]:col-start-2 min-[770px]:row-start-1
+            col-span-3 row-start-1
+            order-2
+          "
+              >
+                <h1 className="text-[1.5rem] font-bold">
+                  Download <span>{article.title}</span>{" "}
+                  {article.isMod && <span>({article.typeMod})</span>}{" "}
+                  <span>{article.version}</span> APK for Android
+                </h1>
+              </div>
+
+              {/* 3 */}
+              <div
+                className="
+            lg:col-start-2 lg:row-start-2 lg:col-span-1
+            min-[770px]:col-start-2 min-[770px]:row-start-2 min-[770px]:col-span-3
+            col-span-2 col-start-2 row-start-2
+            order-3
+          "
+              >
+                {/* developer */}
+                <p className="text-sm text-[#b2b2b2] mb-2.5 max-lg:hidden">
+                  {article.developer}
+                </p>
+                <div className="flex items-center gap-4  mb-4 max-lg:hidden">
+                  <Star rating={article.averageRating} />
+                  <p className="font-bold">
+                    {article.averageRating}{" "}
+                    <span className="text-sm font-normal">
+                      ({article.ratingCount})
+                    </span>
+                  </p>
+                </div>
+                <div>
+                  <ul className="flex gap-4 text-sm  text-[#b2b2b2] max-[770px]:flex-col max-[770px]:gap-2">
+                    <li className="flex items-center gap-2">
+                      <FaAndroid />
+                      <span>Android {article.androidVer} +</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <TbVersionsFilled />
+                      <span>Version: {article.version}</span>
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <ImDatabase />
+                      <span>{article.sizeFileAPK}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* 5 */}
+              <div
+                className="
+          max-[770px]:bg-transparent
+            max-lg:bg-[#55585b] max-lg:rounded-full max-lg:p-2 
+            lg:row-start-1 lg:row-span-3 lg:col-span-1 lg:col-start-3
+            min-[770px]:col-start-2 min-[770px]:row-start-3 min-[770px]:col-span-3
+            col-span-2 col-start-2 row-start-3
+            order-4 h-max  
+          "
+              >
+                {/* Downloads */}
+                <div className="flex flex-col gap-6 items-center max-lg:flex-row">
+                  {article.OBB || article.Script ? (
+                    <Link
+                      href="#downloads"
+                      title="downloads"
+                      className="w-52 px-4 py-3 uppercase bg-green-500 leading-relaxed font-bold rounded-full
+                  shadow-xl shadow-green-500/20 text-nowrap"
+                    >
+                      Downloads
+                    </Link>
+                  ) : (
+                    <Link
+                      href={`/download/${article.id}/apk`}
+                      title={`Download APK ${article.title} Updated to version ${article.version}`}
+                      className="w-52 px-4 py-3 uppercase bg-green-500 font-bold rounded-full 
+                  shadow-xl shadow-green-500/20 text-nowrap"
+                    >
+                      Download({article.sizeFileAPK})
+                    </Link>
+                  )}
+                  <p className="text-sm text-[#b2b2b2] text-center max-[770px]:hidden">
+                    Updated to version {article.version}!
+                  </p>
+                </div>
+              </div>
+
+              {/* 4 */}
+              <div
+                className="
+            lg:col-start-2 lg:row-start-3 lg:col-span-1
+            min-[770px]:col-start-2 min-[770px]:row-start-4
+            col-span-3 row-start-4 
+            order-5
+          "
+              >
                 <Spoiler
                   title={article.title}
                   description={article.description}
@@ -330,7 +310,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
 
             {/* Screenshots */}
             <div className="p-6">
-              <h2 className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center ">
+              <h2 className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center">
                 <span className="sr-only">
                   {article.title} {article.isMod && `${article.typeMod} `}
                   APK –
