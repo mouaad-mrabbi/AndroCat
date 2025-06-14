@@ -37,13 +37,13 @@ export default function Star({ rating=0 }: StarProps) {
     <div className="flex text-2xl">
       {/* Full stars */}
       {Array.from({ length: fullStars }).map((_, i) => (
-        <RiStarFill key={`full-${i}`} className="fill-green-500" />
+        <RiStarFill key={`full-${i}`} className="fill-interactive" />
       ))}
       {/* Half star */}
-      {halfStar && <RiStarHalfFill key="half" className="fill-green-500" />}
+      {halfStar && <RiStarHalfFill key="half" className="fill-interactive" />}
       {/* Empty stars */}
       {Array.from({ length: emptyStars }).map((_, i) => (
-        <RiStarLine key={`empty-${i}`} className="fill-green-500" />
+        <RiStarLine key={`empty-${i}`} className="fill-interactive" />
       ))}
     </div>
   );

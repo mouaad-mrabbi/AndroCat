@@ -8,6 +8,7 @@ import {
   GameCategories,
   PendingArticleParagraph,
   ProgramCategories,
+  ScreenType,
 } from "@prisma/client";
 import { createPendingArticles } from "@/apiCalls/adminApiCall";
 import { ModalForm } from "@/components/modalForm";
@@ -42,6 +43,7 @@ const FormCreatePArticle = () => {
     sizeFileOBB: null,
     sizeFileScript: null,
     sizeFileOriginalAPK: null,
+    screenType:ScreenType.SIXTEEN_BY_NINE,
     appScreens: [],
     keywords: [],
     isMod: false,
@@ -167,6 +169,7 @@ const FormCreatePArticle = () => {
           sizeFileOBB: null,
           sizeFileScript: null,
           sizeFileOriginalAPK: null,
+          screenType:ScreenType.SIXTEEN_BY_NINE,
           appScreens: [],
           keywords: [],
           isMod: false,
@@ -1083,6 +1086,39 @@ const FormCreatePArticle = () => {
             />
           </div>
 
+          {/* screen Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Screen Type:
+            </label>
+            <select
+              name="screenType"
+              value={formData.screenType}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                bg-white text-gray-700 cursor-pointer
+                dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
+                dark:focus:border-indigo-500"
+            >
+              <option
+                value=""
+                disabled
+                className="text-gray-400 dark:text-gray-400"
+              >
+                Select Screen Type
+              </option>
+              {Object.values(ScreenType).map((type) => (
+                <option
+                  key={type}
+                  value={type}
+                  className="text-gray-700 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+                >
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
           {/* App Screenshots */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">

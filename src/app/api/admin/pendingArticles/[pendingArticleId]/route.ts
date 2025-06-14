@@ -50,9 +50,9 @@ export async function GET(request: NextRequest, { params }: Props) {
         createdBy: {
           select: { username: true, profile: true },
         },
-        paragraphs:{
-          select:{title:true,content:true}
-        }
+        paragraphs: {
+          select: { title: true, content: true },
+        },
       },
     });
     if (!pendingArticle) {
@@ -156,7 +156,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
           body.articleType === "PROGRAM" ? body.programCategory : null,
 
         OBB: body.OBB ?? pendingArticle.OBB,
-        Script: body.Script ?? pendingArticle.Script, // احتفظ بالقيمة القديمة إذا لم يتم إرسال Script
+        Script: body.Script ?? pendingArticle.Script,
         OriginalAPK: body.OriginalAPK ?? pendingArticle.OriginalAPK,
 
         linkAPK: body.linkAPK,
@@ -167,7 +167,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
         linkScript:
           body.Script ?? pendingArticle.Script
             ? body.linkScript ?? pendingArticle.linkScript
-            : null, // لا تغير linkScript إلا إذا كان Script = false بشكل صريح
+            : null,
         linkOriginalAPK:
           body.OriginalAPK ?? pendingArticle.OriginalAPK
             ? body.linkOriginalAPK ?? pendingArticle.linkOriginalAPK
@@ -182,12 +182,13 @@ export async function PUT(request: NextRequest, { params }: Props) {
         sizeFileScript:
           body.Script ?? pendingArticle.Script
             ? body.sizeFileScript ?? pendingArticle.sizeFileScript
-            : null, // احتفظ بالقيمة القديمة
+            : null,
         sizeFileOriginalAPK:
           body.OriginalAPK ?? pendingArticle.OriginalAPK
             ? body.sizeFileOriginalAPK ?? pendingArticle.sizeFileOriginalAPK
             : null,
 
+        screenType: body.screenType,
         appScreens: body.appScreens,
         keywords: body.keywords,
 
@@ -195,7 +196,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
         typeMod:
           body.isMod ?? pendingArticle.isMod
             ? body.typeMod ?? pendingArticle.typeMod
-            : null, // احتفظ بالقيمة السابقة إذا لم يتم إرسال isMod
+            : null,
 
         ratedFor: body.ratedFor,
         installs: body.installs,
@@ -210,7 +211,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
     if (body.paragraphs && body.paragraphs.length > 0) {
       await prisma.pendingArticleParagraph.createMany({
-        data: body.paragraphs.map((p,index) => ({
+        data: body.paragraphs.map((p, index) => ({
           pendingArticleId,
           title: p.title,
           content: p.content,

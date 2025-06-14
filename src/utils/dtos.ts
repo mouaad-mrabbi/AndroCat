@@ -1,4 +1,9 @@
-import { ArticleType, GameCategories, ProgramCategories } from "@prisma/client";
+import {
+  ArticleType,
+  GameCategories,
+  ProgramCategories,
+  ScreenType,
+} from "@prisma/client";
 
 //User
 export interface RegisterUserDto {
@@ -49,6 +54,7 @@ export interface CreateArticleDto {
   sizeFileScript?: string | null;
   sizeFileOriginalAPK?: string | null;
 
+  screenType: ScreenType;
   appScreens: string[];
   keywords: string[];
 
@@ -97,6 +103,7 @@ export interface UpdateArticleDto {
   sizeFileScript?: string;
   sizeFileOriginalAPK?: string;
 
+  screenType: ScreenType;
   appScreens?: string[];
   keywords?: string[];
 

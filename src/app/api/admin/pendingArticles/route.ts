@@ -151,6 +151,7 @@ export async function POST(request: NextRequest) {
             ? body.sizeFileOriginalAPK
             : null,
 
+          screenType: body.screenType,
           appScreens: body.appScreens,
           keywords: body.keywords,
 
@@ -162,9 +163,8 @@ export async function POST(request: NextRequest) {
 
           createdById: userFromToken.id,
 
-          // ✅ إضافة الفقرات
           paragraphs: {
-            create: body.paragraphs?.map((p,index) => ({
+            create: body.paragraphs?.map((p, index) => ({
               title: p.title,
               content: p.content,
               order: index,

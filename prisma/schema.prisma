@@ -92,6 +92,13 @@ enum ProgramCategories {
   TOOLS
 }
 
+enum ScreenType {
+  SIXTEEN_BY_NINE
+  NINE_BY_SIXTEEN
+  THREE_BY_FOUR
+  FIVE_BY_EIGHT
+}
+
 model Article {
   id              Int             @id @default(autoincrement())
   title           String
@@ -123,9 +130,10 @@ model Article {
   sizeFileScript      String?
   sizeFileOriginalAPK String?
 
+  screenType ScreenType?
   appScreens String[]
-  keywords   String[]
 
+  keywords   String[]
   isMod   Boolean @default(false)
   typeMod String?
 
@@ -211,9 +219,10 @@ model PendingArticle {
   sizeFileScript      String?
   sizeFileOriginalAPK String?
 
+  screenType ScreenType?
   appScreens String[]
-  keywords   String[]
 
+  keywords   String[]
   isMod   Boolean @default(false)
   typeMod String?
 

@@ -73,7 +73,7 @@ export default function Countdown({
       ) : (
         <a
           href={`${DOMAINCDN}/${link}`}
-          className="mt-4 flex items-center box-border h-10 py-3 px-6 uppercase bg-green-500 text-white 
+          className="mt-4 flex items-center box-border h-10 py-3 px-6 uppercase bg-interactive text-white 
             font-bold rounded-full shadow-lg transition-transform transform hover:scale-105 active:scale-95"
           download={clickedOnce}
           rel="nofollow"

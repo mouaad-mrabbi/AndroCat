@@ -16,7 +16,7 @@ export default function Toolbar({
       <Link
         title="AndroCat"
         href={local === "home" ? "/" : `/admin/${local}`}
-        className="text-green-500"
+        className="text-interactive"
       >
         {local === "home" ? "home" : local}
       </Link>
@@ -27,7 +27,7 @@ export default function Toolbar({
           href={
             local === "home" ? `/${firstLocal}` : `/admin/${firstLocal}/page/1`
           }
-          className="text-green-500"
+          className="text-interactive"
         >
           {firstLocal}
         </Link>

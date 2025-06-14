@@ -10,7 +10,7 @@ interface Props {
   isMod: boolean;
   typeMod?: string;
   paragraphs?: {
-    title?: string;
+    title?: string|null;
     content: string;
   }[];
 }
@@ -54,7 +54,7 @@ export default function Spoiler({
 
       <button
         onClick={() => setExpanded(!expanded)}
-        className="mt-2 text-green-500 flex items-center gap-2"
+        className="mt-2 text-interactive flex items-center gap-2"
       >
         {expanded ? (
           <>

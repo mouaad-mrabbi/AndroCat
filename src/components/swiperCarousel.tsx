@@ -40,7 +40,7 @@ const SwiperCarousel = () => {
                 <Link
                   href="/games"
                   title="all modded games on Androcat"
-                  className="p-2.5 rounded-full font-bold w-max bg-green-500"
+                  className="p-2.5 rounded-full font-bold w-max bg-interactive"
                 >
                   <span>ALL MOD Games</span>
                 </Link>
@@ -71,7 +71,7 @@ const SwiperCarousel = () => {
                 <Link
                   href="/programs"
                   title="all Android programs on Androcat"
-                  className="p-2.5 rounded-full font-bold w-max bg-green-500"
+                  className="p-2.5 rounded-full font-bold w-max bg-interactive"
                 >
                   <span>ALL programs</span>
                 </Link>

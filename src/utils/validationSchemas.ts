@@ -1,4 +1,9 @@
-import { ArticleType, GameCategories, ProgramCategories } from "@prisma/client";
+import {
+  ArticleType,
+  GameCategories,
+  ProgramCategories,
+  ScreenType,
+} from "@prisma/client";
 import { z } from "zod";
 
 // Register Schema
@@ -60,6 +65,7 @@ export const createArticleSchema = z
     sizeFileScript: z.string().min(1).max(20).nullable().optional(),
     sizeFileOriginalAPK: z.string().min(1).max(20).nullable().optional(),
 
+    screenType: z.nativeEnum(ScreenType),
     appScreens: z.array(z.string().max(500)).nonempty().min(1),
     keywords: z.array(z.string().min(1).max(50)).nonempty().min(1),
 
@@ -290,6 +296,7 @@ export const updateArticleSchema = z
     sizeFileScript: z.string().min(1).max(20).nullable().optional(),
     sizeFileOriginalAPK: z.string().min(1).max(20).nullable().optional(),
 
+    screenType: z.nativeEnum(ScreenType).optional(),
     appScreens: z.array(z.string().max(500)).min(1).optional(),
     keywords: z.array(z.string().min(1).max(50)).min(1).optional(),
 

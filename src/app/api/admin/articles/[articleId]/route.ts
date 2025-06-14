@@ -73,6 +73,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
 
+        screenType:true,
         appScreens: true,
         keywords: true,
 

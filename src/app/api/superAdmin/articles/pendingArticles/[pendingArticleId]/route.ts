@@ -105,6 +105,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
 
+        screenType:true,
         appScreens: true,
         keywords: true,
         isMod: true,
@@ -152,6 +153,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
           ? pendingArticle.sizeFileOriginalAPK
           : null,
 
+        screenType: pendingArticle.screenType,
         appScreens: pendingArticle.appScreens,
         keywords: pendingArticle.keywords,
 

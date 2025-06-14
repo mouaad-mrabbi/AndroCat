@@ -23,7 +23,7 @@ export default function Pagination({ pages, pageSelect, url }: PageProps) {
           href={`${url}/${page}`}
           key={page}
           className={
-            " hover:text-green-500 h-full w-11 inline-flex items-center justify-center"
+            " hover:text-interactive h-full w-11 inline-flex items-center justify-center"
           }
         >
           {page}
@@ -89,7 +89,7 @@ export default function Pagination({ pages, pageSelect, url }: PageProps) {
         ) : (
           <Link
             href={`${url}/${pageSelect - 1}`}
-            className="flex items-center justify-center  hover:text-green-500 w-16 border-r border-gray-400 border-solid"
+            className="flex items-center justify-center  hover:text-interactive w-16 border-r border-gray-400 border-solid"
             rel="prev" // إضافة rel="prev" هنا
           >
             <BsArrowLeft className=" stroke-1" />
@@ -105,7 +105,7 @@ export default function Pagination({ pages, pageSelect, url }: PageProps) {
         ) : (
           <Link
             href={`${url}/${pageSelect + 1}`}
-            className="flex items-center justify-center  hover:text-green-500 w-16 border-l border-gray-400 border-solid"
+            className="flex items-center justify-center  hover:text-interactive w-16 border-l border-gray-400 border-solid"
             rel="next" // إضافة rel="next" هنا
           >
             <BsArrowRight className=" stroke-1" />

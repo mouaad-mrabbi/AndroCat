@@ -6,6 +6,7 @@ import {
   ArticleType,
   GameCategories,
   ProgramCategories,
+  ScreenType,
   User,
 } from "@prisma/client";
 import axios from "axios";
@@ -41,6 +42,7 @@ interface PendingArticle {
   sizeFileOBB?: string;
   sizeFileScript?: string;
   sizeFileOriginalAPK?: string;
+  screenType:ScreenType,
   appScreens: string[];
   keywords: string[];
   isMod: boolean;

@@ -58,12 +58,12 @@ export default function Rating({
     const emptyStars = 5 - Math.ceil(value);
 
     return (
-      <div className="flex fill-yellow-500 cursor-pointer ">
+      <div className="flex fill-interactive cursor-pointer ">
         {/* النجوم الممتلئة */}
         {Array.from({ length: fullStars }).map((_, i) => (
           <RiStarFill
             key={`full-${i}`}
-            className="fill-green-500 cursor-pointer text-5xl"
+            className="fill-interactive cursor-pointer text-5xl"
             onMouseEnter={() => setHoverValue(i + 1)}
             onMouseLeave={() => setHoverValue(null)}
             onClick={() => handleClick(i + 1)}
@@ -73,7 +73,7 @@ export default function Rating({
         {halfStar && (
           <RiStarHalfFill
             key="half"
-            className="fill-green-500 cursor-pointer text-5xl"
+            className="fill-interactive cursor-pointer text-5xl"
             onMouseEnter={() => setHoverValue(fullStars + 1)}
             onMouseLeave={() => setHoverValue(null)}
             onClick={() => handleClick(fullStars + 0.5)}
@@ -83,7 +83,7 @@ export default function Rating({
         {Array.from({ length: emptyStars }).map((_, i) => (
           <RiStarLine
             key={`empty-${i}`}
-            className="fill-green-500 cursor-pointer text-5xl"
+            className="fill-interactive cursor-pointer text-5xl"
             onMouseEnter={() =>
               setHoverValue(fullStars + (halfStar ? 1 : 0) + i + 1)
             } // ✅ التعديل هنا

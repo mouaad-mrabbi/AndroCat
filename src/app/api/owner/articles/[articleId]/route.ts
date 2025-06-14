@@ -36,7 +36,7 @@ export async function GET(request: NextRequest, { params }: Props) {
       select: {
         id: true,
         title: true,
-        secondTitle:true,
+        secondTitle: true,
         description: true,
         image: true,
         developer: true,
@@ -63,6 +63,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
 
+        screenType: true,
         appScreens: true,
         keywords: true,
 
@@ -182,7 +183,7 @@ export async function DELETE(request: NextRequest, { params }: Props) {
     return NextResponse.json({ message: "article deleted" }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { message: "internal server error" ,error},
+      { message: "internal server error", error },
       { status: 500 }
     );
   }

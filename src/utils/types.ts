@@ -20,6 +20,7 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
   select: {
     createdBy: { select: { profile: true; username: true } };
     validatedBy: { select: { profile: true; username: true } };
+    paragraphs:{select:{title:true;content:true}}
     pendingArticle: { select: { id: true } };
     id: true;
     title: true;
@@ -74,6 +75,7 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
 export type PendingArticleAndObjects = Prisma.PendingArticleGetPayload<{
   select: {
     createdBy: { select: { profile: true; username: true } };
+    paragraphs: {select:{title:true,content:true}};
     id: true;
     status: true;
     title: true;

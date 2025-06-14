@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+  --interactive: #67CB5B;
+}
+
 /*متوقف حتى يتم دعم دارك مود و white مود 
  :root {
   --background: #ffffff;

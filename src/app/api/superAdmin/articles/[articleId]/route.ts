@@ -1,7 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
-import { deleteFile } from "@/lib/r2";
 
 interface Props {
   params: Promise<{ articleId: string }>;
@@ -74,6 +73,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
 
+        screenType:true,
         appScreens: true,
         keywords: true,
 

@@ -62,6 +62,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
       }`,
       url: `${DOMAIN}/${slug}`,
       image: `${DOMAINCDN}/${article.image}`,
+      screenshot: article.appScreens?.map((img) => `${DOMAINCDN}/${img}`),
       keywords:
         [...(article.keywords || []), "games", "apps", "mod", "apk"].join(
           ", "
@@ -81,7 +82,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
       {
         key: "apk",
         label: "APK",
-        bgColor: "bg-green-500",
+        bgColor: "bg-interactive",
         size: article.sizeFileAPK,
         link: article.linkAPK,
       },
@@ -150,8 +151,6 @@ export async function ArticleContent({ slug }: { slug: string }) {
           />
         </Head>
         <div className="min-w-[320px]">
-          {/*ads remove    <InterstitialAd /> */}
-
           <Toolbar
             local={"home"}
             firstLocal={article.articleType === "GAME" ? "games" : "programs"}
@@ -260,25 +259,17 @@ export async function ArticleContent({ slug }: { slug: string }) {
               >
                 {/* Downloads */}
                 <div className="flex flex-col gap-6 items-center max-lg:flex-row">
-                  {article.OBB || article.Script ? (
-                    <Link
-                      href="#downloads"
-                      title="downloads"
-                      className="w-52 px-4 py-3 uppercase font-bold rounded-full text-center
-                        bg-green-500 shadow-xl shadow-green-500/20"
-                    >
-                      Downloads
-                    </Link>
-                  ) : (
-                    <Link
-                      href={`/download/${article.id}/apk`}
-                      title={`Download APK ${article.title} Updated to version ${article.version}`}
-                      className="w-52 px-4 py-3 uppercase font-bold rounded-full text-sm text-ellipsis whitespace-nowrap text-center
-                        bg-green-500 shadow-xl shadow-green-500/20 overflow-hidden"
-                    >
-                      Download({article.sizeFileAPK})
-                    </Link>
-                  )}
+                  <Link
+                    href="#downloads"
+                    title="downloads"
+                    className="w-52 px-4 py-3 uppercase font-bold rounded-full text-sm text-ellipsis whitespace-nowrap text-center
+                        bg-interactive shadow-xl shadow-interactive/20 overflow-hidden"
+                  >
+                    {article.OBB || article.Script
+                      ? `Downloads`
+                      : `Download(${article.sizeFileAPK})`}
+                  </Link>
+
                   <p className="text-sm text-[#b2b2b2] text-center max-[770px]:hidden">
                     Updated to version {article.version}!
                   </p>
@@ -319,8 +310,13 @@ export async function ArticleContent({ slug }: { slug: string }) {
                 Screenshots
               </h2>
               <div
-                className="flex gap-4 overflow-x-scroll mb-4 select-none"
-                style={{ scrollbarWidth: "none" }}
+                className="flex gap-4 overflow-x-scroll mb-4 select-none snap-x
+                [&::-webkit-scrollbar]:w-1
+                [&::-webkit-scrollbar-track]:bg-gray-100
+                [&::-webkit-scrollbar-thumb]:bg-gray-300
+                dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+                dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
+                max-lg:[&::-webkit-scrollbar]:hidden"
               >
                 {article.appScreens.map((elem) => (
                   <Link
@@ -329,7 +325,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
                       article.isMod ? article.typeMod : ""
                     }`}
                     target="_blank"
-                    className="rounded-lg bg-black aspect-[650/300]  h-[300px] max-[400px]:h-[125px] max-[500px]:h-[150px] max-[770px]:h-[200px]"
+                    className="shrink-0 snap-center min-[500px]:h-[300px] min-[500px]:w-auto max-w-[80vw]"
                     key={`${DOMAINCDN}/${elem}`}
                   >
                     <Image
@@ -339,7 +335,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
                       alt={`${article.title} ${
                         article.isMod ? article.typeMod : ""
                       }`}
-                      className="object-contain rounded-lg h-full w-full "
+                      className="object-contain rounded-lg w-full h-full "
                       loading="lazy"
                     />
                   </Link>

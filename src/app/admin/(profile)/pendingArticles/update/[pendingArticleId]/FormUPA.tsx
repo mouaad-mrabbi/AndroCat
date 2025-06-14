@@ -3,7 +3,13 @@ import { useState, useRef, useEffect } from "react";
 import { CreateArticleDto } from "@/utils/dtos";
 import { toast } from "react-toastify";
 import ReCAPTCHA from "react-google-recaptcha";
-import { ArticleType, GameCategories, PendingArticleParagraph, ProgramCategories } from "@prisma/client";
+import {
+  ArticleType,
+  GameCategories,
+  PendingArticleParagraph,
+  ProgramCategories,
+  ScreenType,
+} from "@prisma/client";
 import {
   createPendingArticles,
   getArticleCreateBy,
@@ -48,6 +54,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
     sizeFileOBB: null,
     sizeFileScript: null,
     sizeFileOriginalAPK: null,
+    screenType: ScreenType.SIXTEEN_BY_NINE,
     appScreens: [],
     keywords: [],
     isMod: false,
@@ -83,6 +90,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
     sizeFileOBB: null,
     sizeFileScript: null,
     sizeFileOriginalAPK: null,
+    screenType: ScreenType.SIXTEEN_BY_NINE,
     appScreens: [],
     keywords: [],
     isMod: false,
@@ -130,6 +138,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
           sizeFileOBB,
           sizeFileScript,
           sizeFileOriginalAPK,
+          screenType,
           appScreens,
           keywords,
           isMod,
@@ -163,6 +172,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
           sizeFileOBB,
           sizeFileScript,
           sizeFileOriginalAPK,
+          screenType,
           appScreens,
           keywords,
           isMod,
@@ -804,50 +814,52 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
               className="mt-1 dark:accent-indigo-500"
             />
           </div>
-
-          {/* Upload OBB File */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              OBB :
-            </label>
-            {formData.linkOBB && (
+          {/* Show Details if OBB true.*/}
+          {formData.OBB && (
+            <>
+              {/* Upload OBB File */}
               <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUrlModal(formData.linkOBB ?? null); // <-- التعديل هنا
-                    setShowModal(true);
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  OBB :
+                </label>
+                {formData.linkOBB && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedUrlModal(formData.linkOBB ?? null); // <-- التعديل هنا
+                        setShowModal(true);
+                      }}
+                      className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                    >
+                      <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                        {formData.linkOBB}
+                      </p>
+                    </button>
+                  </div>
+                )}
+                <PageMultipartFileUploader
+                  title={formData.title}
+                  randomText={`${formData.articleId}`}
+                  fileType="obbs"
+                  onUploadResult={(result) => {
+                    handleUploadOBB(result);
                   }}
-                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
-                >
-                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
-                    {formData.linkOBB}
-                  </p>
-                </button>
+                />
               </div>
-            )}
-            <PageMultipartFileUploader
-              title={formData.title}
-              randomText={`${formData.articleId}`}
-              fileType="obbs"
-              onUploadResult={(result) => {
-                handleUploadOBB(result);
-              }}
-            />
-          </div>
 
-          {/* Link OBB */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Link OBB:
-            </label>
-            <input
-              type="text"
-              name="linkOBB"
-              value={formData.linkOBB || ""}
-              onChange={handleChange}
-              disabled={!formData.OBB}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Link OBB */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Link OBB:
+                </label>
+                <input
+                  type="text"
+                  name="linkOBB"
+                  value={formData.linkOBB || ""}
+                  onChange={handleChange}
+                  disabled={!formData.OBB}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
                 dark:focus:border-indigo-500
@@ -856,21 +868,21 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
                     ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
                     : ""
                 }`}
-            />
-          </div>
+                />
+              </div>
 
-          {/* Size File OBB */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Size File OBB:
-            </label>
-            <input
-              type="text"
-              name="sizeFileOBB"
-              value={formData.sizeFileOBB || ""}
-              onChange={handleChange}
-              disabled={!formData.OBB}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Size File OBB */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Size File OBB:
+                </label>
+                <input
+                  type="text"
+                  name="sizeFileOBB"
+                  value={formData.sizeFileOBB || ""}
+                  onChange={handleChange}
+                  disabled={!formData.OBB}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
                 dark:focus:border-indigo-500
@@ -879,8 +891,10 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
                     ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
                     : ""
                 }`}
-            />
-          </div>
+                />
+              </div>
+            </>
+          )}
 
           {/* Script */}
           <div>
@@ -895,50 +909,52 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
               className="mt-1 dark:accent-indigo-500"
             />
           </div>
-
-          {/* File Script Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Script :
-            </label>
-            {formData.linkScript && (
+          {/* Show Details if Script true.*/}
+          {formData.Script && (
+            <>
+              {/* File Script Upload */}
               <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUrlModal(formData.linkScript ?? null); // <-- التعديل هنا
-                    setShowModal(true);
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Script :
+                </label>
+                {formData.linkScript && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedUrlModal(formData.linkScript ?? null); // <-- التعديل هنا
+                        setShowModal(true);
+                      }}
+                      className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                    >
+                      <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                        {formData.linkScript}
+                      </p>
+                    </button>
+                  </div>
+                )}
+                <PageMultipartFileUploader
+                  title={formData.title}
+                  randomText={`${formData.articleId}`}
+                  fileType="scripts"
+                  onUploadResult={(result) => {
+                    handleUploadScript(result);
                   }}
-                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
-                >
-                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
-                    {formData.linkScript}
-                  </p>
-                </button>
+                />
               </div>
-            )}
-            <PageMultipartFileUploader
-              title={formData.title}
-              randomText={`${formData.articleId}`}
-              fileType="scripts"
-              onUploadResult={(result) => {
-                handleUploadScript(result);
-              }}
-            />
-          </div>
 
-          {/* Link Script */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Link Script:
-            </label>
-            <input
-              type="text"
-              name="linkScript"
-              value={formData.linkScript || ""}
-              onChange={handleChange}
-              disabled={!formData.Script}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Link Script */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Link Script:
+                </label>
+                <input
+                  type="text"
+                  name="linkScript"
+                  value={formData.linkScript || ""}
+                  onChange={handleChange}
+                  disabled={!formData.Script}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
                 dark:focus:border-indigo-500
@@ -947,21 +963,21 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
                     ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
                     : ""
                 }`}
-            />
-          </div>
+                />
+              </div>
 
-          {/* Size File Script */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Size File Script:
-            </label>
-            <input
-              type="text"
-              name="sizeFileScript"
-              value={formData.sizeFileScript || ""}
-              onChange={handleChange}
-              disabled={!formData.Script}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Size File Script */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Size File Script:
+                </label>
+                <input
+                  type="text"
+                  name="sizeFileScript"
+                  value={formData.sizeFileScript || ""}
+                  onChange={handleChange}
+                  disabled={!formData.Script}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
                 dark:focus:border-indigo-500
@@ -970,8 +986,10 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
                     ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
                     : ""
                 }`}
-            />
-          </div>
+                />
+              </div>
+            </>
+          )}
 
           {/* OriginalAPK */}
           <div>
@@ -986,51 +1004,53 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
               className="mt-1 dark:accent-indigo-500"
             />
           </div>
-
-          {/* Upload OriginalAPK File */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              OriginalAPK :
-            </label>
-            {formData.linkOriginalAPK && (
+          {/* Show Details if OriginalAPK true.*/}
+          {formData.OriginalAPK && (
+            <>
+              {/* Upload OriginalAPK File */}
               <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUrlModal(formData.linkOriginalAPK ?? null);
-                    setShowModal(true);
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  OriginalAPK :
+                </label>
+                {formData.linkOriginalAPK && (
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedUrlModal(formData.linkOriginalAPK ?? null);
+                        setShowModal(true);
+                      }}
+                      className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
+                    >
+                      <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                        {formData.linkOriginalAPK}
+                      </p>
+                    </button>
+                  </div>
+                )}
+                <PageMultipartFileUploader
+                  title={formData.title}
+                  randomText={`${formData.articleId}`}
+                  fileType="original-apks"
+                  version={formData.versionOriginal || ""}
+                  onUploadResult={(result) => {
+                    handleUploadOriginalAPK(result);
                   }}
-                  className="flex gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
-                >
-                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
-                    {formData.linkOriginalAPK}
-                  </p>
-                </button>
+                />
               </div>
-            )}
-            <PageMultipartFileUploader
-              title={formData.title}
-              randomText={`${formData.articleId}`}
-              fileType="original-apks"
-              version={formData.versionOriginal || ""}
-              onUploadResult={(result) => {
-                handleUploadOriginalAPK(result);
-              }}
-            />
-          </div>
 
-          {/* Link OriginalAPK */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Link OriginalAPK:
-            </label>
-            <input
-              type="text"
-              name="linkOriginalAPK"
-              value={formData.linkOriginalAPK || ""}
-              onChange={handleChange}
-              disabled={!formData.OriginalAPK}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Link OriginalAPK */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Link OriginalAPK:
+                </label>
+                <input
+                  type="text"
+                  name="linkOriginalAPK"
+                  value={formData.linkOriginalAPK || ""}
+                  onChange={handleChange}
+                  disabled={!formData.OriginalAPK}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
                 dark:focus:border-indigo-500
@@ -1039,21 +1059,21 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
                     ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
                     : ""
                 }`}
-            />
-          </div>
+                />
+              </div>
 
-          {/* Size File OriginalAPK */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Size File OriginalAPK:
-            </label>
-            <input
-              type="text"
-              name="sizeFileOriginalAPK"
-              value={formData.sizeFileOriginalAPK || ""}
-              onChange={handleChange}
-              disabled={!formData.OriginalAPK}
-              className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* Size File OriginalAPK */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Size File OriginalAPK:
+                </label>
+                <input
+                  type="text"
+                  name="sizeFileOriginalAPK"
+                  value={formData.sizeFileOriginalAPK || ""}
+                  onChange={handleChange}
+                  disabled={!formData.OriginalAPK}
+                  className={`mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 
                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
                 dark:focus:border-indigo-500
@@ -1062,26 +1082,28 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
                     ? "bg-gray-100 dark:bg-gray-600 cursor-not-allowed"
                     : ""
                 }`}
-            />
-          </div>
+                />
+              </div>
 
-          {/* versionOriginal */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              versionOriginal:
-            </label>
-            <input
-              type="text"
-              name="versionOriginal"
-              value={formData.versionOriginal || ""}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+              {/* versionOriginal */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  versionOriginal:
+                </label>
+                <input
+                  type="text"
+                  name="versionOriginal"
+                  value={formData.versionOriginal || ""}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
                 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
                 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
                 dark:focus:border-indigo-500"
-              /* required */
-            />
-          </div>
+                  /* required */
+                />
+              </div>
+            </>
+          )}
 
           {/* Upload APK File */}
           <div>
@@ -1170,6 +1192,39 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
             />
           </div>
 
+          {/* screen Type */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Screen Type:
+            </label>
+            <select
+              name="screenType"
+              value={formData.screenType}
+              onChange={handleChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+                focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 
+                bg-white text-gray-700 cursor-pointer
+                dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
+                dark:focus:border-indigo-500"
+            >
+              <option
+                value=""
+                disabled
+                className="text-gray-400 dark:text-gray-400"
+              >
+                Select Screen Type
+              </option>
+              {Object.values(ScreenType).map((type) => (
+                <option
+                  key={type}
+                  value={type}
+                  className="text-gray-700 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+                >
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
           {/* App Screenshots */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">

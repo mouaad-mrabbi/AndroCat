@@ -36,9 +36,9 @@ export async function GET() {
 
   const staticUrls: SitemapUrl[] = [
     { loc: `${SITE_URL}/`, priority: "1.0", changefreq: "daily" },
-    { loc: `${SITE_URL}/games/1`, priority: "0.7", changefreq: "weekly" },
-    { loc: `${SITE_URL}/programs/1`, priority: "0.7", changefreq: "weekly" },
-    ...Array.from({ length: totalGamesPages - 1 }, (_, i) => ({
+    { loc: `${SITE_URL}/games`, priority: "0.7", changefreq: "weekly" },
+    { loc: `${SITE_URL}/programs`, priority: "0.7", changefreq: "weekly" },
+/*     ...Array.from({ length: totalGamesPages - 1 }, (_, i) => ({
       loc: `${SITE_URL}/games/${i + 2}`,
       priority: "0.4",
       changefreq: "weekly",
@@ -47,7 +47,7 @@ export async function GET() {
       loc: `${SITE_URL}/programs/${i + 2}`,
       priority: "0.4",
       changefreq: "weekly",
-    })),
+    })), */
   ];
 
   const articleUrls: SitemapUrl[] = articles.map((item) => ({

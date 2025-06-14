@@ -3,7 +3,7 @@ import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
 import { CreateArticleDto } from "@/utils/dtos";
 import { createArticleSchema } from "@/utils/validationSchemas";
-import { ActionType } from "@prisma/client";
+import { ActionType, ScreenType } from "@prisma/client";
 
 interface Props {
   params: Promise<{ articleId: string }>;
@@ -86,6 +86,7 @@ export async function POST(request: NextRequest, { params }: Props) {
       sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
       sizeFileScript: body.Script ? body.sizeFileScript : null,
       sizeFileOriginalAPK: body.OriginalAPK ? body.sizeFileOriginalAPK : null,
+      screenType:body.screenType,
       appScreens: body.appScreens,
       keywords: body.keywords,
       isMod: body.isMod,
