@@ -27,7 +27,7 @@ import { ArticleAndObjects } from "@/utils/types";
 import { fetchArticle } from "@/apiCalls/superAdminApiCall";
 import { createPendingUpdateArticle } from "@/apiCalls/adminApiCall";
 import { CreateArticleDto } from "@/utils/dtos";
-import { ArticleType } from "@prisma/client";
+import { ArticleType, ScreenType } from "@prisma/client";
 import { DOMAINCDN } from "@/utils/constants";
 
 interface PageparamsProps {
@@ -70,6 +70,7 @@ export default function PageArticle({ params }: PageparamsProps) {
     sizeFileOBB: null,
     sizeFileScript: null,
     sizeFileOriginalAPK: null,
+    screenType:ScreenType.SIXTEEN_BY_NINE,
     appScreens: [],
     keywords: [],
     isMod: false,
@@ -129,6 +130,7 @@ export default function PageArticle({ params }: PageparamsProps) {
           sizeFileOBB,
           sizeFileScript,
           sizeFileOriginalAPK,
+          screenType,
           appScreens,
           keywords,
           isMod,
@@ -161,6 +163,7 @@ export default function PageArticle({ params }: PageparamsProps) {
           sizeFileOBB,
           sizeFileScript,
           sizeFileOriginalAPK,
+          screenType,
           appScreens,
           keywords,
           isMod,

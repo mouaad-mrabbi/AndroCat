@@ -130,7 +130,7 @@ model Article {
   sizeFileScript      String?
   sizeFileOriginalAPK String?
 
-  screenType ScreenType?
+  screenType ScreenType @default(SIXTEEN_BY_NINE)
   appScreens String[]
 
   keywords   String[]
@@ -219,7 +219,7 @@ model PendingArticle {
   sizeFileScript      String?
   sizeFileOriginalAPK String?
 
-  screenType ScreenType?
+  screenType ScreenType @default(SIXTEEN_BY_NINE)
   appScreens String[]
 
   keywords   String[]

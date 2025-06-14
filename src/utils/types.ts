@@ -52,6 +52,7 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
     sizeFileScript: true;
     sizeFileOriginalAPK: true;
 
+    screenType:true,
     appScreens: true;
     keywords: true;
     isMod: true;
@@ -106,6 +107,7 @@ export type PendingArticleAndObjects = Prisma.PendingArticleGetPayload<{
     sizeFileScript: true;
     sizeFileOriginalAPK: true;
 
+    screenType:true,
     appScreens: true;
     keywords: true;
     isMod: true;
