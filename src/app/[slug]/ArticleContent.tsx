@@ -19,7 +19,7 @@ interface DownloadLink {
   key: string;
   label: string;
   bgColor: string;
-  size: string | null; // Allowing null here
+  size: string | null;
   link: string | null;
 }
 
@@ -121,7 +121,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
       return (
         <Link
           key={key}
-          href={`/download/${article.id}/${key}`}
+          href={`/download/${article.id}-${key}`}
           title={`Download ${label} ${article.title} Updated to version ${article.version}`}
           className={`flex items-center justify-between max-[1000px]:flex-col 
             box-border py-4 px-8 max-sm:px-4 uppercase ${bgColor} leading-relaxed 
@@ -378,7 +378,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
                 {[
                   { label: "Categories", value: category },
                   { label: "Type", value: capitalize(article.articleType) },
-                  { label: "Installs", value: article.installs },
+                  { label: "Installs", value: `${article.installs} +` },
                   { label: "Rated for", value: `${article.ratedFor} + years` },
                 ].map((item, index) => (
                   <div key={index}>

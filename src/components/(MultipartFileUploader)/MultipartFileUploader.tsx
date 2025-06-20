@@ -170,7 +170,7 @@ export function MultipartFileUploader({
         showLinkToFileUploadResult={true}
         proudlyDisplayPoweredByUppy={false}
         showProgressDetails={true}
-        height={150}
+        height={250}
         metaFields={[{ id: "name", name: "Name", placeholder: "File name" }]}
         locale={{
           strings: {
@@ -183,7 +183,7 @@ export function MultipartFileUploader({
       <style>
         {`
         .uppy-Container {
-          max-width: 570px !important;
+          max-width: 100% !important;
           overflow-y: auto;
         }
         .uppy-DashboardContent-bar{

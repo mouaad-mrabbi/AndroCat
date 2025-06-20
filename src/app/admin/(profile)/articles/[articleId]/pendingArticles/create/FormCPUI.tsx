@@ -19,6 +19,7 @@ import {
 import PageMultipartFileUploader, {
   UploadState,
 } from "@/components/(MultipartFileUploader)/PageMultipartFileUploader";
+import { DOMAINCDN } from "@/utils/constants";
 
 interface pageProps {
   articleId: number;
@@ -670,7 +671,7 @@ export default function FormCPUA({ articleId }: pageProps) {
                 >
                   <div className="w-32">
                     <img
-                      src={formData.image}
+                      src={`${DOMAINCDN}/${formData.image}`}
                       alt=""
                       className=" h-14 rounded-lg w-32 object-cover"
                     />
@@ -1263,7 +1264,7 @@ export default function FormCPUA({ articleId }: pageProps) {
                   >
                     <div className="w-32">
                       <img
-                        src={screen}
+                        src={`${DOMAINCDN}/${screen}`}
                         alt=""
                         className=" h-14 rounded-lg w-32 object-cover"
                       />

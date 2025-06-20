@@ -158,9 +158,7 @@ export default function Page({ params }: PageparamsProps) {
               src={`${DOMAINCDN}/${pendingArticle.image}`}
               width={190}
               height={190}
-              alt={`${pendingArticle.title} ${
-                pendingArticle.isMod ? "mod" : ""
-              } apk`}
+              alt={`${pendingArticle.title} ${pendingArticle.isMod ? "mod" : ""} apk`}
               className="w-[136px] min-[500px]:w-[184px] min-[770px]:w-[160px] min-[1200px]:w-[184px] aspect-square rounded-2xl object-cover"
               priority
             />
@@ -202,7 +200,10 @@ export default function Page({ params }: PageparamsProps) {
             <div className="flex items-center gap-4  mb-4 max-lg:hidden">
               <Star rating={0} />
               <p className="font-bold">
-                0 <span className="text-sm font-normal">0</span>
+                {0}{" "}
+                <span className="text-sm font-normal">
+                  ({0})
+                </span>
               </p>
             </div>
             <div>
@@ -287,26 +288,37 @@ export default function Page({ params }: PageparamsProps) {
 
         {/* Screenshots */}
         <div className="p-6">
-          <p className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center ">
+          <h2 className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center">
             Screenshots
-          </p>
+          </h2>
           <div
-            className="flex gap-4 overflow-x-scroll mb-4 select-none"
-            style={{ scrollbarWidth: "none" }}
+            className="flex gap-4 overflow-x-scroll mb-4 select-none snap-x
+                [&::-webkit-scrollbar]:w-1
+                [&::-webkit-scrollbar-track]:bg-gray-100
+                [&::-webkit-scrollbar-thumb]:bg-gray-300
+                dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+                dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
+                max-lg:[&::-webkit-scrollbar]:hidden"
           >
-            {pendingArticle.appScreens.map((elem: any) => (
+            {pendingArticle.appScreens.map((elem) => (
               <Link
                 href={`${DOMAINCDN}/${elem}`}
+                title={`${pendingArticle.title} ${
+                  pendingArticle.isMod ? pendingArticle.typeMod : ""
+                }`}
                 target="_blank"
-                className="rounded-lg bg-black aspect-[650/300]  h-[300px] max-[400px]:h-[125px] max-[500px]:h-[150px] max-[770px]:h-[200px]"
-                key={elem}
+                className="shrink-0 snap-center min-[500px]:h-[300px] min-[500px]:w-auto max-w-[80vw]"
+                key={`${DOMAINCDN}/${elem}`}
               >
                 <Image
                   src={`${DOMAINCDN}/${elem}`}
-                  width={90}
-                  height={90}
-                  alt={elem}
-                  className="object-contain rounded-lg h-full w-full "
+                  width={526}
+                  height={296}
+                  alt={`${pendingArticle.title} ${
+                    pendingArticle.isMod ? pendingArticle.typeMod : ""
+                  }`}
+                  className="object-contain rounded-lg w-full h-full "
+                  loading="lazy"
                 />
               </Link>
             ))}

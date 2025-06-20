@@ -543,7 +543,7 @@ const FormCreatePArticle = () => {
                 >
                   <div className="w-32">
                     <img
-                      src={formData.image}
+                      src={`${DOMAINCDN}/${formData.image}`}
                       alt=""
                       className=" h-14 rounded-lg w-32 object-cover"
                     />

@@ -127,7 +127,7 @@ export async function sendRatingToAPI(value: number, articleId: number) {
 
 //Download Details
 export async function getDownloadData(
-  articleId: string,
+  articleId: number,
   downloadType: "apk" | "obb" | "script" | "original-apk"
 ) {
   try {

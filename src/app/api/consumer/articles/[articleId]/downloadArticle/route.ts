@@ -45,6 +45,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           title: true,
           secondTitle: true,
           image: true,
+          version: true,
           androidVer: true,
           linkAPK: true,
           sizeFileAPK: true,
@@ -52,6 +53,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           typeMod: true,
         },
       });
+
       if (!article) {
         return NextResponse.json(
           { message: "article not found" },
@@ -59,7 +61,20 @@ export async function GET(request: NextRequest, { params }: Props) {
         );
       }
 
-      return NextResponse.json(article, { status: 200 });
+      const result = {
+        id: article.id,
+        title: article.title,
+        secondTitle: article.secondTitle,
+        image: article.image,
+        version:article.version,
+        androidVer: article.androidVer,
+        isMod: article.isMod,
+        typeMod: article.typeMod,
+        link: article.linkAPK,
+        size: article.sizeFileAPK,
+      };
+
+      return NextResponse.json(result, { status: 200 });
     } else if (downloadType === "obb") {
       const article = await prisma.article.findUnique({
         where: { id: articleId, isApproved: true, OBB: true },
@@ -68,6 +83,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           title: true,
           secondTitle: true,
           image: true,
+          version: true,
           androidVer: true,
           linkOBB: true,
           sizeFileOBB: true,
@@ -75,6 +91,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           typeMod: true,
         },
       });
+
       if (!article) {
         return NextResponse.json(
           { message: "article not found" },
@@ -82,7 +99,20 @@ export async function GET(request: NextRequest, { params }: Props) {
         );
       }
 
-      return NextResponse.json(article, { status: 200 });
+      const result = {
+        id: article.id,
+        title: article.title,
+        secondTitle: article.secondTitle,
+        image: article.image,
+        version:article.version,
+        androidVer: article.androidVer,
+        isMod: article.isMod,
+        typeMod: article.typeMod,
+        link: article.linkOBB,
+        size: article.sizeFileOBB,
+      };
+
+      return NextResponse.json(result, { status: 200 });
     } else if (downloadType === "script") {
       const article = await prisma.article.findUnique({
         where: { id: articleId, isApproved: true, Script: true },
@@ -91,6 +121,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           title: true,
           secondTitle: true,
           image: true,
+          version: true,
           androidVer: true,
           linkScript: true,
           sizeFileScript: true,
@@ -98,6 +129,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           typeMod: true,
         },
       });
+
       if (!article) {
         return NextResponse.json(
           { message: "article not found" },
@@ -105,7 +137,20 @@ export async function GET(request: NextRequest, { params }: Props) {
         );
       }
 
-      return NextResponse.json(article, { status: 200 });
+      const result = {
+        id: article.id,
+        title: article.title,
+        secondTitle: article.secondTitle,
+        image: article.image,
+        version:article.version,
+        androidVer: article.androidVer,
+        isMod: article.isMod,
+        typeMod: article.typeMod,
+        link: article.linkScript,
+        size: article.sizeFileScript,
+      };
+
+      return NextResponse.json(result, { status: 200 });
     } else if (downloadType === "original-apk") {
       const article = await prisma.article.findUnique({
         where: { id: articleId, isApproved: true, OriginalAPK: true },
@@ -120,6 +165,7 @@ export async function GET(request: NextRequest, { params }: Props) {
           sizeFileOriginalAPK: true,
         },
       });
+
       if (!article) {
         return NextResponse.json(
           { message: "article not found" },
@@ -127,7 +173,18 @@ export async function GET(request: NextRequest, { params }: Props) {
         );
       }
 
-      return NextResponse.json(article, { status: 200 });
+      const result = {
+        id: article.id,
+        title: article.title,
+        secondTitle: article.secondTitle,
+        image: article.image,
+        androidVer: article.androidVer,
+        version: article.versionOriginal,
+        link: article.linkOriginalAPK,
+        size: article.sizeFileOriginalAPK,
+      };
+
+      return NextResponse.json(result, { status: 200 });
     }
   } catch (error) {
     return NextResponse.json(

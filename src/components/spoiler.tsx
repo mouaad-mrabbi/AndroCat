@@ -23,7 +23,7 @@ export default function Spoiler({
   typeMod,
   paragraphs,
 }: Props) {
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded] = useState(true);
 
   return (
     <div>

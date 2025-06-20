@@ -70,7 +70,7 @@ export default function PageArticle({ params }: PageparamsProps) {
     sizeFileOBB: null,
     sizeFileScript: null,
     sizeFileOriginalAPK: null,
-    screenType:ScreenType.SIXTEEN_BY_NINE,
+    screenType: ScreenType.SIXTEEN_BY_NINE,
     appScreens: [],
     keywords: [],
     isMod: false,
@@ -251,7 +251,7 @@ export default function PageArticle({ params }: PageparamsProps) {
     return (
       <Link
         key={key}
-        href={`${DOMAINCDN}/${link}`}
+        href={`/admin/download/${article.id}-${key}`}
         title={`Download ${label} ${article.title} Updated to version ${
           key === "original-apk" ? article.versionOriginal : article.version
         }`}
@@ -454,26 +454,37 @@ export default function PageArticle({ params }: PageparamsProps) {
 
         {/* Screenshots */}
         <div className="p-6">
-          <p className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center ">
+          <h2 className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center">
             Screenshots
-          </p>
+          </h2>
           <div
-            className="flex gap-4 overflow-x-scroll mb-4 select-none"
-            style={{ scrollbarWidth: "none" }}
+            className="flex gap-4 overflow-x-scroll mb-4 select-none snap-x
+                [&::-webkit-scrollbar]:w-1
+                [&::-webkit-scrollbar-track]:bg-gray-100
+                [&::-webkit-scrollbar-thumb]:bg-gray-300
+                dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+                dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
+                max-lg:[&::-webkit-scrollbar]:hidden"
           >
             {article.appScreens.map((elem) => (
               <Link
                 href={`${DOMAINCDN}/${elem}`}
+                title={`${article.title} ${
+                  article.isMod ? article.typeMod : ""
+                }`}
                 target="_blank"
-                className="rounded-lg bg-black aspect-[650/300]  h-[300px] max-[400px]:h-[125px] max-[500px]:h-[150px] max-[770px]:h-[200px]"
-                key={elem}
+                className="shrink-0 snap-center min-[500px]:h-[300px] min-[500px]:w-auto max-w-[80vw] max-h-[400px]"
+                key={`${DOMAINCDN}/${elem}`}
               >
                 <Image
                   src={`${DOMAINCDN}/${elem}`}
-                  width={190}
-                  height={190}
-                  alt={elem}
-                  className="object-contain rounded-lg h-full w-full "
+                  width={526}
+                  height={296}
+                  alt={`${article.title} ${
+                    article.isMod ? article.typeMod : ""
+                  }`}
+                  className="object-contain rounded-lg w-full h-full "
+                  loading="lazy"
                 />
               </Link>
             ))}
