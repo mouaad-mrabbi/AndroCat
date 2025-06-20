@@ -11,36 +11,20 @@ import { headers } from "next/headers";
 import { DOMAINCDN } from "@/utils/constants";
 import { slugifyTitle } from "@/utils/slugifyTitle";
 
-type Props = {
-  params: {
-    slug?: string;
-  };
-};
-
-export default async function DownloadPage({ params }: Props) {
+export default async function DownloadPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
   const headersList = await headers();
   const userAgent = headersList.get("user-agent") || "";
 
   const isMobile =
     /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(userAgent);
 
-  const slug = params.slug;
-
-  if (!slug) {
-    throw new Error("Slug is undefined");
-  }
-
-  const allowedTypes = ["apk", "obb", "script", "original-apk"] as const;
-  type AllowedType = (typeof allowedTypes)[number];
-
-  const [idPart, typePartRaw] = slug.split("-");
+  const { slug } = await params;
+  const [idPart, typePart] = slug.split("-");
   const articleId = parseInt(idPart);
-
-  if (!allowedTypes.includes(typePartRaw as AllowedType)) {
-    return <NotFoundPage />;
-  }
-
-  const typePart = typePartRaw as AllowedType;
   try {
     const article = await getDownloadData(articleId, typePart);
     const cleanTitle = slugifyTitle(article.title);

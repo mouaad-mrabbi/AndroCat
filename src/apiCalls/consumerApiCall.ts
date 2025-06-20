@@ -128,7 +128,7 @@ export async function sendRatingToAPI(value: number, articleId: number) {
 //Download Details
 export async function getDownloadData(
   articleId: number,
-  downloadType: "apk" | "obb" | "script" | "original-apk"
+  downloadType: string
 ) {
   try {
     const response = await axios.get(

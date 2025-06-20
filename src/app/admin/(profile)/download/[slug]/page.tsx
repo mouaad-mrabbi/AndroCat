@@ -4,35 +4,20 @@ import { FaAndroid } from "react-icons/fa";
 import NotFoundPage from "@/app/not-found";
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
-import InterstitialAd from "@/components/interstitialAd";
 import { DOMAINCDN } from "@/utils/constants";
 import { slugifyTitle } from "@/utils/slugifyTitle";
 import Countdown from "@/components/countdownAdmin";
 
-type Props = {
-  params: {
-    slug?: string;
-  };
-};
+export default async function DownloadPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
 
-export default async function DownloadPage({ params }: Props) {
-  const slug = params.slug;
-
-  if (!slug) {
-    throw new Error("Slug is undefined");
-  }
-
-  const allowedTypes = ["apk", "obb", "script", "original-apk"] as const;
-  type AllowedType = (typeof allowedTypes)[number];
-
-  const [idPart, typePartRaw] = slug.split("-");
+  const { slug } = await params;
+  const [idPart, typePart] = slug.split("-");
   const articleId = parseInt(idPart);
 
-  if (!allowedTypes.includes(typePartRaw as AllowedType)) {
-    return <NotFoundPage />;
-  }
-
-  const typePart = typePartRaw as AllowedType;
   try {
     const article = await getDownloadData(articleId, typePart);
     const cleanTitle = slugifyTitle(article.title);
