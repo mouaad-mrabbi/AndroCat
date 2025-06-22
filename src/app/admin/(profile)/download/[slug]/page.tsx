@@ -50,7 +50,7 @@ export default async function DownloadPage({
             <p className="text-[1.25rem] text-center font-bold mb-9">
               <span>{article.title}</span>{" "}
               {article.isMod && <span>({article.typeMod})</span>}{" "}
-              <span>{article.version}</span>.{typePart}
+              Latest Version {typePart}
             </p>
 
             <div className="flex items-center gap-2 text-sm text-gray-500 font-bold mb-4">
