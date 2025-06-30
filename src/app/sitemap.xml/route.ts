@@ -52,8 +52,8 @@ export async function GET() {
 
   const articleUrls: SitemapUrl[] = articles.map((item) => ({
     loc: `${SITE_URL}/${item.id}-${slugifyTitle(item.title)}${
-      item.isMod ? "-mod" : ""
-    }-apk-android-download`,
+      item.isMod ? "-mod" : "-apk"
+    }`,
     priority: "0.9",
     changefreq: "weekly",
     lastmod: item.updatedAt.toISOString().split("T")[0],

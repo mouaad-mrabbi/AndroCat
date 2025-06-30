@@ -50,16 +50,16 @@ export async function ArticleContent({ slug }: { slug: string }) {
         ? capitalize(article.gameCategory)
         : capitalize(article.programCategory);
 
+    const modType = article.isMod ? `(${article.typeMod}) ` : "";
+    const title = `Download ${article.title} ${modType}${article.version} apk for android`;
+    const description = `${article.title} ${modType}- ${article.descriptionMeta}`;
+
     const structuredData = {
       "@context": "https://schema.org",
       "@type":
         article.articleType === "GAME" ? "VideoGame" : "SoftwareApplication",
-      name: `Download ${article.title} ${article.isMod && article.typeMod} ${
-        article.version
-      } apk for android`,
-      description: `${article.title} (${article.isMod && article.typeMod}) - ${
-        article.descriptionMeta
-      }`,
+      name: title,
+      description: description,
       url: `${DOMAIN}/${slug}`,
       image: `${DOMAINCDN}/${article.image}`,
       screenshot: article.appScreens?.map((img) => `${DOMAINCDN}/${img}`),

@@ -26,8 +26,8 @@ export default function LandCard({ article, url, index }: Props) {
         href={
           url === "home"
             ? `/${article.id}-${cleanTitle}${
-                article.isMod ? "-mod" : ""
-              }-apk-android-download`
+                article.isMod ? "-mod" : "-apk"
+              }`
             : url === "pendingArticles" || url === "articles"
             ? `/admin/${url}/${article.id}`
             : "#"

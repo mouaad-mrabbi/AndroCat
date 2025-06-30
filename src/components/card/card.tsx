@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import Star from "./star";
 import { allArticle } from "@/utils/types";
-import slugify from "slugify";
 import { DOMAINCDN } from "@/utils/constants";
 import { slugifyTitle } from "@/utils/slugifyTitle";
 
@@ -12,8 +11,8 @@ export default function Card({ article }: { article: allArticle }) {
   return (
     <Link
       href={`/${article.id}-${cleanTitle}${
-        article.isMod ? "-mod" : ""
-      }-apk-android-download`}
+        article.isMod ? "-mod" : "-apk"
+      }`}
       title={`Download ${article.title} ${
         article.isMod && article.typeMod
       } free on android in Androcat`}

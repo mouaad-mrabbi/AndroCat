@@ -22,11 +22,9 @@ export async function generateMetadata({ params }: ArticlesPageProp) {
 
     const article = await fetchMetadata(articleId);
 
-    const modType = article.isMod ? article.typeMod : "";
-    const title = `Download ${article.title} (${modType}) ${article.version} apk for android`;
-    const description = `${article.title} (${
-      article.isMod && article.typeMod
-    }) - ${article.descriptionMeta}`;
+    const modType = article.isMod ? `(${article.typeMod}) ` : "";
+    const title = `Download ${article.title} ${modType}${article.version} apk for android`;
+    const description = `${article.title} ${modType}- ${article.descriptionMeta}`;
     const imageUrl = article.image ? `${DOMAINCDN}/${article.image}` : "";
 
     return {
