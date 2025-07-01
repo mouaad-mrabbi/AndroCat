@@ -10,9 +10,7 @@ export default function Card({ article }: { article: allArticle }) {
 
   return (
     <Link
-      href={`/${article.id}-${cleanTitle}${
-        article.isMod ? "-mod" : "-apk"
-      }`}
+      href={`/${article.id}-${cleanTitle}`}
       title={`Download ${article.title} ${
         article.isMod && article.typeMod
       } free on android in Androcat`}

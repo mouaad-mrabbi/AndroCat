@@ -173,7 +173,7 @@ export async function POST(request: NextRequest) {
         },
 
         include: {
-          paragraphs: true, // إذا أردت إرجاع الفقرات في الرد
+          paragraphs: true,
         },
       });
 

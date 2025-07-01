@@ -100,7 +100,7 @@ enum ScreenType {
 }
 
 model Article {
-  id              Int             @id @default(autoincrement())
+  id              Int     @id @default(autoincrement())
   title           String
   secondTitle     String?
   description     String
@@ -133,9 +133,9 @@ model Article {
   screenType ScreenType @default(SIXTEEN_BY_NINE)
   appScreens String[]
 
-  keywords   String[]
-  isMod   Boolean @default(false)
-  typeMod String?
+  keywords String[]
+  isMod    Boolean  @default(false)
+  typeMod  String?
 
   ratedFor Int
   installs String
@@ -160,7 +160,9 @@ model Article {
 
   pendingArticle PendingArticle?
   ratings        ArticleRating[]
-  paragraphs ArticleParagraph[]
+  paragraphs     ArticleParagraph[]
+  apks           ArticleAPKS[]
+  apkxs          ArticleAPKXS[]
 }
 
 model ArticleRating {
@@ -222,9 +224,9 @@ model PendingArticle {
   screenType ScreenType @default(SIXTEEN_BY_NINE)
   appScreens String[]
 
-  keywords   String[]
-  isMod   Boolean @default(false)
-  typeMod String?
+  keywords String[]
+  isMod    Boolean  @default(false)
+  typeMod  String?
 
   ratedFor Int
   installs String
@@ -238,8 +240,10 @@ model PendingArticle {
   articleId Int?     @unique
   article   Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
-  rejected RejectedPendingArticle?
+  rejected   RejectedPendingArticle?
   paragraphs PendingArticleParagraph[]
+  apks       PendingArticleAPKS[]
+  apkxs      PendingArticleAPKXS[]
 }
 
 model RejectedPendingArticle {
@@ -255,24 +259,74 @@ model RejectedPendingArticle {
   reason String
 }
 
-//
+// Paragraph
 
 model ArticleParagraph {
-  id         Int      @id @default(autoincrement())
-  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  articleId  Int
+  id        Int     @id @default(autoincrement())
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int
 
-  title      String?
-  content    String
-  order      Int
+  title   String?
+  content String
+  order   Int
 }
 
 model PendingArticleParagraph {
-  id              Int             @id @default(autoincrement())
-  pendingArticle  PendingArticle @relation(fields: [pendingArticleId], references: [id], onDelete: Cascade)
+  id               Int            @id @default(autoincrement())
+  pendingArticle   PendingArticle @relation(fields: [pendingArticleId], references: [id], onDelete: Cascade)
   pendingArticleId Int
 
-  title      String?
-  content    String
-  order      Int
+  title   String?
+  content String
+  order   Int
+}
+
+// apks
+model ArticleAPKS {
+  id        Int     @id @default(autoincrement())
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int
+
+  version String
+  link    String
+  size    String
+  isMod    Boolean  @default(false)
+  order   Int
+}
+
+model PendingArticleAPKS {
+  id               Int            @id @default(autoincrement())
+  pendingArticle   PendingArticle @relation(fields: [pendingArticleId], references: [id], onDelete: Cascade)
+  pendingArticleId Int
+
+  version String
+  link    String
+  size    String
+  isMod    Boolean  @default(false)
+  order   Int
+}
+
+//apkxs
+model ArticleAPKXS {
+  id        Int     @id @default(autoincrement())
+  article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId Int
+
+  version String
+  link    String
+  size    String
+  isMod    Boolean  @default(false)
+  order   Int
+}
+
+model PendingArticleAPKXS {
+  id               Int            @id @default(autoincrement())
+  pendingArticle   PendingArticle @relation(fields: [pendingArticleId], references: [id], onDelete: Cascade)
+  pendingArticleId Int
+
+  version String
+  link    String
+  size    String
+  isMod    Boolean  @default(false)
+  order   Int
 }

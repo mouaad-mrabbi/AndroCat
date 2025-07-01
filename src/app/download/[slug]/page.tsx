@@ -35,9 +35,7 @@ export default async function DownloadPage({
         <div className="max-w-[648px] mx-auto p-10">
           {/* Back Window */}
           <Link
-            href={`/${article.id}-${cleanTitle}${
-              article.isMod ? "-mod" : "-apk"
-            }`}
+            href={`/${article.id}-${cleanTitle}`}
             className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-500/50"
           >
             <IoArrowBack />

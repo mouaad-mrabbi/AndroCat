@@ -25,9 +25,7 @@ export default function LandCard({ article, url, index }: Props) {
         }`}
         href={
           url === "home"
-            ? `/${article.id}-${cleanTitle}${
-                article.isMod ? "-mod" : "-apk"
-              }`
+            ? `/${article.id}-${cleanTitle}`
             : url === "pendingArticles" || url === "articles"
             ? `/admin/${url}/${article.id}`
             : "#"
