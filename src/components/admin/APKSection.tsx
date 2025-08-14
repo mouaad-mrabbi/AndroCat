@@ -112,9 +112,9 @@ const SortableItem: React.FC<{
             {...attributes}
             type="button"
             className="ml-2 p-1 cursor-grab text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+            style={{ touchAction: "none" }} // 🔑 منع scroll أثناء السحب على الهاتف
             aria-label="Drag Handle"
-            onMouseDown={(e) => e.stopPropagation()}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()} // توقف أي click
           >
             ☰
           </button>
