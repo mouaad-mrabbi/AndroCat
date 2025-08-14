@@ -169,7 +169,13 @@ export async function ArticleContent({ slug }: { slug: string }) {
                     </li>
                     <li className="flex items-center gap-2">
                       <ImDatabase />
-                      <span>{article.sizeFileAPK}</span>
+                      <span>
+                        {article.apks && article.apks.length > 0
+                          ? article.apks[0].size
+                          : article.xapks && article.xapks.length > 0
+                          ? article.xapks[0].size
+                          : "*** **"}
+                      </span>
                     </li>
                   </ul>
                 </div>

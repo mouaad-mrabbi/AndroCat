@@ -1,7 +1,6 @@
 import { ArticleContent } from "./ArticleContent";
 import { fetchMetadata } from "@/apiCalls/consumerApiCall";
 import { DOMAIN, DOMAINCDN } from "@/utils/constants";
-import { redirect } from "next/navigation";
 
 interface ArticlesPageProp {
   params: Promise<{ slug: string }>;

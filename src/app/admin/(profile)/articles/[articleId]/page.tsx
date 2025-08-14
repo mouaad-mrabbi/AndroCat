@@ -58,12 +58,10 @@ export default function PageArticle({ params }: PageparamsProps) {
     OBB: false,
     Script: false,
     OriginalAPK: false,
-    linkAPK: "",
     linkOBB: null,
     linkVideo: null,
     linkScript: null,
     linkOriginalAPK: null,
-    sizeFileAPK: "",
     sizeFileOBB: null,
     sizeFileScript: null,
     sizeFileOriginalAPK: null,
@@ -126,12 +124,10 @@ export default function PageArticle({ params }: PageparamsProps) {
           OBB,
           Script,
           OriginalAPK,
-          linkAPK,
           linkOBB,
           linkVideo,
           linkScript,
           linkOriginalAPK,
-          sizeFileAPK,
           sizeFileOBB,
           sizeFileScript,
           sizeFileOriginalAPK,
@@ -162,12 +158,10 @@ export default function PageArticle({ params }: PageparamsProps) {
           OBB,
           Script,
           OriginalAPK,
-          linkAPK,
           linkOBB,
           linkVideo,
           linkScript,
           linkOriginalAPK,
-          sizeFileAPK,
           sizeFileOBB,
           sizeFileScript,
           sizeFileOriginalAPK,
@@ -326,7 +320,13 @@ export default function PageArticle({ params }: PageparamsProps) {
                 </li>
                 <li className="flex items-center gap-2">
                   <ImDatabase />
-                  <span>{article.sizeFileAPK}</span>
+                  <span>
+                    {article.apks && article.apks.length > 0
+                      ? article.apks[0].size
+                      : article.xapks && article.xapks.length > 0
+                      ? article.xapks[0].size
+                      : "*** **"}
+                  </span>
                 </li>
               </ul>
             </div>

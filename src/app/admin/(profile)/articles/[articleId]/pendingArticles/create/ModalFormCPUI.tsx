@@ -1,5 +1,4 @@
 "use client";
-
 import { DOMAINCDN } from "@/utils/constants";
 import React, { useEffect, useState } from "react";
 

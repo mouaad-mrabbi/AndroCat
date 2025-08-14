@@ -43,12 +43,10 @@ const FormCreatePArticle = () => {
     OBB: false,
     Script: false,
     OriginalAPK: false,
-    linkAPK: "",
     linkOBB: null,
     linkVideo: null,
     linkScript: null,
     linkOriginalAPK: null,
-    sizeFileAPK: "",
     sizeFileOBB: null,
     sizeFileScript: null,
     sizeFileOriginalAPK: null,
@@ -175,12 +173,10 @@ const FormCreatePArticle = () => {
           OBB: false,
           Script: false,
           OriginalAPK: false,
-          linkAPK: "",
           linkOBB: null,
           linkVideo: null,
           linkScript: null,
           linkOriginalAPK: null,
-          sizeFileAPK: "",
           sizeFileOBB: null,
           sizeFileScript: null,
           sizeFileOriginalAPK: null,
@@ -290,20 +286,6 @@ const FormCreatePArticle = () => {
       ...prevData,
       sizeFileOriginalAPK: formatSize(Number(size)),
       linkOriginalAPK: key,
-    }));
-  };
-
-  const handleUploadAPK1 = async (result: UploadState) => {
-    const file = result.successful?.[0];
-    const key = file?.s3Multipart?.key;
-    const size = file?.size;
-
-    if (!key || !size) return;
-
-    setFormData((prevData) => ({
-      ...prevData,
-      sizeFileAPK: formatSize(Number(size)),
-      linkAPK: key,
     }));
   };
 
@@ -1153,78 +1135,6 @@ const FormCreatePArticle = () => {
             </>
           )}
 
-          {/* Upload APK File */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              APK :
-            </label>
-
-            <PageMultipartFileUploader
-              title={formData.title}
-              randomText={randomText}
-              fileType="apks"
-              version={formData.version}
-              isMod={formData.isMod}
-              onUploadResult={(result) => {
-                handleUploadAPK1(result);
-              }}
-            />
-          </div>
-
-          {/* Link APK */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Link APK:
-            </label>
-            {formData.linkAPK && (
-              <div>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedUrlModal(formData.linkAPK);
-                    setShowModal(true);
-                  }}
-                  className="flex  gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
-                     dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
-                >
-                  <p className="flex flex-grow  w-full break-words overflow-hidden whitespace-nowrap">
-                    {formData.linkAPK}
-                  </p>
-                </button>
-              </div>
-            )}
-
-            <input
-              type="text"
-              name="linkAPK"
-              value={formData.linkAPK}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-      dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-      dark:focus:border-indigo-500"
-              /* required */
-            />
-          </div>
-
-          {/* Size File APK */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Size File APK:
-            </label>
-            <input
-              type="text"
-              name="sizeFileAPK"
-              value={formData.sizeFileAPK}
-              onChange={handleChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-      focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-      dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:ring-indigo-500 
-      dark:focus:border-indigo-500"
-              /* required */
-            />
-          </div>
-
           {/* Link Video */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -1487,10 +1397,6 @@ const FormCreatePArticle = () => {
             if (newData.image === deletedPath) newData.image = "";
 
             // ✅ حذف من روابط ثابتة
-            if (newData.linkAPK === deletedPath) {
-              newData.linkAPK = "";
-              newData.sizeFileAPK = "";
-            }
             if (newData.linkOBB === deletedPath) {
               newData.linkOBB = null;
               newData.sizeFileOBB = null;

@@ -54,13 +54,11 @@ export const createArticleSchema = z
     Script: z.boolean().default(false),
     OriginalAPK: z.boolean().default(false),
 
-    linkAPK: z.string().max(500),
     linkOBB: z.string().max(500).nullable().optional(),
     linkVideo: z.string().max(500).nullable().optional(),
     linkScript: z.string().max(500).nullable().optional(),
     linkOriginalAPK: z.string().max(500).nullable().optional(),
 
-    sizeFileAPK: z.string().min(1).max(20),
     sizeFileOBB: z.string().min(1).max(20).nullable().optional(),
     sizeFileScript: z.string().min(1).max(20).nullable().optional(),
     sizeFileOriginalAPK: z.string().min(1).max(20).nullable().optional(),
@@ -317,13 +315,11 @@ export const updateArticleSchema = z
     Script: z.boolean().optional(),
     OriginalAPK: z.boolean().optional(),
 
-    linkAPK: z.string().max(500).optional(),
     linkOBB: z.string().max(500).nullable().optional(),
     linkVideo: z.string().max(500).nullable().optional(),
     linkScript: z.string().max(500).nullable().optional(),
     linkOriginalAPK: z.string().max(500).nullable().optional(),
 
-    sizeFileAPK: z.string().min(1).max(20).optional(),
     sizeFileOBB: z.string().min(1).max(20).nullable().optional(),
     sizeFileScript: z.string().min(1).max(20).nullable().optional(),
     sizeFileOriginalAPK: z.string().min(1).max(20).nullable().optional(),

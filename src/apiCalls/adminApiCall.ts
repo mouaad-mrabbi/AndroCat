@@ -33,12 +33,10 @@ interface PendingArticle {
   Script: boolean;
   OriginalAPK: boolean;
 
-  linkAPK: string;
   linkOBB?: string;
   linkVideo?: string;
   linkScript?: string;
   linkOriginalAPK?: string;
-  sizeFileAPK: string;
   sizeFileOBB?: string;
   sizeFileScript?: string;
   sizeFileOriginalAPK?: string;

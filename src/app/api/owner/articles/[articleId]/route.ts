@@ -52,13 +52,11 @@ export async function GET(request: NextRequest, { params }: Props) {
         Script: true,
         OriginalAPK: true,
 
-        linkAPK: true,
         linkOBB: true,
         linkScript: true,
         linkOriginalAPK: true,
         linkVideo: true,
 
-        sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
@@ -147,7 +145,6 @@ export async function DELETE(request: NextRequest, { params }: Props) {
       select: {
         id: true,
         image: true,
-        linkAPK: true,
         linkOBB: true,
         linkScript: true,
         linkOriginalAPK: true,
@@ -168,7 +165,6 @@ export async function DELETE(request: NextRequest, { params }: Props) {
 
     const filesToDelete = [
       article.image,
-      article.linkAPK,
       article.linkOBB,
       article.linkScript,
       article.linkOriginalAPK,

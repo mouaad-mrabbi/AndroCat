@@ -44,13 +44,11 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
     Script: true;
     OriginalAPK: true;
 
-    linkAPK: true;
     linkOBB: true;
     linkVideo: true;
     linkScript: true;
     linkOriginalAPK: true;
 
-    sizeFileAPK: true;
     sizeFileOBB: true;
     sizeFileScript: true;
     sizeFileOriginalAPK: true;
@@ -102,13 +100,11 @@ export type PendingArticleAndObjects = Prisma.PendingArticleGetPayload<{
     Script: true;
     OriginalAPK: true;
 
-    linkAPK: true;
     linkOBB: true;
     linkVideo: true;
     linkScript: true;
     linkOriginalAPK: true;
 
-    sizeFileAPK: true;
     sizeFileOBB: true;
     sizeFileScript: true;
     sizeFileOriginalAPK: true;

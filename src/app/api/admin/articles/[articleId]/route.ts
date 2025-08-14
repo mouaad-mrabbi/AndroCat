@@ -62,13 +62,11 @@ export async function GET(request: NextRequest, { params }: Props) {
         Script: true,
         OriginalAPK: true,
 
-        linkAPK: true,
         linkOBB: true,
         linkVideo: true,
         linkScript: true,
         linkOriginalAPK: true,
 
-        sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
         sizeFileOriginalAPK: true,

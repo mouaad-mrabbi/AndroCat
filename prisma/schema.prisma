@@ -119,13 +119,11 @@ model Article {
   Script      Boolean @default(false)
   OriginalAPK Boolean @default(false)
 
-  linkAPK         String
   linkOBB         String?
   linkVideo       String?
   linkScript      String?
   linkOriginalAPK String?
 
-  sizeFileAPK         String
   sizeFileOBB         String?
   sizeFileScript      String?
   sizeFileOriginalAPK String?
@@ -210,13 +208,11 @@ model PendingArticle {
   Script      Boolean @default(false)
   OriginalAPK Boolean @default(false)
 
-  linkAPK         String
   linkOBB         String?
   linkVideo       String?
   linkScript      String?
   linkOriginalAPK String?
 
-  sizeFileAPK         String
   sizeFileOBB         String?
   sizeFileScript      String?
   sizeFileOriginalAPK String?

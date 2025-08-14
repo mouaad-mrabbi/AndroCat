@@ -116,13 +116,11 @@ export async function POST(request: NextRequest, { params }: Props) {
         Script: true,
         OriginalAPK: true,
 
-        linkAPK: true,
         linkOBB: true,
         linkVideo: true,
         linkScript: true,
         linkOriginalAPK: true,
 
-        sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
@@ -183,13 +181,11 @@ export async function POST(request: NextRequest, { params }: Props) {
         Script: true,
         OriginalAPK: true,
 
-        linkAPK: true,
         linkOBB: true,
         linkVideo: true,
         linkScript: true,
         linkOriginalAPK: true,
 
-        sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
@@ -226,7 +222,6 @@ export async function POST(request: NextRequest, { params }: Props) {
         Script: pendingArticle.Script,
         OriginalAPK: pendingArticle.OriginalAPK,
 
-        linkAPK: pendingArticle.linkAPK,
         linkOBB: pendingArticle.OBB ? pendingArticle.linkOBB : null,
         linkVideo: pendingArticle.linkVideo,
         linkScript: pendingArticle.Script ? pendingArticle.linkScript : null,
@@ -234,7 +229,6 @@ export async function POST(request: NextRequest, { params }: Props) {
           ? pendingArticle.linkOriginalAPK
           : null,
 
-        sizeFileAPK: pendingArticle.sizeFileAPK,
         sizeFileOBB: pendingArticle.OBB ? pendingArticle.sizeFileOBB : null,
         sizeFileScript: pendingArticle.Script
           ? pendingArticle.sizeFileScript
@@ -289,12 +283,11 @@ export async function POST(request: NextRequest, { params }: Props) {
       return `${path}/${newArticle.id}/${file.split("/").pop()}`;
     };
 
-    const [image, linkAPK] = await Promise.all([
+    const [image] = await Promise.all([
       updateFile(newArticle.image, "posts"),
-      updateFile(newArticle.linkAPK, "apks"),
     ]);
 
-    const updates: any = { image, linkAPK };
+    const updates: any = { image };
 
     if (newArticle.OBB && newArticle.linkOBB) {
       updates.linkOBB = await updateFile(newArticle.linkOBB, "obbs");

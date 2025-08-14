@@ -43,13 +43,11 @@ export interface CreateArticleDto {
   Script: boolean;
   OriginalAPK: boolean;
 
-  linkAPK: string;
   linkOBB?: string | null;
   linkVideo?: string | null;
   linkScript?: string | null;
   linkOriginalAPK?: string | null;
 
-  sizeFileAPK: string;
   sizeFileOBB?: string | null;
   sizeFileScript?: string | null;
   sizeFileOriginalAPK?: string | null;
@@ -108,13 +106,11 @@ export interface UpdateArticleDto {
   Script?: boolean;
   OriginalAPK?: boolean;
 
-  linkAPK?: string;
   linkOBB?: string;
   linkVideo?: string;
   linkScript?: string;
   linkOriginalAPK?: string;
 
-  sizeFileAPK?: string;
   sizeFileOBB?: string;
   sizeFileScript?: string;
   sizeFileOriginalAPK?: string;

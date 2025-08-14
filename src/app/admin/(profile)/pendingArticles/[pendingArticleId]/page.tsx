@@ -224,7 +224,13 @@ export default function Page({ params }: PageparamsProps) {
                 </li>
                 <li className="flex items-center gap-2">
                   <ImDatabase />
-                  <span>{pendingArticle.sizeFileAPK}</span>
+                  <span>
+                    {pendingArticle.apks && pendingArticle.apks.length > 0
+                      ? pendingArticle.apks[0].size
+                      : pendingArticle.xapks && pendingArticle.xapks.length > 0
+                      ? pendingArticle.xapks[0].size
+                      : "*** **"}
+                  </span>
                 </li>
               </ul>
             </div>

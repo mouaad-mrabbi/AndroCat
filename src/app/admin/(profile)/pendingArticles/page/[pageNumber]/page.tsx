@@ -1,5 +1,4 @@
 "use client";
-
 import { ARTICLE_PER_PAGE } from "@/utils/constants";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";

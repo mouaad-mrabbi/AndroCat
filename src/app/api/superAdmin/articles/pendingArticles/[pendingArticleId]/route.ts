@@ -59,7 +59,6 @@ export async function PUT(request: NextRequest, { params }: Props) {
       where: { id: pendingArticle.articleId },
       select: {
         image: true,
-        linkAPK: true,
         linkOBB: true,
         linkScript: true,
         linkOriginalAPK: true,
@@ -97,13 +96,11 @@ export async function PUT(request: NextRequest, { params }: Props) {
         Script: true,
         OriginalAPK: true,
 
-        linkAPK: true,
         linkOBB: true,
         linkScript: true,
         linkVideo: true,
         linkOriginalAPK: true,
 
-        sizeFileAPK: true,
         sizeFileOBB: true,
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
@@ -143,7 +140,6 @@ export async function PUT(request: NextRequest, { params }: Props) {
         Script: pendingArticle.Script,
         OriginalAPK: pendingArticle.OriginalAPK,
 
-        linkAPK: pendingArticle.linkAPK,
         linkOBB: pendingArticle.OBB ? pendingArticle.linkOBB : null,
         linkScript: pendingArticle.Script ? pendingArticle.linkScript : null,
         linkOriginalAPK: pendingArticle.OriginalAPK
@@ -151,7 +147,6 @@ export async function PUT(request: NextRequest, { params }: Props) {
           : null,
         linkVideo: pendingArticle.linkVideo,
 
-        sizeFileAPK: pendingArticle.sizeFileAPK,
         sizeFileOBB: pendingArticle.OBB ? pendingArticle.sizeFileOBB : null,
         sizeFileScript: pendingArticle.Script
           ? pendingArticle.sizeFileScript
@@ -232,7 +227,6 @@ export async function PUT(request: NextRequest, { params }: Props) {
     await Promise.all(
       [
         article.image !== newArticle.image && deleteFile(article.image),
-        article.linkAPK !== newArticle.linkAPK && deleteFile(article.linkAPK),
         article.linkOBB !== newArticle.linkOBB &&
           article.linkOBB &&
           deleteFile(article.linkOBB),

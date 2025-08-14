@@ -165,7 +165,6 @@ export async function PUT(request: NextRequest, { params }: Props) {
         Script: body.Script ?? pendingArticle.Script,
         OriginalAPK: body.OriginalAPK ?? pendingArticle.OriginalAPK,
 
-        linkAPK: body.linkAPK,
         linkOBB:
           body.OBB ?? pendingArticle.OBB
             ? body.linkOBB ?? pendingArticle.linkOBB
@@ -180,7 +179,6 @@ export async function PUT(request: NextRequest, { params }: Props) {
             : null,
         linkVideo: body.linkVideo,
 
-        sizeFileAPK: body.sizeFileAPK,
         sizeFileOBB:
           body.OBB ?? pendingArticle.OBB
             ? body.sizeFileOBB ?? pendingArticle.sizeFileOBB
@@ -299,7 +297,6 @@ export async function DELETE(request: NextRequest, { params }: Props) {
       select: {
         id: true,
         createdById: true,
-        linkAPK: true,
         linkOBB: true,
         linkOriginalAPK: true,
         linkScript: true,
@@ -309,7 +306,6 @@ export async function DELETE(request: NextRequest, { params }: Props) {
         xapks: true,
         article: {
           select: {
-            linkAPK: true,
             linkOBB: true,
             linkOriginalAPK: true,
             linkScript: true,
@@ -335,7 +331,6 @@ export async function DELETE(request: NextRequest, { params }: Props) {
 
       const fileComparisons = [
         ["image", pendingArticle.image, article.image],
-        ["linkAPK", pendingArticle.linkAPK, article.linkAPK],
         ["linkOBB", pendingArticle.linkOBB, article.linkOBB],
         [
           "linkOriginalAPK",
@@ -380,7 +375,6 @@ export async function DELETE(request: NextRequest, { params }: Props) {
 
       const fileLinks = [
         pendingArticle.image,
-        pendingArticle.linkAPK,
         pendingArticle.linkOBB,
         pendingArticle.linkOriginalAPK,
         pendingArticle.linkScript,
