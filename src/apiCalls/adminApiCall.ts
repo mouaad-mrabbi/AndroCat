@@ -54,7 +54,9 @@ interface PendingArticle {
   createdById: number;
   createdBy: User;
   atricleId?: number | null;
-  paragraphs: []
+  paragraphs: [];
+  apks:[];
+  xapks:[];
 }
 
 //create pending Article (CREATE)
@@ -149,7 +151,6 @@ export async function createPendingUpdateArticle(
   formData: CreateArticleDto,
   statusType: "UPDATE" | "DELETE"
 ) {
-  console.log(formData);
   const response = await axios.post(
     `${DOMAIN}/api/admin/pendingArticles/articles/${articleId}`,
     formData,

@@ -35,7 +35,8 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
     const pendingArticle = (await prisma.pendingArticle.findUnique({
       where: { id: pendingArticleId },
-    })) as CreateArticleDto & { articleId: number };
+      include:{apks:true, xapks:true}
+    })) as unknown as CreateArticleDto & { articleId: number };
     if (!pendingArticle) {
       return NextResponse.json(
         { message: "Pending Article not found" },
@@ -63,6 +64,8 @@ export async function PUT(request: NextRequest, { params }: Props) {
         linkScript: true,
         linkOriginalAPK: true,
         appScreens: true,
+        apks: true,
+        xapks: true,
       },
     });
     if (!article) {
@@ -105,7 +108,7 @@ export async function PUT(request: NextRequest, { params }: Props) {
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
 
-        screenType:true,
+        screenType: true,
         appScreens: true,
         keywords: true,
         isMod: true,
@@ -116,6 +119,10 @@ export async function PUT(request: NextRequest, { params }: Props) {
         createdById: true,
         createdAt: true,
         isApproved: true,
+
+        apks: true,
+        xapks: true,
+        paragraphs:true
       },
       data: {
         title: pendingArticle.title,
@@ -171,54 +178,89 @@ export async function PUT(request: NextRequest, { params }: Props) {
           : new Date(),
 
         isApproved: false,
+
+        ...(pendingArticle.apks && pendingArticle.apks.length > 0
+          ? {
+              apks: {
+                deleteMany: {},
+                createMany: {
+                  data: pendingArticle.apks.map((apk, index) => ({
+                    version: apk.version,
+                    link: apk.link,
+                    size: apk.size,
+                    isMod: apk.isMod,
+                    order: index,
+                  })),
+                },
+              },
+            }
+          : {}),
+        ...(pendingArticle.xapks && pendingArticle.xapks.length > 0
+          ? {
+              xapks: {
+                deleteMany: {},
+                createMany: {
+                  data: pendingArticle.xapks.map((xapk, index) => ({
+                    version: xapk.version,
+                    link: xapk.link,
+                    size: xapk.size,
+                    isMod: xapk.isMod,
+                    order: index,
+                  })),
+                },
+              },
+            }
+          : {}),
+        ...(pendingArticle.paragraphs && pendingArticle.paragraphs.length > 0
+          ? {
+              paragraphs: {
+                deleteMany: {},
+                createMany: {
+                  data: pendingArticle.paragraphs.map((p, index) => ({
+                    articleId: pendingArticle.articleId,
+                    title: p.title,
+                    content: p.content,
+                    order: index,
+                  })),
+                },
+              },
+            }
+          : {}),
       },
     });
 
-    const pendingParagraphs = await prisma.pendingArticleParagraph.findMany({
-      where: { pendingArticleId },
-    });
-    await prisma.articleParagraph.deleteMany({
-      where: { articleId: pendingArticle.articleId },
-    });
-    if (pendingParagraphs.length > 0) {
-      await prisma.articleParagraph.createMany({
-        data: pendingParagraphs.map((p, index) => ({
-          articleId: pendingArticle.articleId,
-          title: p.title,
-          content: p.content,
-          order: index,
-        })),
-      });
-    }
-
-    if (article.image !== newArticle.image) {
-      await deleteFile(article.image);
-    }
-    if (article.linkAPK !== newArticle.linkAPK) {
-      await deleteFile(article.linkAPK);
-    }
-    if (article.linkOBB !== newArticle.linkOBB && article.linkOBB) {
-      await deleteFile(article.linkOBB);
-    }
-    if (article.linkScript !== newArticle.linkScript && article.linkScript) {
-      await deleteFile(article.linkScript);
-    }
-    if (
-      article.linkOriginalAPK !== newArticle.linkOriginalAPK &&
-      article.linkOriginalAPK
-    ) {
-      await deleteFile(article.linkOriginalAPK);
-    }
     await Promise.all(
-      article.appScreens.map(async (screen) => {
-        if (!newArticle.appScreens.includes(screen) && screen) {
-          try {
-            await deleteFile(screen);
-          } catch (error) {
-            console.error("Failed to delete screen:", screen, error);
-          }
-        }
-      })
+      [
+        article.image !== newArticle.image && deleteFile(article.image),
+        article.linkAPK !== newArticle.linkAPK && deleteFile(article.linkAPK),
+        article.linkOBB !== newArticle.linkOBB &&
+          article.linkOBB &&
+          deleteFile(article.linkOBB),
+        article.linkScript !== newArticle.linkScript &&
+          article.linkScript &&
+          deleteFile(article.linkScript),
+        article.linkOriginalAPK !== newArticle.linkOriginalAPK &&
+          article.linkOriginalAPK &&
+          deleteFile(article.linkOriginalAPK),
+        ...article.appScreens.map(
+          (screen) =>
+            !newArticle.appScreens.includes(screen) &&
+            screen &&
+            deleteFile(screen)
+        ),
+        ...article.apks.map(
+          (apk) =>
+            !newArticle.apks.some((a) => a.link === apk.link) &&
+            apk.link &&
+            deleteFile(apk.link)
+        ),
+        ...article.xapks.map(
+          (xapk) =>
+            !newArticle.xapks.some((a) => a.link === xapk.link) &&
+            xapk.link &&
+            deleteFile(xapk.link)
+        ),
+      ].filter(Boolean)
     );
 
     await prisma.pendingArticle.delete({ where: { id: pendingArticleId } });

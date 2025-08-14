@@ -43,24 +43,31 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  if (!url.startsWith("/admin")) {
+    const slug = url.split("/").pop() || "";
+    if (slug.endsWith("-mod-apk-android-download")) {
+      const newSlug = slug.replace(/-mod-apk-android-download$/, "");
+      const nextUrl = request.nextUrl.clone();
+      nextUrl.pathname = url.replace(slug, newSlug);
+      return NextResponse.redirect(nextUrl, 301);
+    }
+  }
+
+  // 🔒 كود حماية /admin كما هو
   const jwtToken = request.cookies.get("jwtToken");
   const token = jwtToken ? jwtToken.value : null;
 
   if (!token) {
-    if (
-      !url.startsWith("/admin/login") &&
-      !url.startsWith("/admin/register")
-    ) {
+    if (!url.startsWith("/admin/login") && !url.startsWith("/admin/register")) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
   } else {
-    if (
-      url === "/admin/login" ||
-      url === "/admin/register"
-    ) {
+    if (url === "/admin/login" || url === "/admin/register") {
       return NextResponse.redirect(new URL("/admin/dashboard", request.url));
     }
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
@@ -71,9 +78,11 @@ export const config = {
     "/admin/articles/:path*",
     "/admin/register",
     "/admin/login",
+
+    // فقط صفحات المقال التي قد تحتاج إعادة التوجيه
+    "/:slug*-mod-apk-android-download",
   ],
 };
-
 
 /* export async function middleware(request: NextRequest) {
   const jwtToken = request.cookies.get("jwtToken");

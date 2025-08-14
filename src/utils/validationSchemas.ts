@@ -75,7 +75,6 @@ export const createArticleSchema = z
     ratedFor: z.number().min(1).max(20),
     installs: z.string().min(1).max(20),
 
-    // ✅ الفقرات (اختياري لكن يجب أن تكون منظمة إذا وُجدت)
     paragraphs: z
       .array(
         z.object({
@@ -83,6 +82,29 @@ export const createArticleSchema = z
           content: z.string().min(5),
         })
       )
+      .optional(),
+
+    apks: z
+      .array(
+        z.object({
+          version: z.string().min(1),
+          link: z.string().min(5),
+          size: z.string().min(3),
+          isMod: z.boolean(),
+        })
+      )
+      .nonempty()
+      .optional(),
+    xapks: z
+      .array(
+        z.object({
+          version: z.string().min(1),
+          link: z.string().min(5),
+          size: z.string().min(3),
+          isMod: z.boolean(),
+        })
+      )
+      .nonempty()
       .optional(),
   })
   .superRefine((data, ctx) => {
@@ -257,6 +279,16 @@ export const createArticleSchema = z
         });
       }
     }
+
+    //apk xapk
+    const apksEmpty = !data.apks?.length;
+    const xapksEmpty = !data.xapks?.length;
+
+    if (apksEmpty && xapksEmpty) {
+      const message = "APKs or XAPKs must contain at least one element";
+      ctx.addIssue({ path: ["apks"], code: z.ZodIssueCode.custom, message });
+      ctx.addIssue({ path: ["xapks"], code: z.ZodIssueCode.custom, message });
+    }
   });
 
 export const updateArticleSchema = z
@@ -306,7 +338,6 @@ export const updateArticleSchema = z
     ratedFor: z.number().min(1).max(20).optional(),
     installs: z.string().min(1).max(20).optional(),
 
-    // ✅ الفقرات (اختياري لكن يجب أن تكون منظمة إذا وُجدت)
     paragraphs: z
       .array(
         z.object({
@@ -314,6 +345,29 @@ export const updateArticleSchema = z
           content: z.string().min(5),
         })
       )
+      .optional(),
+
+    apks: z
+      .array(
+        z.object({
+          version: z.string().min(1),
+          link: z.string().min(5),
+          size: z.string().min(3),
+          isMod: z.boolean(),
+        })
+      )
+      .nonempty()
+      .optional(),
+    xapks: z
+      .array(
+        z.object({
+          version: z.string().min(1),
+          link: z.string().min(5),
+          size: z.string().min(3),
+          isMod: z.boolean(),
+        })
+      )
+      .nonempty()
       .optional(),
   })
   .superRefine((data, ctx) => {
@@ -485,5 +539,15 @@ export const updateArticleSchema = z
           path: ["gameCategory"],
         });
       }
+    }
+
+    //apk xapk
+    const apksEmpty = !data.apks?.length;
+    const xapksEmpty = !data.xapks?.length;
+
+    if (apksEmpty && xapksEmpty) {
+      const message = "APKs or XAPKs must contain at least one element";
+      ctx.addIssue({ path: ["apks"], code: z.ZodIssueCode.custom, message });
+      ctx.addIssue({ path: ["xapks"], code: z.ZodIssueCode.custom, message });
     }
   });

@@ -11,7 +11,10 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        interactive: "var(--interactive)",
+        interactive: {
+          DEFAULT: "var(--interactive)",
+          20: "rgba(102, 203, 91, 0.2)",
+        },
       },
     },
   },

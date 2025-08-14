@@ -28,12 +28,17 @@ export async function POST(request: NextRequest) {
 
 //DELETE
 export async function DELETE(request: NextRequest) {
-  const { key } = await request.json()
-
   try {
-    await deleteFile(key)
-    return NextResponse.json({ message: 'File deleted successfully' })
-  } catch (error) {
-    return NextResponse.json({ error: 'Error deleting file' }, { status: 500 })
+    const { key } = await request.json();
+
+    if (!key) {
+      return NextResponse.json({ error: 'Missing file key' }, { status: 400 });
+    }
+
+    const result = await deleteFile(key);
+
+    return NextResponse.json({ message: 'File deleted successfully', result });
+  } catch (error: any) {
+    return NextResponse.json({ error: 'Error deleting file', details: error.message }, { status: 500 });
   }
 }

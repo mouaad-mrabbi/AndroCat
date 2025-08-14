@@ -15,14 +15,6 @@ import BannerAd from "@/components/bannerAd";
 import Head from "next/head";
 import { DOMAIN, DOMAINCDN } from "@/utils/constants";
 
-interface DownloadLink {
-  key: string;
-  label: string;
-  bgColor: string;
-  size: string | null;
-  link: string | null;
-}
-
 export async function ArticleContent({ slug }: { slug: string }) {
   try {
     const headersList = await headers();
@@ -31,16 +23,15 @@ export async function ArticleContent({ slug }: { slug: string }) {
     const isMobile =
       /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(userAgent);
 
-    if (!slug || isNaN(Number(slug.split("-")[0]))) {
-      throw new Error("Invalid slug format");
-    }
-    const [idPart, ...titleParts] = slug.split("-");
-    const articleId = parseInt(idPart);
-    if (isNaN(articleId)) {
+    const parts = slug.split("-");
+    const id = Number(parts[0]);
+    const titleSlug = parts.slice(1).join("-");
+
+    if (isNaN(id)) {
       throw new Error("Invalid articleId from slug");
     }
 
-    const article = await fetchArticleById(articleId);
+    const article = await fetchArticleById(id);
 
     const capitalize = (str: any) =>
       str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
@@ -78,68 +69,6 @@ export async function ArticleContent({ slug }: { slug: string }) {
       },
     };
 
-    const downloadLinks = [
-      {
-        key: "apk",
-        label: "APK",
-        bgColor: "bg-interactive",
-        size: article.sizeFileAPK,
-        link: article.linkAPK,
-      },
-      {
-        key: "original-apk",
-        label: "Original APK",
-        bgColor: "bg-[#3f4244]",
-        size: article.sizeFileScript,
-        link: article.linkOriginalAPK,
-      },
-      {
-        key: "obb",
-        label: "OBB",
-        bgColor: "bg-yellow-600",
-        size: article.sizeFileOBB,
-        link: article.linkOBB,
-      },
-      {
-        key: "script",
-        label: "Script",
-        bgColor: "bg-yellow-600",
-        size: article.sizeFileScript,
-        link: article.linkScript,
-      },
-    ];
-
-    const renderDownloadLink = ({
-      key,
-      label,
-      bgColor,
-      size,
-      link,
-    }: DownloadLink) => {
-      if (!link) return null;
-
-      return (
-        <Link
-          key={key}
-          href={`/download/${article.id}-${key}`}
-          title={`Download ${label} ${article.title} Updated to version ${article.version}`}
-          className={`flex items-center justify-between max-[1000px]:flex-col 
-            box-border py-4 px-8 max-sm:px-4 uppercase ${bgColor} leading-relaxed 
-            font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-${bgColor}/20`}
-        >
-          <div>
-            <p>
-              Download {label} {article.title}{" "}
-              <span> Updated to version {article.version}</span>
-            </p>
-          </div>
-          <div className="max-[1000px]:font-medium flex items-center gap-2">
-            <RiDownloadFill />
-            <p>{size}</p>
-          </div>
-        </Link>
-      );
-    };
     return (
       <>
         <Head>
@@ -185,7 +114,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
                   priority
                 />
                 {/* developer */}
-                <p className="text-sm text-[#b2b2b2]  lg:hidden mt-4">
+                <p className="text-sm text-[#b2b2b2]  lg:hidden mt-4 w-[136px] min-[500px]:w-[184px] min-[770px]:w-[160px]">
                   {article.developer}
                 </p>
               </div>
@@ -265,9 +194,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
                     className="w-52 px-4 py-3 uppercase font-bold rounded-full text-sm text-ellipsis whitespace-nowrap text-center
                         bg-interactive shadow-xl shadow-interactive/20 overflow-hidden"
                   >
-                    {article.OBB || article.Script
-                      ? `Downloads`
-                      : `Download(${article.sizeFileAPK})`}
+                    Downloads
                   </Link>
 
                   <p className="text-sm text-[#b2b2b2] text-center max-[770px]:hidden">
@@ -354,6 +281,7 @@ export async function ArticleContent({ slug }: { slug: string }) {
               <p>({article.ratingCount})</p>
             </div>
           </div>
+
           {/* Download link */}
           <div
             id="downloads"
@@ -363,8 +291,121 @@ export async function ArticleContent({ slug }: { slug: string }) {
               {article.title} v{article.version}{" "}
               {article.isMod ? article.typeMod + " " : ""}– Download
             </h2>
+            {/* APKs Section */}
+            {article.apks.length > 0 && (
+              <>
+                <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+                  APKs
+                </h2>
+                {article.apks.map((apk, i) => (
+                  <Link
+                    key={`APKs ${i}`}
+                    href={`${slug}/download/${i + 1}-apk`}
+                    title={`Download APK ${article.title} Updated to version ${apk.version}`}
+                    className={`flex items-center justify-between max-[1000px]:flex-col 
+                      box-border py-4 px-8 max-sm:px-4 uppercase bg-interactive leading-relaxed 
+                      font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-interactive-20`}
+                  >
+                    <div>
+                      <p>
+                        Download APK {article.title}{" "}
+                        <span> Updated to version {apk.version}</span>
+                      </p>
+                    </div>
+                    <div className="max-[1000px]:font-medium flex items-center gap-2">
+                      <RiDownloadFill />
+                      <p>{apk.size}</p>
+                    </div>
+                  </Link>
+                ))}
+              </>
+            )}
 
-            {downloadLinks.map(renderDownloadLink)}
+            {/* XAPKs Section */}
+            {article.xapks.length > 0 && (
+              <>
+                <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+                  XAPKs
+                </h2>
+                {article.xapks.map((xapk, i) => (
+                  <Link
+                    key={`XAPKs ${i}`}
+                    href={`${slug}/download/${i + 1}-xapk`}
+                    title={`Download XAPK ${article.title} Updated to version ${xapk.version}`}
+                    className={`flex items-center justify-between max-[1000px]:flex-col 
+                      box-border py-4 px-8 max-sm:px-4 uppercase bg-interactive leading-relaxed 
+                      font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-interactive-20`}
+                  >
+                    <div>
+                      <p>
+                        Download XAPK {article.title}{" "}
+                        <span> Updated to version {xapk.version}</span>
+                      </p>
+                    </div>
+                    <div className="max-[1000px]:font-medium flex items-center gap-2">
+                      <RiDownloadFill />
+                      <p>{xapk.size}</p>
+                    </div>
+                  </Link>
+                ))}
+              </>
+            )}
+
+            {/* original apk */}
+            {article.OriginalAPK && (
+              <>
+                <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+                  Original APK
+                </h2>
+                <Link
+                  key={"original-apk"}
+                  href={`${slug}/download/1-original-apk`}
+                  title={`Download Original APK ${article.title} Updated to version ${article.versionOriginal}`}
+                  className={`flex items-center justify-between max-[1000px]:flex-col 
+            box-border py-4 px-8 max-sm:px-4 uppercase bg-[#3f4244] leading-relaxed 
+            font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-[#3f4244]/20`}
+                >
+                  <div>
+                    <p>
+                      Download Original APK {article.title}{" "}
+                      <span> Updated to version {article.versionOriginal}</span>
+                    </p>
+                  </div>
+                  <div className="max-[1000px]:font-medium flex items-center gap-2">
+                    <RiDownloadFill />
+                    <p>{article.sizeFileScript}</p>
+                  </div>
+                </Link>
+              </>
+            )}
+
+            {/* obb */}
+            {article.OBB && (
+              <>
+                <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+                  OBB
+                </h2>
+                <Link
+                  key={"obb"}
+                  href={`${slug}/download/1-obb`}
+                  title={`Download OBB ${article.title} Updated to version ${article.version}`}
+                  className={`flex items-center justify-between max-[1000px]:flex-col 
+                    box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
+                    font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20`}
+                >
+                  <div>
+                    <p>
+                      Download OBB {article.title}{" "}
+                      <span> Updated to version {article.version}</span>
+                    </p>
+                  </div>
+                  <div className="max-[1000px]:font-medium flex items-center gap-2">
+                    <RiDownloadFill />
+                    <p>{article.sizeFileOBB}</p>
+                  </div>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Additional Information */}

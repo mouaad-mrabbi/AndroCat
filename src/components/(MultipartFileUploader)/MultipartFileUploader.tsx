@@ -104,6 +104,8 @@ export function MultipartFileUploader({
         default:
           if (["apks", "original-apks"].includes(customKey.fileType)) {
             extension = "apk";
+          }else if (["xapks"].includes(customKey.fileType)) {
+            extension = "xapk";
           } else if (["obbs", "scripts"].includes(customKey.fileType)) {
             extension = "zip";
           } else {
@@ -127,6 +129,8 @@ export function MultipartFileUploader({
         customKey.randomText
       }/${cleanTitleFile}${
         customKey.fileType === "apks"
+          ? `${customKey.isMod ? "-mod" : ""}_${customKey.version}-AndroCat.com`
+          : customKey.fileType === "xapks"
           ? `${customKey.isMod ? "-mod" : ""}_${customKey.version}-AndroCat.com`
           : customKey.fileType === "original-apks"
           ? `-original_${customKey.version}-AndroCat.com`

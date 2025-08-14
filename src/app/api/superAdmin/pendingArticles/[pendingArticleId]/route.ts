@@ -49,6 +49,9 @@ export async function GET(request: NextRequest, { params }: Props) {
         createdBy: {
           select: { username: true, profile: true },
         },
+        paragraphs: true,
+        apks: true,
+        xapks: true,
       },
     });
     if (!pendingArticle) {
@@ -93,7 +96,52 @@ export async function POST(request: NextRequest, { params }: Props) {
 
     const pendingArticle = (await prisma.pendingArticle.findUnique({
       where: { id: pendingArticleId },
-    })) as CreateArticleDto & { articleId: number };
+      select: {
+        id: true,
+        title: true,
+        secondTitle: true,
+        description: true,
+        descriptionMeta: true,
+        image: true,
+        developer: true,
+        version: true,
+        versionOriginal: true,
+        androidVer: true,
+
+        articleType: true,
+        gameCategory: true,
+        programCategory: true,
+
+        OBB: true,
+        Script: true,
+        OriginalAPK: true,
+
+        linkAPK: true,
+        linkOBB: true,
+        linkVideo: true,
+        linkScript: true,
+        linkOriginalAPK: true,
+
+        sizeFileAPK: true,
+        sizeFileOBB: true,
+        sizeFileScript: true,
+        sizeFileOriginalAPK: true,
+
+        screenType: true,
+        appScreens: true,
+        keywords: true,
+        isMod: true,
+        typeMod: true,
+        ratedFor: true,
+        installs: true,
+
+        createdById: true,
+        createdAt: true,
+
+        apks: true,
+        xapks: true,
+      },
+    })) as unknown as CreateArticleDto & { articleId: number };
     if (!pendingArticle) {
       return NextResponse.json(
         { message: "Pending Article not found" },
@@ -233,87 +281,71 @@ export async function POST(request: NextRequest, { params }: Props) {
 
     await prisma.pendingArticle.delete({ where: { id: pendingArticleId } });
 
-    await renameFile(
-      newArticle.image,
-      `posts/${newArticle.id}/${newArticle.image.split("/").pop()}`
-    );
-    await renameFile(
-      newArticle.linkAPK,
-      `apks/${newArticle.id}/${newArticle.linkAPK.split("/").pop()}`
-    );
-    await prisma.article.update({
-      where: { id: newArticle.id },
-      data: {
-        image: `posts/${newArticle.id}/${newArticle.image.split("/").pop()}`,
-        linkAPK: `apks/${newArticle.id}/${newArticle.linkAPK.split("/").pop()}`,
-      },
-      select: { id: true, image: true, linkAPK: true },
-    });
+    const updateFile = async (file: string, path: string) => {
+      await renameFile(
+        file,
+        `${path}/${newArticle.id}/${file.split("/").pop()}`
+      );
+      return `${path}/${newArticle.id}/${file.split("/").pop()}`;
+    };
+
+    const [image, linkAPK] = await Promise.all([
+      updateFile(newArticle.image, "posts"),
+      updateFile(newArticle.linkAPK, "apks"),
+    ]);
+
+    const updates: any = { image, linkAPK };
 
     if (newArticle.OBB && newArticle.linkOBB) {
-      await renameFile(
-        newArticle.linkOBB,
-        `obbs/${newArticle.id}/${newArticle.linkOBB.split("/").pop()}`
-      );
-      await prisma.article.update({
-        where: { id: newArticle.id },
-        data: {
-          linkOBB: `obbs/${newArticle.id}/${newArticle.linkOBB
-            .split("/")
-            .pop()}`,
-        },
-        select: { id: true, linkOBB: true },
-      });
+      updates.linkOBB = await updateFile(newArticle.linkOBB, "obbs");
     }
     if (newArticle.Script && newArticle.linkScript) {
-      await renameFile(
-        newArticle.linkScript,
-        `scripts/${newArticle.id}/${newArticle.linkScript.split("/").pop()}`
-      );
-      await prisma.article.update({
-        where: { id: newArticle.id },
-        data: {
-          linkScript: `scripts/${newArticle.id}/${newArticle.linkScript
-            .split("/")
-            .pop()}`,
-        },
-        select: { id: true, linkScript: true },
-      });
+      updates.linkScript = await updateFile(newArticle.linkScript, "scripts");
     }
     if (newArticle.OriginalAPK && newArticle.linkOriginalAPK) {
-      await renameFile(
+      updates.linkOriginalAPK = await updateFile(
         newArticle.linkOriginalAPK,
-        `original-apks/${newArticle.id}/${newArticle.linkOriginalAPK
-          .split("/")
-          .pop()}`
+        "original-apks"
       );
-      await prisma.article.update({
-        where: { id: newArticle.id },
-        data: {
-          linkOriginalAPK: `original-apks/${
-            newArticle.id
-          }/${newArticle.linkOriginalAPK.split("/").pop()}`,
-        },
-        select: { id: true, linkOriginalAPK: true },
-      });
     }
 
-    await Promise.all(
-      newArticle.appScreens.map((screen) =>
-        renameFile(
-          screen,
-          `screenshots/${newArticle.id}/${screen.split("/").pop()}`
-        )
-      )
-    );
-    const updatedScreens = newArticle.appScreens.map((screen) => {
-      const fileName = screen.split("/").pop();
-      return `screenshots/${newArticle.id}/${fileName}`;
-    });
+    const [updatedApks, updatedXapks, updatedScreens] = await Promise.all([
+      Promise.all(
+        pendingArticle.apks.map(async (apk) => ({
+          version: apk.version,
+          link: await updateFile(apk.link, "apks"),
+          size: apk.size,
+          isMod: apk.isMod,
+        }))
+      ),
+      Promise.all(
+        pendingArticle.xapks.map(async (xapk) => ({
+          version: xapk.version,
+          link: await updateFile(xapk.link, "xapks"),
+          size: xapk.size,
+          isMod: xapk.isMod,
+        }))
+      ),
+      Promise.all(
+        newArticle.appScreens.map((screen) => updateFile(screen, "screenshots"))
+      ),
+    ]);
+
     await prisma.article.update({
       where: { id: newArticle.id },
       data: {
+        ...updates,
         appScreens: updatedScreens,
+        apks: {
+          createMany: {
+            data: updatedApks.map((apk, i) => ({ ...apk, order: i })),
+          },
+        },
+        xapks: {
+          createMany: {
+            data: updatedXapks.map((xapk, i) => ({ ...xapk, order: i })),
+          },
+        },
       },
     });
 

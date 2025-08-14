@@ -14,7 +14,7 @@ import { slugifyTitle } from "@/utils/slugifyTitle";
 export default async function DownloadPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; scdSlug: string }>;
 }) {
   const headersList = await headers();
   const userAgent = headersList.get("user-agent") || "";
@@ -22,11 +22,18 @@ export default async function DownloadPage({
   const isMobile =
     /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(userAgent);
 
-  const { slug } = await params;
-  const [idPart, typePart] = slug.split("-");
-  const articleId = parseInt(idPart);
+  const { slug, scdSlug } = await params;
+
+  const partsSlug = slug.split("-");
+  const id = Number(partsSlug[0]);
+  const titleSlug = partsSlug.slice(1).join("-");
+
+  const partsScdSlug = scdSlug.split("-");
+  const order = Number(partsScdSlug[0]);
+  const titleScdSlug = partsScdSlug.slice(1).join("-");
+
   try {
-    const article = await getDownloadData(articleId, typePart);
+    const article = await getDownloadData(id, titleScdSlug, order);
     const cleanTitle = slugifyTitle(article.title);
     return (
       <div>
@@ -57,7 +64,7 @@ export default async function DownloadPage({
             <p className="text-[1.25rem] text-center font-bold mb-9">
               <span>{article.title}</span>{" "}
               {article.isMod && <span>({article.typeMod})</span>}{" "}
-              <span>{article.version}</span>.{typePart}
+              <span>{article.version}</span>.{titleScdSlug}
             </p>
 
             <div className="flex items-center gap-2 text-sm text-gray-500 font-bold mb-4">

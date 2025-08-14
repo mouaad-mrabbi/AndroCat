@@ -73,7 +73,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         sizeFileScript: true,
         sizeFileOriginalAPK: true,
 
-        screenType:true,
+        screenType: true,
         appScreens: true,
         keywords: true,
 
@@ -101,6 +101,12 @@ export async function GET(request: NextRequest, { params }: Props) {
 
         pendingArticle: true,
         paragraphs: { select: { title: true, content: true } },
+        apks: {
+          select: { link: true, size: true, version: true, isMod: true },
+        },
+        xapks: {
+          select: { link: true, size: true, version: true, isMod: true },
+        },
       },
     });
     if (!article) {

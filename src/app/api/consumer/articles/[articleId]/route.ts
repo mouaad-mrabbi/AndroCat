@@ -67,6 +67,8 @@ export async function GET(request: NextRequest, { params }: Props) {
         averageRating: true,
         updatedAt: true,
         paragraphs: { select: { title: true, content: true } },
+        apks:true,
+        xapks:true
       },
     });
     if (!article) {

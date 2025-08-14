@@ -162,7 +162,7 @@ model Article {
   ratings        ArticleRating[]
   paragraphs     ArticleParagraph[]
   apks           ArticleAPKS[]
-  apkxs          ArticleAPKXS[]
+  xapks          ArticleXAPKS[]
 }
 
 model ArticleRating {
@@ -243,7 +243,7 @@ model PendingArticle {
   rejected   RejectedPendingArticle?
   paragraphs PendingArticleParagraph[]
   apks       PendingArticleAPKS[]
-  apkxs      PendingArticleAPKXS[]
+  xapks      PendingArticleXAPKS[]
 }
 
 model RejectedPendingArticle {
@@ -290,7 +290,7 @@ model ArticleAPKS {
   version String
   link    String
   size    String
-  isMod    Boolean  @default(false)
+  isMod   Boolean @default(false)
   order   Int
 }
 
@@ -302,12 +302,12 @@ model PendingArticleAPKS {
   version String
   link    String
   size    String
-  isMod    Boolean  @default(false)
+  isMod   Boolean @default(false)
   order   Int
 }
 
-//apkxs
-model ArticleAPKXS {
+//xapks
+model ArticleXAPKS {
   id        Int     @id @default(autoincrement())
   article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
   articleId Int
@@ -315,11 +315,11 @@ model ArticleAPKXS {
   version String
   link    String
   size    String
-  isMod    Boolean  @default(false)
+  isMod   Boolean @default(false)
   order   Int
 }
 
-model PendingArticleAPKXS {
+model PendingArticleXAPKS {
   id               Int            @id @default(autoincrement())
   pendingArticle   PendingArticle @relation(fields: [pendingArticleId], references: [id], onDelete: Cascade)
   pendingArticleId Int
@@ -327,6 +327,6 @@ model PendingArticleAPKXS {
   version String
   link    String
   size    String
-  isMod    Boolean  @default(false)
+  isMod   Boolean @default(false)
   order   Int
 }

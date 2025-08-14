@@ -3,7 +3,7 @@ import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
 import { CreateArticleDto } from "@/utils/dtos";
 import { createArticleSchema } from "@/utils/validationSchemas";
-import { ActionType, ScreenType } from "@prisma/client";
+import { ActionType } from "@prisma/client";
 
 interface Props {
   params: Promise<{ articleId: string }>;
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest, { params }: Props) {
       sizeFileOBB: body.OBB ? body.sizeFileOBB : null,
       sizeFileScript: body.Script ? body.sizeFileScript : null,
       sizeFileOriginalAPK: body.OriginalAPK ? body.sizeFileOriginalAPK : null,
-      screenType:body.screenType,
+      screenType: body.screenType,
       appScreens: body.appScreens,
       keywords: body.keywords,
       isMod: body.isMod,
@@ -103,46 +103,96 @@ export async function POST(request: NextRequest, { params }: Props) {
     });
 
     if (existingPending) {
-      const updatedPending = await prisma.pendingArticle.update({
+      const updatedPendingArticle = await prisma.pendingArticle.update({
         where: { articleId },
-        data: baseData,
+        data: {
+          ...baseData,
+          paragraphs: {
+            deleteMany: {},
+            createMany: {
+              data:
+                body.paragraphs?.map((p, index) => ({
+                  title: p.title,
+                  content: p.content,
+                  order: index,
+                })) ?? [],
+            },
+          },
+          apks: {
+            deleteMany: {},
+            createMany: {
+              data:
+                body.apks?.map((apk, index) => ({
+                  version: apk.version,
+                  link: apk.link,
+                  size: apk.size,
+                  isMod: apk.isMod,
+                  order: index,
+                })) ?? [],
+            },
+          },
+          xapks: {
+            deleteMany: {},
+            createMany: {
+              data:
+                body.xapks?.map((xapk, index) => ({
+                  version: xapk.version,
+                  link: xapk.link,
+                  size: xapk.size,
+                  isMod: xapk.isMod,
+                  order: index,
+                })) ?? [],
+            },
+          },
+        },
+        include: {
+          paragraphs: true,
+          apks: true,
+          xapks: true,
+        },
       });
 
-      // في حالة UPDATE فقط: حذف الفقرات القديمة وإضافة الجديدة
-      if (statusType === "UPDATE") {
-        await prisma.pendingArticleParagraph.deleteMany({
-          where: { pendingArticleId: updatedPending.id },
-        });
-
-        if (Array.isArray(body.paragraphs) && body.paragraphs.length > 0) {
-          await prisma.pendingArticleParagraph.createMany({
-            data: body.paragraphs.map((p, index) => ({
-              pendingArticleId: updatedPending.id,
-              title: p.title,
-              content: p.content,
-              order: index,
-            })),
-          });
-        }
-      }
-
-      return NextResponse.json(updatedPending.id, { status: 200 });
+      return NextResponse.json(updatedPendingArticle.id, { status: 200 });
     } else {
       // إنشاء جديد
       const createdPending = await prisma.pendingArticle.create({
         data: {
           ...baseData,
-          ...(statusType === "UPDATE" && Array.isArray(body.paragraphs)
-            ? {
-                paragraphs: {
-                  create: body.paragraphs.map((p, index) => ({
-                    title: p.title,
-                    content: p.content,
-                    order: index,
-                  })),
-                },
-              }
-            : {}),
+
+          ...(Array.isArray(body.paragraphs) &&
+            body.paragraphs.length > 0 && {
+              paragraphs: {
+                create: body.paragraphs.map((p, i) => ({
+                  title: p.title,
+                  content: p.content,
+                  order: i,
+                })),
+              },
+            }),
+          ...(Array.isArray(body.apks) &&
+            body.apks.length > 0 && {
+              apks: {
+                create: body.apks.map((apk, i) => ({
+                  version: apk.version,
+                  link: apk.link,
+                  size: apk.size,
+                  isMod: apk.isMod,
+                  order: i,
+                })),
+              },
+            }),
+          ...(Array.isArray(body.xapks) &&
+            body.xapks.length > 0 && {
+              xapks: {
+                create: body.xapks.map((xapk, i) => ({
+                  version: xapk.version,
+                  link: xapk.link,
+                  size: xapk.size,
+                  isMod: xapk.isMod,
+                  order: i,
+                })),
+              },
+            }),
         },
       });
 

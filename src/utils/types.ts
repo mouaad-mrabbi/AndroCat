@@ -20,8 +20,11 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
   select: {
     createdBy: { select: { profile: true; username: true } };
     validatedBy: { select: { profile: true; username: true } };
-    paragraphs:{select:{title:true;content:true}}
-    pendingArticle: { select: { id: true } };
+    paragraphs: { select: { title: true; content: true } };
+    pendingArticle: true;
+    apks: true;
+    xapks: true;
+
     id: true;
     title: true;
     secondTitle: true;
@@ -52,7 +55,7 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
     sizeFileScript: true;
     sizeFileOriginalAPK: true;
 
-    screenType:true,
+    screenType: true;
     appScreens: true;
     keywords: true;
     isMod: true;
@@ -76,7 +79,10 @@ export type ArticleAndObjects = Prisma.ArticleGetPayload<{
 export type PendingArticleAndObjects = Prisma.PendingArticleGetPayload<{
   select: {
     createdBy: { select: { profile: true; username: true } };
-    paragraphs: {select:{title:true,content:true}};
+    paragraphs: { select: { title: true; content: true } };
+    apks: true;
+    xapks: true;
+
     id: true;
     status: true;
     title: true;
@@ -107,7 +113,7 @@ export type PendingArticleAndObjects = Prisma.PendingArticleGetPayload<{
     sizeFileScript: true;
     sizeFileOriginalAPK: true;
 
-    screenType:true,
+    screenType: true;
     appScreens: true;
     keywords: true;
     isMod: true;

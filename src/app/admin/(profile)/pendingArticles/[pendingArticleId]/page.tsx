@@ -42,16 +42,24 @@ type ConfirmOpenState = {
   delete: boolean;
 };
 
+type LoadingState = {
+  toArticle: boolean;
+};
+
 export default function Page({ params }: PageparamsProps) {
   const [pendingArticle, setPendingArticle] =
     useState<PendingArticleAndObjects>();
   const [pendingArticleId, setPendingArticleId] = useState<number>();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading1, setIsLoading1] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const [isConfirmOpen, setIsConfirmOpen] = useState<ConfirmOpenState>({
     delete: false,
+  });
+
+  const [isLoading, setIsLoading] = useState<LoadingState>({
+    toArticle: false,
   });
 
   useEffect(() => {
@@ -66,7 +74,7 @@ export default function Page({ params }: PageparamsProps) {
     const fetchArticles = async () => {
       if (!pendingArticleId) return;
 
-      setIsLoading(true);
+      setIsLoading1(true);
       setError(null);
 
       try {
@@ -75,7 +83,7 @@ export default function Page({ params }: PageparamsProps) {
       } catch (error: any) {
         setError("Failed to fetch pending Articles.");
       } finally {
-        setIsLoading(false);
+        setIsLoading1(false);
       }
     };
 
@@ -84,36 +92,35 @@ export default function Page({ params }: PageparamsProps) {
 
   const handleMoveToArticle = async () => {
     if (!pendingArticle) return;
-    if (pendingArticle.status === "CREATE") {
-      try {
-        const response = await creatArticle(pendingArticle.id);
+    setIsLoading((prev) => ({ ...prev, toArticle: true }));
 
-        toast.success(response.data.message || "New Articles added");
-        router.push(`/admin/articles/${response.data.id}`);
-      } catch (error: any) {
-        toast.error(error?.response?.data?.message);
+    try {
+      let res;
+      switch (pendingArticle.status) {
+        case "CREATE":
+          res = await creatArticle(pendingArticle.id);
+          router.push(`/admin/articles/${res.data.id}`);
+          toast.success("New Articles CREATE");
+          break;
+        case "UPDATE":
+          res = await updateArticle(pendingArticle.id);
+          router.push(`/admin/articles/${pendingArticle.articleId}`);
+          toast.success("Articles UPDATE");
+          break;
+        case "DELETE":
+          if (!pendingArticle.articleId) break;
+          res = await deleteArticle(pendingArticle.articleId);
+          toast.success("Articles DELETE");
+          break;
       }
-    } else if (pendingArticle.status === "UPDATE") {
-      try {
-        const response = await updateArticle(pendingArticle.id);
-
-        toast.success(response.data.message || "New Articles added");
-        router.push(`/admin/articles/${pendingArticle.articleId}`);
-      } catch (error: any) {
-        toast.error(error?.response?.data?.message);
-      }
-    } else if (pendingArticle.status === "DELETE" && pendingArticle.articleId) {
-      console.log("here");
-      try {
-        const res = await deleteArticle(pendingArticle.articleId);
-        toast.success(res);
-      } catch (error: any) {
-        toast.error(error);
-      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error);
+    } finally {
+      setIsLoading((prev) => ({ ...prev, toArticle: false }));
     }
   };
 
-  if (isLoading) return <LoadingArticle />;
+  if (isLoading1) return <LoadingArticle />;
   if (error) return NotFoundPage();
   if (!pendingArticle) return NotFoundPage();
 
@@ -158,12 +165,14 @@ export default function Page({ params }: PageparamsProps) {
               src={`${DOMAINCDN}/${pendingArticle.image}`}
               width={190}
               height={190}
-              alt={`${pendingArticle.title} ${pendingArticle.isMod ? "mod" : ""} apk`}
+              alt={`${pendingArticle.title} ${
+                pendingArticle.isMod ? "mod" : ""
+              } apk`}
               className="w-[136px] min-[500px]:w-[184px] min-[770px]:w-[160px] min-[1200px]:w-[184px] aspect-square rounded-2xl object-cover"
               priority
             />
             {/* developer */}
-            <p className="text-sm text-[#b2b2b2]  lg:hidden mt-4">
+            <p className="text-sm text-[#b2b2b2] lg:hidden mt-4 w-[136px] min-[500px]:w-[184px] min-[770px]:w-[160px]">
               {pendingArticle.developer}
             </p>
           </div>
@@ -200,10 +209,7 @@ export default function Page({ params }: PageparamsProps) {
             <div className="flex items-center gap-4  mb-4 max-lg:hidden">
               <Star rating={0} />
               <p className="font-bold">
-                {0}{" "}
-                <span className="text-sm font-normal">
-                  ({0})
-                </span>
+                {0} <span className="text-sm font-normal">({0})</span>
               </p>
             </div>
             <div>
@@ -237,25 +243,14 @@ export default function Page({ params }: PageparamsProps) {
           >
             {/* Downloads */}
             <div className="flex flex-col gap-6 items-center max-lg:flex-row">
-              {pendingArticle.OBB || pendingArticle.Script ? (
-                <Link
-                  href="#downloads"
-                  title="downloads"
-                  className="w-52 px-4 py-3 uppercase font-bold rounded-full text-center
-                        bg-green-500 shadow-xl shadow-green-500/20"
-                >
-                  Downloads
-                </Link>
-              ) : (
-                <Link
-                  href={`/download/${pendingArticle.id}/apk`}
-                  title={`Download APK ${pendingArticle.title} Updated to version ${pendingArticle.version}`}
-                  className="w-52 px-4 py-3 uppercase font-bold rounded-full text-sm text-ellipsis whitespace-nowrap text-center
-                        bg-green-500 shadow-xl shadow-green-500/20 overflow-hidden"
-                >
-                  Download({pendingArticle.sizeFileAPK})
-                </Link>
-              )}
+              <Link
+                href="#downloads"
+                title="downloads"
+                className="w-52 px-4 py-3 uppercase font-bold rounded-full text-sm text-ellipsis whitespace-nowrap text-center
+                        bg-interactive shadow-xl shadow-interactive/20 overflow-hidden"
+              >
+                Downloads
+              </Link>
               <p className="text-sm text-[#b2b2b2] text-center max-[770px]:hidden">
                 Updated to version {pendingArticle.version}!
               </p>
@@ -327,87 +322,131 @@ export default function Page({ params }: PageparamsProps) {
       </div>
 
       {/* Download link */}
-      <div className="flex flex-col gap-8 bg-[#1b1d1f] max-[770px]:bg-transparent p-8 m-7 max-[770px]:m-0 ">
-        {/* APK link */}
-        <Link
-          href={`${DOMAINCDN}/${pendingArticle.linkAPK}`}
-          className="flex items-center justify-between max-[1000px]:flex-col 
-          box-border py-4 px-8 max-sm:px-4 uppercase bg-green-500 leading-relaxed 
-          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-green-500/20"
-        >
-          <div>
-            <p>
-              Download APK {pendingArticle.title}{" "}
-              <span> Updated to version {pendingArticle.version}</span>
-            </p>
-          </div>
-          <div className="max-[1000px]:font-medium flex items-center gap-2">
-            <RiDownloadFill />
-            <p>{pendingArticle.sizeFileAPK}</p>
-          </div>
-        </Link>
-        {/* OBB link */}
-        {pendingArticle.OBB && pendingArticle.linkOBB && (
-          <Link
-            href={`${DOMAINCDN}/${pendingArticle.linkOBB}`}
-            className="flex items-center justify-between max-[1000px]:flex-col 
-          box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
-          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20"
-          >
-            <div>
-              <p>
-                Download OBB {pendingArticle.title}{" "}
-                <span> Updated to version {pendingArticle.version}</span>
-              </p>
-            </div>
-            <div className="max-[1000px]:font-medium flex items-center gap-2">
-              <RiDownloadFill />
-              <p>{pendingArticle.sizeFileOBB}</p>
-            </div>
-          </Link>
+      <div
+        id="downloads"
+        className="flex flex-col gap-8 bg-[#292c2f] p-8 mx-7 max-[770px]:mx-0"
+      >
+        <h2 className="mb-4 text-2xl font-bold  max-[770px]:text-xl max-[500px]:text-center sr-only">
+          {pendingArticle.title} v{pendingArticle.version}{" "}
+          {pendingArticle.isMod ? pendingArticle.typeMod + " " : ""}– Download
+        </h2>
+        {/* APKs Section */}
+        {pendingArticle.apks.length > 0 && (
+          <>
+            <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+              APKs
+            </h2>
+            {pendingArticle.apks.map((apk, i) => (
+              <Link
+                key={`APKs ${i}`}
+                href={`${DOMAINCDN}/${apk.link}`}
+                title={`Download APK ${pendingArticle.title} Updated to version ${apk.version}`}
+                className={`flex items-center justify-between max-[1000px]:flex-col 
+                      box-border py-4 px-8 max-sm:px-4 uppercase bg-interactive leading-relaxed 
+                      font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-interactive-20`}
+              >
+                <div>
+                  <p>
+                    Download APK {pendingArticle.title}{" "}
+                    <span> Updated to version {apk.version}</span>
+                  </p>
+                </div>
+                <div className="max-[1000px]:font-medium flex items-center gap-2">
+                  <RiDownloadFill />
+                  <p>{apk.size}</p>
+                </div>
+              </Link>
+            ))}
+          </>
         )}
-        {/* Script link */}
-        {pendingArticle.Script && pendingArticle.linkScript && (
-          <Link
-            href={`${DOMAINCDN}/${pendingArticle.linkScript}`}
-            className="flex items-center justify-between max-[1000px]:flex-col 
-          box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
-          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20 "
-          >
-            <div>
-              <p>
-                Download Script {pendingArticle.title}{" "}
-                <span> Updated to version {pendingArticle.version}</span>
-              </p>
-            </div>
-            <div className="max-[1000px]:font-medium flex items-center gap-2">
-              <RiDownloadFill />
-              <p>{pendingArticle.sizeFileScript}</p>
-            </div>
-          </Link>
+
+        {/* XAPKs Section */}
+        {pendingArticle.xapks.length > 0 && (
+          <>
+            <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+              XAPKs
+            </h2>
+            {pendingArticle.xapks.map((xapk, i) => (
+              <Link
+                key={`XAPKs ${i}`}
+                href={`${DOMAINCDN}/download/${i + 1}-xapk`}
+                title={`Download XAPK ${pendingArticle.title} Updated to version ${xapk.version}`}
+                className={`flex items-center justify-between max-[1000px]:flex-col 
+                      box-border py-4 px-8 max-sm:px-4 uppercase bg-interactive leading-relaxed 
+                      font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-interactive-20`}
+              >
+                <div>
+                  <p>
+                    Download XAPK {pendingArticle.title}{" "}
+                    <span> Updated to version {xapk.version}</span>
+                  </p>
+                </div>
+                <div className="max-[1000px]:font-medium flex items-center gap-2">
+                  <RiDownloadFill />
+                  <p>{xapk.size}</p>
+                </div>
+              </Link>
+            ))}
+          </>
         )}
-        {/* OriginalAPK link */}
-        {pendingArticle.OriginalAPK && pendingArticle.linkOriginalAPK && (
-          <Link
-            href={`${DOMAINCDN}/${pendingArticle.linkOriginalAPK}`}
-            className="flex items-center justify-between max-[1000px]:flex-col 
-          box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
-          font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20 "
-          >
-            <div>
-              <p>
-                Download Original APK {pendingArticle.title}{" "}
-                <span>
-                  {" "}
-                  Updated to version {pendingArticle.versionOriginal}
-                </span>
-              </p>
-            </div>
-            <div className="max-[1000px]:font-medium flex items-center gap-2">
-              <RiDownloadFill />
-              <p>{pendingArticle.sizeFileOriginalAPK}</p>
-            </div>
-          </Link>
+
+        {/* original apk */}
+        {pendingArticle.OriginalAPK && (
+          <>
+            <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+              Original APK
+            </h2>
+            <Link
+              key={"original-apk"}
+              href={`${DOMAINCDN}/download/1-original-apk`}
+              title={`Download Original APK ${pendingArticle.title} Updated to version ${pendingArticle.versionOriginal}`}
+              className={`flex items-center justify-between max-[1000px]:flex-col 
+            box-border py-4 px-8 max-sm:px-4 uppercase bg-[#3f4244] leading-relaxed 
+            font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-[#3f4244]/20`}
+            >
+              <div>
+                <p>
+                  Download Original APK {pendingArticle.title}{" "}
+                  <span>
+                    {" "}
+                    Updated to version {pendingArticle.versionOriginal}
+                  </span>
+                </p>
+              </div>
+              <div className="max-[1000px]:font-medium flex items-center gap-2">
+                <RiDownloadFill />
+                <p>{pendingArticle.sizeFileScript}</p>
+              </div>
+            </Link>
+          </>
+        )}
+
+        {/* obb */}
+        {pendingArticle.OBB && (
+          <>
+            <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+              OBB
+            </h2>
+            <Link
+              key={"obb"}
+              href={`${DOMAINCDN}/download/1-obb`}
+              title={`Download OBB ${pendingArticle.title} Updated to version ${pendingArticle.version}`}
+              className={`flex items-center justify-between max-[1000px]:flex-col 
+                    box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
+                    font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20`}
+            >
+              <div>
+                <p>
+                  Download OBB {pendingArticle.title}{" "}
+                  <span> Updated to version {pendingArticle.version}</span>
+                </p>
+              </div>
+              <div className="max-[1000px]:font-medium flex items-center gap-2">
+                <RiDownloadFill />
+                <p>{pendingArticle.sizeFileOBB}</p>
+              </div>
+            </Link>
+          </>
         )}
       </div>
 
@@ -495,9 +534,14 @@ export default function Page({ params }: PageparamsProps) {
         </p>
 
         <button
-          className="flex justify-center items-center w-full p-4 bg-green-500  rounded-3xl 
-          font-bold text-xl shadow-xl shadow-green-500/20"
+          className={`flex justify-center items-center w-full p-4 rounded-3xl 
+          font-bold text-xl shadow-xl ${
+            isLoading.toArticle
+              ? "bg-gray-400 cursor-not-allowed shadow-gray-400/20"
+              : "bg-interactive shadow-interactive-20"
+          }`}
           onClick={handleMoveToArticle}
+          disabled={isLoading.toArticle}
         >
           <p>
             To Article <span>{pendingArticle.status}</span>

@@ -170,6 +170,31 @@ export async function POST(request: NextRequest) {
               order: index,
             })),
           },
+
+          apks: {
+            createMany: {
+              data:
+                body.apks?.map((apk, index) => ({
+                  version: apk.version,
+                  link: apk.link,
+                  size: apk.size,
+                  isMod: apk.isMod,
+                  order: index,
+                })) ?? [],
+            },
+          },
+          xapks: {
+            createMany: {
+              data:
+                body.xapks?.map((xapk, index) => ({
+                  version: xapk.version,
+                  link: xapk.link,
+                  size: xapk.size,
+                  isMod: xapk.isMod,
+                  order: index,
+                })) ?? [],
+            },
+          },
         },
 
         include: {

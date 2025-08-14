@@ -1,4 +1,4 @@
-import { ARTICLE_PER_PAGE, DOMAIN } from "@/utils/constants";
+import { DOMAIN } from "@/utils/constants";
 import { NextResponse } from "next/server";
 import prisma from "@/utils/db";
 import { slugifyTitle } from "@/utils/slugifyTitle";
@@ -12,7 +12,6 @@ type SitemapUrl = {
 
 export async function GET() {
   const SITE_URL = DOMAIN;
-  const PAGE_SIZE = ARTICLE_PER_PAGE;
 
   const articles = await prisma.article.findMany({
     where: {
@@ -28,26 +27,10 @@ export async function GET() {
     },
   });
 
-  const games = articles.filter((a) => a.articleType === "GAME");
-  const programs = articles.filter((a) => a.articleType === "PROGRAM");
-
-  const totalGamesPages = Math.ceil(games.length / PAGE_SIZE);
-  const totalProgramsPages = Math.ceil(programs.length / PAGE_SIZE);
-
   const staticUrls: SitemapUrl[] = [
     { loc: `${SITE_URL}/`, priority: "1.0", changefreq: "daily" },
     { loc: `${SITE_URL}/games`, priority: "0.7", changefreq: "weekly" },
     { loc: `${SITE_URL}/programs`, priority: "0.7", changefreq: "weekly" },
-/*     ...Array.from({ length: totalGamesPages - 1 }, (_, i) => ({
-      loc: `${SITE_URL}/games/${i + 2}`,
-      priority: "0.4",
-      changefreq: "weekly",
-    })),
-    ...Array.from({ length: totalProgramsPages - 1 }, (_, i) => ({
-      loc: `${SITE_URL}/programs/${i + 2}`,
-      priority: "0.4",
-      changefreq: "weekly",
-    })), */
   ];
 
   const articleUrls: SitemapUrl[] = articles.map((item) => ({
@@ -79,6 +62,9 @@ ${urls
     status: 200,
     headers: {
       "Content-Type": "application/xml",
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      Pragma: "no-cache",
+      Expires: "0",
     },
   });
 }

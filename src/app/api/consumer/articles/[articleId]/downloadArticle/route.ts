@@ -14,9 +14,18 @@ interface Props {
  */
 export async function GET(request: NextRequest, { params }: Props) {
   try {
-    const downloadType = (
-      request.nextUrl.searchParams.get("downloadType") || ""
-    ).toLowerCase();
+    const searchParams = request.nextUrl.searchParams;
+
+    const orderValue = searchParams.get("order");
+    const orderParams = parseInt(orderValue ?? "", 10);
+    if (!orderValue || isNaN(orderParams) || orderParams < 1) {
+      return NextResponse.json(
+        { error: "Invalid or missing 'order' parameter" },
+        { status: 400 }
+      );
+    }
+
+    const downloadType = (searchParams.get("downloadType") || "").toLowerCase();
     const validTypes = ["apk", "obb", "script", "original-apk"];
     if (!validTypes.includes(downloadType)) {
       return NextResponse.json(
@@ -45,20 +54,19 @@ export async function GET(request: NextRequest, { params }: Props) {
           title: true,
           secondTitle: true,
           image: true,
-          version: true,
           androidVer: true,
-          linkAPK: true,
-          sizeFileAPK: true,
-          isMod: true,
           typeMod: true,
+          apks: true,
         },
       });
-
       if (!article) {
         return NextResponse.json(
           { message: "article not found" },
           { status: 404 }
         );
+      }
+      if (article.apks.length < orderParams) {
+        return NextResponse.json({ message: "apk not found" }, { status: 404 });
       }
 
       const result = {
@@ -66,12 +74,51 @@ export async function GET(request: NextRequest, { params }: Props) {
         title: article.title,
         secondTitle: article.secondTitle,
         image: article.image,
-        version:article.version,
         androidVer: article.androidVer,
-        isMod: article.isMod,
         typeMod: article.typeMod,
-        link: article.linkAPK,
-        size: article.sizeFileAPK,
+
+        version: article.apks[orderParams - 1].version,
+        isMod: article.apks[orderParams - 1].isMod,
+        link: article.apks[orderParams - 1].link,
+        size: article.apks[orderParams - 1].size,
+      };
+
+      return NextResponse.json(result, { status: 200 });
+    }else if (downloadType === "xapk") {
+      const article = await prisma.article.findUnique({
+        where: { id: articleId, isApproved: true },
+        select: {
+          id: true,
+          title: true,
+          secondTitle: true,
+          image: true,
+          androidVer: true,
+          typeMod: true,
+          xapks: true,
+        },
+      });
+      if (!article) {
+        return NextResponse.json(
+          { message: "article not found" },
+          { status: 404 }
+        );
+      }
+      if (article.xapks.length < orderParams) {
+        return NextResponse.json({ message: "xapk not found" }, { status: 404 });
+      }
+
+      const result = {
+        id: article.id,
+        title: article.title,
+        secondTitle: article.secondTitle,
+        image: article.image,
+        androidVer: article.androidVer,
+        typeMod: article.typeMod,
+
+        version: article.xapks[orderParams - 1].version,
+        isMod: article.xapks[orderParams - 1].isMod,
+        link: article.xapks[orderParams - 1].link,
+        size: article.xapks[orderParams - 1].size,
       };
 
       return NextResponse.json(result, { status: 200 });
@@ -104,7 +151,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         title: article.title,
         secondTitle: article.secondTitle,
         image: article.image,
-        version:article.version,
+        version: article.version,
         androidVer: article.androidVer,
         isMod: article.isMod,
         typeMod: article.typeMod,
@@ -142,7 +189,7 @@ export async function GET(request: NextRequest, { params }: Props) {
         title: article.title,
         secondTitle: article.secondTitle,
         image: article.image,
-        version:article.version,
+        version: article.version,
         androidVer: article.androidVer,
         isMod: article.isMod,
         typeMod: article.typeMod,

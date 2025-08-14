@@ -90,6 +90,10 @@ export async function GET(request: NextRequest, { params }: Props) {
         validatedBy: { select: { profile: true, username: true } },
 
         pendingArticle: { select: { id: true } },
+
+        paragraphs:true,
+        apks:true,
+        xapks:true,
       },
     });
     if (!article) {
@@ -148,6 +152,8 @@ export async function DELETE(request: NextRequest, { params }: Props) {
         linkScript: true,
         linkOriginalAPK: true,
         appScreens: true,
+        apks:true,
+        xapks:true
       },
     });
     if (!article) {
@@ -157,6 +163,9 @@ export async function DELETE(request: NextRequest, { params }: Props) {
       );
     }
 
+    const articleApks = article.apks.map((apk) => apk.link);
+    const articleXapks = article.xapks.map((xapk) => xapk.link);
+
     const filesToDelete = [
       article.image,
       article.linkAPK,
@@ -164,6 +173,8 @@ export async function DELETE(request: NextRequest, { params }: Props) {
       article.linkScript,
       article.linkOriginalAPK,
       ...(article.appScreens || []),
+      ...(articleApks || []),
+      ...(articleXapks || []),
     ].filter(
       (url): url is string => typeof url === "string" && url.trim() !== ""
     );

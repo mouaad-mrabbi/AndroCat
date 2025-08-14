@@ -40,11 +40,31 @@ export async function fetchArticlesCount(articleType?: "GAME" | "PROGRAM") {
 export interface Paragraph {
   paragraphs?: { title?: string; content: string }[];
 }
+
+export interface Apks {
+  apks: {
+    version: string;
+    link: string;
+    size: string;
+    isMod: boolean;
+    order?: number;
+  }[];
+}
+export interface Xapks {
+  xapks: {
+    version: string;
+    link: string;
+    size: string;
+    isMod: boolean;
+    order?: number;
+  }[];
+}
+
 export async function fetchArticleById(
   articleId: number
-): Promise<Article & Paragraph> {
+): Promise<Article & Paragraph & Apks&Xapks> {
   try {
-    const response = await axios.get<Article & Paragraph>(
+    const response = await axios.get<Article & Paragraph & Apks&Xapks>(
       `${DOMAIN}/api/consumer/articles/${articleId}`
     );
     return response.data;
@@ -126,15 +146,12 @@ export async function sendRatingToAPI(value: number, articleId: number) {
 }
 
 //Download Details
-export async function getDownloadData(
-  articleId: number,
-  downloadType: string
-) {
+export async function getDownloadData(articleId: number, downloadType: string, order:number) {
   try {
     const response = await axios.get(
       `${DOMAIN}/api/consumer/articles/${articleId}/downloadArticle`,
       {
-        params: { downloadType },
+        params: { downloadType ,order },
       }
     );
 

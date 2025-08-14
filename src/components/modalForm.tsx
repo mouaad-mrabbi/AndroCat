@@ -69,8 +69,6 @@ export const ModalForm: React.FC<ModalProps> = ({
 
   const handleDelete = async () => {
     if (!path) return;
-    console.log(path)
-
     setDeleting(true);
     setDeleteError(null);
 

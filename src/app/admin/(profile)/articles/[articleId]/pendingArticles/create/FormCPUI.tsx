@@ -8,7 +8,9 @@ import { CreateArticleDto } from "@/utils/dtos";
 import {
   ArticleType,
   GameCategories,
+  PendingArticleAPKS,
   PendingArticleParagraph,
+  PendingArticleXAPKS,
   ProgramCategories,
   ScreenType,
 } from "@prisma/client";
@@ -20,10 +22,15 @@ import PageMultipartFileUploader, {
   UploadState,
 } from "@/components/(MultipartFileUploader)/PageMultipartFileUploader";
 import { DOMAINCDN } from "@/utils/constants";
+import APKSection from "@/components/admin/APKSection";
+import SortableList from "@/components/admin/SortableList";
+import { rectSortingStrategy } from "@dnd-kit/sortable";
 
 interface pageProps {
   articleId: number;
 }
+type FileItemType = "apks" | "xapks";
+type FileItem = PendingArticleAPKS | PendingArticleXAPKS;
 
 //Form Create Pending Article for Update  (FormCPUA)
 export default function FormCPUA({ articleId }: pageProps) {
@@ -61,6 +68,8 @@ export default function FormCPUA({ articleId }: pageProps) {
     installs: "",
     createdById: 0,
     paragraphs: [],
+    apks: [],
+    xapks: [],
   });
   const [formDataOrigin, setFormDataOrigin] = useState<CreateArticleDto>({
     title: "",
@@ -95,6 +104,8 @@ export default function FormCPUA({ articleId }: pageProps) {
     ratedFor: 0,
     installs: "",
     createdById: 0,
+    apks: [],
+    xapks: [],
   });
   const [showModal, setShowModal] = useState(false);
   const [selectedUrlModal, setSelectedUrlModal] = useState<string | null>(null);
@@ -103,6 +114,10 @@ export default function FormCPUA({ articleId }: pageProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [collapsedParagraphs, setCollapsedParagraphs] = useState<boolean[]>([]);
+  const [collapsed, setCollapsed] = useState<Record<FileItemType, boolean[]>>({
+    apks: [],
+    xapks: [],
+  });
 
   useEffect(() => {
     if (!articleId) return;
@@ -144,6 +159,8 @@ export default function FormCPUA({ articleId }: pageProps) {
           installs,
           createdById,
           paragraphs,
+          apks,
+          xapks,
         } = article;
         setFormData({
           title,
@@ -179,6 +196,8 @@ export default function FormCPUA({ articleId }: pageProps) {
           installs,
           createdById,
           paragraphs,
+          apks,
+          xapks,
         });
         setFormDataOrigin({
           title,
@@ -213,6 +232,8 @@ export default function FormCPUA({ articleId }: pageProps) {
           ratedFor,
           installs,
           createdById,
+          apks,
+          xapks,
         });
       } catch (error: any) {
         toast.error(error.message || "Failed to load article data");
@@ -327,8 +348,10 @@ export default function FormCPUA({ articleId }: pageProps) {
       return `${size} B`;
     } else if (size < 1024 * 1024) {
       return `${(size / 1024).toFixed(2)} KB`;
-    } else {
+    } else if (size < 1024 * 1024 * 1024) {
       return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+    } else {
+      return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
     }
   };
 
@@ -421,22 +444,32 @@ export default function FormCPUA({ articleId }: pageProps) {
     });
   };
 
-  const handleCheckorigin = (): boolean => {
-    const { linkAPK, linkOBB, linkScript, image, appScreens, linkOriginalAPK } =
-      formDataOrigin;
-
+  const handleCheckorigin = (urlToCheck: string | null): boolean => {
+    const {
+      linkAPK,
+      linkOBB,
+      linkScript,
+      image,
+      appScreens,
+      linkOriginalAPK,
+      apks,
+      xapks,
+    } = formDataOrigin;
     const allLinks = [
       linkAPK,
       linkOBB,
       linkScript,
       linkOriginalAPK,
       image,
-      ...(appScreens || []), // في حال كانت undefined
-    ].filter(Boolean); // لإزالة null أو undefined
+      ...(appScreens || []),
+      ...(apks.map((apk) => apk.link) || []),
+      ...(xapks.map((xapk) => xapk.link) || []),
+    ].filter(Boolean);
 
-    return allLinks.includes(selectedUrlModal);
+    return allLinks.includes(urlToCheck);
   };
 
+  //Paragraph
   const handleParagraphChange = (
     index: number,
     field: keyof PendingArticleParagraph,
@@ -467,6 +500,88 @@ export default function FormCPUA({ articleId }: pageProps) {
 
     setFormData((prev) => ({ ...prev, paragraphs: newParagraphs }));
     setCollapsedParagraphs(newCollapsed);
+  };
+
+  // APKs and XAPKs logic
+  const handleChangeAPK_XAPK = (
+    type: FileItemType,
+    index: number,
+    field: keyof FileItem,
+    value: any
+  ) => {
+    const newList = [...(formData[type] ?? [])];
+    newList[index] = { ...newList[index], [field]: value };
+    setFormData((prev) => ({ ...prev, [type]: newList }));
+  };
+
+  const addAPK_XAPK = (type: FileItemType) => {
+    setFormData((prev) => ({
+      ...prev,
+      [type]: [
+        { version: "", link: "", size: "", isMod: false },
+        ...(prev[type] ?? []),
+      ],
+    }));
+    setCollapsed((prev) => ({
+      ...prev,
+      [type]: [ false, ...(prev[type] ?? [])],
+    }));
+  };
+
+  const removeAPK_XAPK = async (
+    type: FileItemType,
+    path: string,
+    index: number
+  ) => {
+    const deleteFromCloud = async () => {
+      try {
+        const res = await fetch("/api/files", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key: path }),
+        });
+        if (!res.ok) throw new Error("Failed to delete file.");
+        return true;
+      } catch (err) {
+        console.error("Error deleting file:", err);
+        toast.error("Error deleting the file from Cloudflare.");
+        return false;
+      }
+    };
+
+    if (path && !handleCheckorigin(path)) {
+      const success = await deleteFromCloud();
+      if (!success) return;
+    }
+
+    const newItems = [...(formData[type] ?? [])];
+    newItems.splice(index, 1);
+    setFormData((prev) => ({ ...prev, [type]: newItems }));
+
+    const newCollapsed = [...collapsed[type]];
+    newCollapsed.splice(index, 1);
+    setCollapsed((prev) => ({ ...prev, [type]: newCollapsed }));
+
+    toast.success(`${type.toUpperCase()} item deleted`);
+  };
+
+  const handleUploadAPK_XAPK = (
+    type: FileItemType,
+    result: any,
+    index: number
+  ) => {
+    const file = result.successful?.[0];
+    const key = file?.s3Multipart?.key;
+    const size = file?.size;
+    if (!key || !size) return;
+
+    const updated = [...formData[type]];
+    updated[index] = {
+      ...updated[index],
+      link: key,
+      size: formatSize(Number(size)),
+    };
+    setFormData((prev) => ({ ...prev, [type]: updated }));
   };
 
   return (
@@ -823,6 +938,60 @@ export default function FormCPUA({ articleId }: pageProps) {
               ))}
             </select>
           </div>
+
+          {/* APKs */}
+          <APKSection
+            type="apks"
+            items={formData.apks}
+            collapsed={collapsed.apks}
+            onToggleCollapse={(index) =>
+              setCollapsed((prev) => {
+                const newState = [...prev.apks];
+                newState[index] = !newState[index];
+                return { ...prev, apks: newState };
+              })
+            }
+            onChange={(index, field, value) =>
+              handleChangeAPK_XAPK("apks", index, field, value)
+            }
+            onRemove={(link, index) => removeAPK_XAPK("apks", link, index)}
+            onUpload={(result, index) =>
+              handleUploadAPK_XAPK("apks", result, index)
+            }
+            onAdd={() => addAPK_XAPK("apks")}
+            onReorder={(newItems) => {
+              setFormData((prev) => ({ ...prev, apks: newItems }));
+            }}
+            title={formData.title}
+            randomText={`${articleId}`}
+          />
+
+          {/* XAPKs */}
+          <APKSection
+            type="xapks"
+            items={formData.xapks}
+            collapsed={collapsed.xapks}
+            onToggleCollapse={(index) =>
+              setCollapsed((prev) => {
+                const newState = [...prev.xapks];
+                newState[index] = !newState[index];
+                return { ...prev, xapks: newState };
+              })
+            }
+            onChange={(index, field, value) =>
+              handleChangeAPK_XAPK("xapks", index, field, value)
+            }
+            onRemove={(link, index) => removeAPK_XAPK("xapks", link, index)}
+            onUpload={(result, index) =>
+              handleUploadAPK_XAPK("xapks", result, index)
+            }
+            onAdd={() => addAPK_XAPK("xapks")}
+                        onReorder={(newItems) => {
+              setFormData((prev) => ({ ...prev, xapks: newItems }));
+            }}
+            title={formData.title}
+            randomText={`${articleId}`}
+          />
 
           {/* OBB */}
           <div>
@@ -1250,33 +1419,39 @@ export default function FormCPUA({ articleId }: pageProps) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               App Screenshots (URLs):
             </label>
-            <div className="flex flex-col gap-2 my-2 ">
-              {formData.appScreens.map((screen, index) => (
-                <div key={index}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedUrlModal(screen); // هنا نقوم بتحديث `selectedScreen`
-                      setShowModal(true);
-                    }}
-                    className="flex  gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
-                     dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
-                  >
-                    <div className="w-32">
-                      <img
-                        src={`${DOMAINCDN}/${screen}`}
-                        alt=""
-                        className=" h-14 rounded-lg w-32 object-cover"
-                      />
-                    </div>
-
-                    <p className="flex flex-grow  w-full break-words overflow-hidden whitespace-nowrap">
-                      {screen}
-                    </p>
-                  </button>
-                </div>
-              ))}
-            </div>
+            <SortableList
+              items={formData.appScreens}
+              onChange={(newList) =>
+                setFormData((prev) => ({ ...prev, appScreens: newList }))
+              }
+              renderItem={({ id, isDragging }) => (
+                <button
+                  type="button"
+                  className={`flex gap-4 justify-between items-center px-2 py-1 rounded-lg text-sm w-full break-words 
+                    overflow-hidden whitespace-nowrap cursor-move
+                  ${
+                    isDragging
+                      ? "bg-blue-200 text-blue-800 dark:bg-blue-700 dark:text-blue-100"
+                      : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+                  }`}
+                  onClick={() => {
+                    setSelectedUrlModal(id);
+                    setShowModal(true);
+                  }}
+                >
+                  <div className="w-32">
+                    <img
+                      src={id}
+                      alt=""
+                      className="h-14 rounded-lg w-32 object-cover"
+                    />
+                  </div>
+                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                    {id}
+                  </p>
+                </button>
+              )}
+            />
             <PageMultipartFileUploader
               title={formData.title}
               randomText={`${articleId}`}
@@ -1292,24 +1467,33 @@ export default function FormCPUA({ articleId }: pageProps) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Keywords:
             </label>
-            <div className="flex flex-wrap gap-2 mt-1">
-              {formData.keywords.map((keyword, index) => (
+            <SortableList
+              items={formData.keywords}
+              onChange={(newList) =>
+                setFormData((prev) => ({ ...prev, keywords: newList }))
+              }
+              strategy={rectSortingStrategy}
+              wrapperClassName="flex flex-wrap gap-2 mt-1"
+              renderItem={({ id, isDragging }) => (
                 <div
-                  key={index}
-                  className="flex items-center bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-sm
-          dark:bg-indigo-900 dark:text-indigo-200"
+                  className={`flex items-center px-2 py-1 rounded-full text-sm cursor-move
+                  ${
+                    isDragging
+                      ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-700 dark:text-indigo-100"
+                      : "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200"
+                  }`}
                 >
-                  {keyword}
+                  {id}
                   <button
                     type="button"
-                    onClick={() => removeKeyword(keyword)}
+                    onClick={() => removeKeyword(id)}
                     className="ml-1 text-indigo-500 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-100"
                   >
                     &times;
                   </button>
                 </div>
-              ))}
-            </div>
+              )}
+            />
             <div className="flex gap-2 mt-2">
               <input
                 type="text"
@@ -1423,7 +1607,7 @@ export default function FormCPUA({ articleId }: pageProps) {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         path={selectedUrlModal}
-        origin={handleCheckorigin()}
+        origin={handleCheckorigin(selectedUrlModal)}
         onDelete={(deletedPath) => {
           setFormData((prev) => {
             const newData = { ...prev };
@@ -1454,6 +1638,15 @@ export default function FormCPUA({ articleId }: pageProps) {
               newData.linkOriginalAPK = null;
               newData.sizeFileOriginalAPK = null;
             }
+
+            // apks
+            newData.apks = newData.apks.map((apk) =>
+              apk.link === deletedPath ? { ...apk, link: "", size: "" } : apk
+            );
+            // xapks
+            newData.xapks = newData.xapks.map((xapk) =>
+              xapk.link === deletedPath ? { ...xapk, link: "", size: "" } : xapk
+            );
 
             return newData;
           });

@@ -68,8 +68,24 @@ export interface CreateArticleDto {
   createdAt?: string | Date;
 
   paragraphs?: {
-    title?: string;
+    title?: string|null;
     content: string;
+  }[];
+
+  apks: {
+    version: string;
+    link: string;
+    size: string;
+    isMod: boolean;
+    order?:number;
+  }[];
+
+  xapks: {
+    version: string;
+    link: string;
+    size: string;
+    isMod: boolean;
+    order?:number;
   }[];
 }
 
@@ -119,5 +135,19 @@ export interface UpdateArticleDto {
   paragraphs?: {
     title?: string;
     content: string;
+  }[];
+
+  apks?: {
+    version: string;
+    link: string;
+    size: string;
+    isMod: boolean;
+  }[];
+
+  xapks?: {
+    version: string;
+    link: string;
+    size: string;
+    isMod: boolean;
   }[];
 }

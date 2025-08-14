@@ -11,24 +11,26 @@ import Countdown from "@/components/countdownAdmin";
 export default async function DownloadPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ articleId: string; download: string }>;
 }) {
+  const { articleId, download } = await params;
 
-  const { slug } = await params;
-  const [idPart, typePart] = slug.split("-");
-  const articleId = parseInt(idPart);
-
+  const partsDownload = download.split("-");
+  const order = Number(partsDownload[0]);
+  const titleDownload = partsDownload.slice(1).join("-");
   try {
-    const article = await getDownloadData(articleId, typePart);
-    const cleanTitle = slugifyTitle(article.title);
+    const article = await getDownloadData(
+      Number(articleId),
+      titleDownload,
+      order
+    );
+
     return (
       <div>
         <div className="max-w-[648px] mx-auto p-10">
           {/* Back Window */}
           <Link
-            href={`/${article.id}-${cleanTitle}${
-              article.isMod ? "-mod" : ""
-            }-apk-android-download`}
+            href={`/admin/articles/${articleId}`}
             className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-500/50"
           >
             <IoArrowBack />
@@ -49,8 +51,8 @@ export default async function DownloadPage({
 
             <p className="text-[1.25rem] text-center font-bold mb-9">
               <span>{article.title}</span>{" "}
-              {article.isMod && <span>({article.typeMod})</span>}{" "}
-              Latest Version {typePart}
+              {article.isMod && <span>({article.typeMod})</span>} Latest Version{" "}
+              {titleDownload}
             </p>
 
             <div className="flex items-center gap-2 text-sm text-gray-500 font-bold mb-4">

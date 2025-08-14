@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MultipartFileUploader } from "./MultipartFileUploader";
 import type { UploadResult, Meta, Body, UppyFile } from "@uppy/core";
 
@@ -34,7 +34,7 @@ export default function PageMultipartFileUploader({
   fileType,
   version,
   isMod,
-    onUploadResult, // 👈 استقبال الدالة
+    onUploadResult,
 }: PageMultipartFileUploaderProps) {
   const [uploadResult, setUploadResult] = useState<UploadState>();
    return (

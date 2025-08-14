@@ -1,6 +1,7 @@
 import { ArticleContent } from "./ArticleContent";
 import { fetchMetadata } from "@/apiCalls/consumerApiCall";
 import { DOMAIN, DOMAINCDN } from "@/utils/constants";
+import { redirect } from "next/navigation";
 
 interface ArticlesPageProp {
   params: Promise<{ slug: string }>;
@@ -10,17 +11,15 @@ export async function generateMetadata({ params }: ArticlesPageProp) {
   try {
     const { slug } = await params;
 
-    if (!slug || isNaN(Number(slug.split("-")[0]))) {
-      throw new Error("Invalid slug format");
-    }
+    const parts = slug.split("-");
+    const id = Number(parts[0]);
+    const titleSlug = parts.slice(1).join("-");
 
-    const [idPart, ...titleParts] = slug.split("-");
-    const articleId = parseInt(idPart);
-    if (isNaN(articleId)) {
+    if (isNaN(id)) {
       throw new Error("Invalid articleId from slug");
     }
 
-    const article = await fetchMetadata(articleId);
+    const article = await fetchMetadata(id);
 
     const modType = article.isMod ? `(${article.typeMod}) ` : "";
     const title = `Download ${article.title} ${modType}${article.version} apk for android`;

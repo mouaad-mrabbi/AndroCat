@@ -44,7 +44,7 @@ export async function GET(request: NextRequest, { params }: Props) {
     const pendingArticle = await prisma.pendingArticle.findUnique({
       where: {
         id: pendingArticleId,
-        createdById: userFromToken.id, // تأكد أن العنصر يخص هذا المستخدم
+        createdById: userFromToken.id,
       },
       include: {
         createdBy: {
@@ -52,6 +52,12 @@ export async function GET(request: NextRequest, { params }: Props) {
         },
         paragraphs: {
           select: { title: true, content: true },
+        },
+        apks: {
+          select: { link: true, size: true, version: true, isMod: true },
+        },
+        xapks: {
+          select: { link: true, size: true, version: true, isMod: true },
         },
       },
     });
@@ -200,6 +206,41 @@ export async function PUT(request: NextRequest, { params }: Props) {
 
         ratedFor: body.ratedFor,
         installs: body.installs,
+
+        // ———————————— هنا نضع العلاقات ————————————
+        apks: {
+          // 1) احذف القديم (إن أردت استبدالًا كليًا):
+          deleteMany: {},
+          // 2) أضف الجديد دفعة واحدة:
+          createMany: {
+            data:
+              body.apks?.map((apk,index) => ({
+                version: apk.version,
+                link: apk.link,
+                size: apk.size,
+                isMod: apk.isMod,
+                order: index,
+              })) ?? [],
+          },
+        },
+
+        xapks: {
+          deleteMany: {},
+          createMany: {
+            data:
+              body.xapks?.map((xapk,index) => ({
+                version: xapk.version,
+                link: xapk.link,
+                size: xapk.size,
+                isMod: xapk.isMod,
+                order: index,
+              })) ?? [],
+          },
+        },
+      },
+      include: {
+        apks: true,
+        xapks: true,
       },
     });
 
@@ -264,6 +305,8 @@ export async function DELETE(request: NextRequest, { params }: Props) {
         linkScript: true,
         image: true,
         appScreens: true,
+        apks: true,
+        xapks: true,
         article: {
           select: {
             linkAPK: true,
@@ -272,6 +315,8 @@ export async function DELETE(request: NextRequest, { params }: Props) {
             linkScript: true,
             image: true,
             appScreens: true,
+            apks: { select: { link: true } },
+            xapks: true,
           },
         },
       },
@@ -311,7 +356,28 @@ export async function DELETE(request: NextRequest, { params }: Props) {
       );
 
       await Promise.all(screensToDelete.map((screen) => deleteFile(screen)));
+
+      // apks
+      const articleApks = article.apks.map((apk) => apk.link);
+      const pArticleApks = pendingArticle.apks.map((apk) => apk.link);
+
+      const apksToDelete = pArticleApks.filter(
+        (apk) => !articleApks.includes(apk)
+      );
+      await Promise.all(apksToDelete.map((apk) => deleteFile(apk)));
+
+      // xapks
+      const articleXapks = article.xapks.map((xapk) => xapk.link);
+      const pArticleXapks = pendingArticle.xapks.map((xapk) => xapk.link);
+
+      const xapksToDelete = pArticleXapks.filter(
+        (xapk) => !articleXapks.includes(xapk)
+      );
+      await Promise.all(xapksToDelete.map((xapk) => deleteFile(xapk)));
     } else {
+      const pArticleApks = pendingArticle.apks.map((apk) => apk.link);
+      const pArticleXapks = pendingArticle.xapks.map((xapk) => xapk.link);
+
       const fileLinks = [
         pendingArticle.image,
         pendingArticle.linkAPK,
@@ -319,6 +385,8 @@ export async function DELETE(request: NextRequest, { params }: Props) {
         pendingArticle.linkOriginalAPK,
         pendingArticle.linkScript,
         ...pendingArticle.appScreens,
+        ...pArticleApks,
+        ...pArticleXapks,
       ].filter((url): url is string => !!url);
 
       await Promise.all(fileLinks.map((url) => deleteFile(url)));

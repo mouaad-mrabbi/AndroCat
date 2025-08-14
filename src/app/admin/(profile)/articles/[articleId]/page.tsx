@@ -37,13 +37,10 @@ type ConfirmOpenState = {
   Approved: boolean;
   delete: boolean;
 };
-interface DownloadLink {
-  key: string;
-  label: string;
-  bgColor: string;
-  size: string | null; // Allowing null here
-  link: string | null;
-}
+type LoadingState = {
+  delete: boolean;
+  create: boolean;
+};
 
 export default function PageArticle({ params }: PageparamsProps) {
   const [formData, setFormData] = useState<CreateArticleDto>({
@@ -78,15 +75,23 @@ export default function PageArticle({ params }: PageparamsProps) {
     ratedFor: 0,
     installs: "",
     createdById: 0,
+    paragraphs: [],
+    apks: [],
+    xapks: [],
   });
   const [article, setArticle] = useState<ArticleAndObjects>();
   const [articleId, setArticleId] = useState<number>();
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading1, setIsLoading1] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState<ConfirmOpenState>({
     Approved: false,
     delete: false,
+  });
+
+  const [isLoading, setIsLoading] = useState<LoadingState>({
+    delete: false,
+    create: false,
   });
 
   useEffect(() => {
@@ -101,7 +106,7 @@ export default function PageArticle({ params }: PageparamsProps) {
     const FetchArticle = async () => {
       if (!articleId) return;
 
-      setIsLoading(true);
+      setIsLoading1(true);
       setError(null);
 
       try {
@@ -138,6 +143,9 @@ export default function PageArticle({ params }: PageparamsProps) {
           ratedFor,
           installs,
           createdById,
+          paragraphs,
+          apks,
+          xapks,
         } = Article;
         setFormData({
           title,
@@ -171,12 +179,15 @@ export default function PageArticle({ params }: PageparamsProps) {
           ratedFor,
           installs,
           createdById,
+          paragraphs,
+          apks,
+          xapks,
         });
         setArticle(Article);
       } catch (error: any) {
         setError("Failed to fetch pending articles.");
       } finally {
-        setIsLoading(false);
+        setIsLoading1(false);
       }
     };
 
@@ -196,7 +207,7 @@ export default function PageArticle({ params }: PageparamsProps) {
     }
   };
 
-  if (isLoading) return <LoadingArticle />;
+  if (isLoading1) return <LoadingArticle />;
   if (error) return NotFoundPage();
   if (!article) return NotFoundPage();
 
@@ -208,88 +219,19 @@ export default function PageArticle({ params }: PageparamsProps) {
       ? capitalize(article.gameCategory)
       : capitalize(article.programCategory);
 
-  const downloadLinks = [
-    {
-      key: "apk",
-      label: "APK",
-      bgColor: "bg-green-500",
-      size: article.sizeFileAPK,
-      link: article.linkAPK,
-    },
-    {
-      key: "original-apk",
-      label: "Original APK",
-      bgColor: "bg-[#3f4244]",
-      size: article.sizeFileScript,
-      link: article.linkOriginalAPK,
-    },
-    {
-      key: "obb",
-      label: "OBB",
-      bgColor: "bg-yellow-600",
-      size: article.sizeFileOBB,
-      link: article.linkOBB,
-    },
-    {
-      key: "script",
-      label: "Script",
-      bgColor: "bg-yellow-600",
-      size: article.sizeFileScript,
-      link: article.linkScript,
-    },
-  ];
-
-  const renderDownloadLink = ({
-    key,
-    label,
-    bgColor,
-    size,
-    link,
-  }: DownloadLink) => {
-    if (!link) return null;
-
-    return (
-      <Link
-        key={key}
-        href={`/admin/download/${article.id}-${key}`}
-        title={`Download ${label} ${article.title} Updated to version ${
-          key === "original-apk" ? article.versionOriginal : article.version
-        }`}
-        className={`flex items-center justify-between max-[1000px]:flex-col 
-              box-border py-4 px-8 max-sm:px-4 uppercase ${bgColor} leading-relaxed 
-              font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-${bgColor}/20`}
-      >
-        <div>
-          <p>
-            Download {label} {article.title}{" "}
-            <span>
-              {" "}
-              Updated to version{" "}
-              {key === "original-apk"
-                ? article.versionOriginal
-                : article.version}
-            </span>
-          </p>
-        </div>
-        <div className="max-[1000px]:font-medium flex items-center gap-2">
-          <RiDownloadFill />
-          <p>{size}</p>
-        </div>
-      </Link>
-    );
-  };
-
   const handleDelete = async () => {
     if (!articleId) return;
+
     try {
-      const response = await createPendingUpdateArticle(
-        articleId,
-        formData,
-        "DELETE"
-      );
-      toast.success("article is DELETE");
+      setIsLoading({ ...isLoading, delete: true });
+      setIsConfirmOpen({ ...isConfirmOpen, delete: false });
+
+      await createPendingUpdateArticle(articleId, formData, "DELETE");
+      toast.success("Create PendingArticle For DELETE");
     } catch (error: any) {
       toast.error(error);
+    } finally {
+      setIsLoading({ ...isLoading, delete: false });
     }
   };
 
@@ -329,7 +271,7 @@ export default function PageArticle({ params }: PageparamsProps) {
               priority
             />
             {/* developer */}
-            <p className="text-sm text-[#b2b2b2]  lg:hidden mt-4">
+            <p className="text-sm text-[#b2b2b2] lg:hidden mt-4 w-[136px] min-[500px]:w-[184px] min-[770px]:w-[160px]">
               {article.developer}
             </p>
           </div>
@@ -403,25 +345,14 @@ export default function PageArticle({ params }: PageparamsProps) {
           >
             {/* Downloads */}
             <div className="flex flex-col gap-6 items-center max-lg:flex-row">
-              {article.OBB || article.Script ? (
-                <Link
-                  href="#downloads"
-                  title="downloads"
-                  className="w-52 px-4 py-3 uppercase font-bold rounded-full text-center
-                        bg-green-500 shadow-xl shadow-green-500/20"
-                >
-                  Downloads
-                </Link>
-              ) : (
-                <Link
-                  href={`/download/${article.id}/apk`}
-                  title={`Download APK ${article.title} Updated to version ${article.version}`}
-                  className="w-52 px-4 py-3 uppercase font-bold rounded-full text-sm text-ellipsis whitespace-nowrap text-center
-                        bg-green-500 shadow-xl shadow-green-500/20 overflow-hidden"
-                >
-                  Download({article.sizeFileAPK})
-                </Link>
-              )}
+              <Link
+                href="#downloads"
+                title="downloads"
+                className="w-52 px-4 py-3 uppercase font-bold rounded-full text-sm text-ellipsis whitespace-nowrap text-center
+                        bg-interactive shadow-xl shadow-interactive/20 overflow-hidden"
+              >
+                Downloads
+              </Link>
               <p className="text-sm text-[#b2b2b2] text-center max-[770px]:hidden">
                 Updated to version {article.version}!
               </p>
@@ -497,7 +428,121 @@ export default function PageArticle({ params }: PageparamsProps) {
         id="downloads"
         className="flex flex-col gap-8 bg-[#292c2f] p-8 mx-7 max-[770px]:mx-0"
       >
-        {downloadLinks.map(renderDownloadLink)}
+        {/* APKs Section */}
+        {article.apks.length > 0 && (
+          <>
+            <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+              APKs
+            </h2>
+            {article.apks.map((apk, i) => (
+              <Link
+                key={`APKs ${i}`}
+                href={`${articleId}/download/${i + 1}-apk`}
+                title={`Download APK ${article.title} Updated to version ${apk.version}`}
+                className={`flex items-center justify-between max-[1000px]:flex-col 
+                      box-border py-4 px-8 max-sm:px-4 uppercase bg-interactive leading-relaxed 
+                      font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-interactive-20`}
+              >
+                <div>
+                  <p>
+                    Download APK {article.title}{" "}
+                    <span> Updated to version {apk.version}</span>
+                  </p>
+                </div>
+                <div className="max-[1000px]:font-medium flex items-center gap-2">
+                  <RiDownloadFill />
+                  <p>{apk.size}</p>
+                </div>
+              </Link>
+            ))}
+          </>
+        )}
+
+        {/* XAPKs Section */}
+        {article.xapks.length > 0 && (
+          <>
+            <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+              XAPKs
+            </h2>
+            {article.xapks.map((xapk, i) => (
+              <Link
+                key={`XAPKs ${i}`}
+                href={`${articleId}/download/${i + 1}-xapk`}
+                title={`Download XAPK ${article.title} Updated to version ${xapk.version}`}
+                className={`flex items-center justify-between max-[1000px]:flex-col 
+                      box-border py-4 px-8 max-sm:px-4 uppercase bg-interactive leading-relaxed 
+                      font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-interactive-20`}
+              >
+                <div>
+                  <p>
+                    Download XAPK {article.title}{" "}
+                    <span> Updated to version {xapk.version}</span>
+                  </p>
+                </div>
+                <div className="max-[1000px]:font-medium flex items-center gap-2">
+                  <RiDownloadFill />
+                  <p>{xapk.size}</p>
+                </div>
+              </Link>
+            ))}
+          </>
+        )}
+
+        {/* original apk */}
+        {article.OriginalAPK && (
+          <>
+            <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+              Original APK
+            </h2>
+            <Link
+              key={"original-apk"}
+              href={`${articleId}/download/1-original-apk`}
+              title={`Download Original APK ${article.title} Updated to version ${article.versionOriginal}`}
+              className={`flex items-center justify-between max-[1000px]:flex-col 
+            box-border py-4 px-8 max-sm:px-4 uppercase bg-[#3f4244] leading-relaxed 
+            font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-[#3f4244]/20`}
+            >
+              <div>
+                <p>
+                  Download Original APK {article.title}{" "}
+                  <span> Updated to version {article.versionOriginal}</span>
+                </p>
+              </div>
+              <div className="max-[1000px]:font-medium flex items-center gap-2">
+                <RiDownloadFill />
+                <p>{article.sizeFileScript}</p>
+              </div>
+            </Link>
+          </>
+        )}
+
+        {/* obb */}
+        {article.OBB && (
+          <>
+            <h2 className="text-xl font-bold max-[770px]:text-xl max-[500px]:text-center">
+              OBB
+            </h2>
+            <Link
+              key={"obb"}
+              href={`${articleId}/download/1-obb`}
+              title={`Download OBB ${article.title} Updated to version ${article.version}`}
+              className={`flex items-center justify-between max-[1000px]:flex-col 
+                    box-border py-4 px-8 max-sm:px-4 uppercase bg-yellow-600 leading-relaxed 
+                    font-bold rounded-full max-[1000px]:rounded-xl shadow-xl shadow-yellow-600/20`}
+            >
+              <div>
+                <p>
+                  Download OBB {article.title}{" "}
+                  <span> Updated to version {article.version}</span>
+                </p>
+              </div>
+              <div className="max-[1000px]:font-medium flex items-center gap-2">
+                <RiDownloadFill />
+                <p>{article.sizeFileOBB}</p>
+              </div>
+            </Link>
+          </>
+        )}
       </div>
 
       {/* Additional Information */}
@@ -592,11 +637,15 @@ export default function PageArticle({ params }: PageparamsProps) {
             update
           </Link>
           <button
-            className="flex justify-center items-center bg-red-500 w-1/2 rounded-3xl
-           font-bold text-xl shadow-xl shadow-red-500/20"
+            className={`flex justify-center items-center w-1/2 rounded-3xl font-bold text-xl shadow-xl ${
+              isLoading.delete
+                ? "bg-gray-400 cursor-not-allowed shadow-gray-400/20"
+                : "bg-red-500 shadow-red-500/20"
+            }`}
             onClick={() => {
               setIsConfirmOpen({ ...isConfirmOpen, delete: true });
             }}
+            disabled={isLoading.delete}
           >
             delete
           </button>

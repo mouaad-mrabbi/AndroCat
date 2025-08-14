@@ -85,35 +85,41 @@ const Home = () => {
 
         <div className="max-[500px]:px-0 px-8 mx-2">
           <div className="mt-10 text-[#898a8b] max-w-[57.5rem]">
-            <h2 className="text-xl mb-4 font-bold max-[770px]:text-base max-[770px]:mb-2">
-              Download free games for Android
+            <h2 className="text-xl mb-4 max-[770px]:mb-2 font-bold max-[770px]:text-base ">
+              AndroCat – Your Hub for Android Games and Programs
             </h2>
-            <div className="max-[770px]:text-sm">
-              On Androcat.com, you can effortlessly download free Android games,
-              MOD APKs, and premium apps with lightning-fast speeds and
-              guaranteed safety. Whether you’re searching for the latest Android
-              games, apps, or MOD APKs, we offer an extensive catalog of
-              high-quality content that’s continuously updated to bring you the
-              most popular and recent releases. Our platform specializes in
-              providing unlocked apps and modded versions of games, allowing you
-              to experience all the premium features without any cost. Each game
-              and app available on Androcat.com is meticulously tested to ensure
-              it meets the highest standards for performance, security, and
-              compatibility, so you don’t have to worry about crashes, bugs, or
-              viruses. With Androcat, you can easily access a variety of APK
-              games, from action-packed adventures to casual games, all
-              optimized for your Android device. We also ensure all APKs are
-              virus-free and scanned for any harmful content to keep your device
-              safe. The download speeds are optimized to deliver a seamless
-              experience, ensuring you can enjoy your favorite Android games and
-              apps without any interruptions. Androcat.com is designed to cater
-              to all Android users, offering a secure, fast, and reliable
-              platform where you can get the best free Android games, MOD APKs,
-              and apps at no cost. Whether you're looking for free Android
-              games, the latest MOD APKs, or unlocked apps, Androcat.com has
-              something for everyone. Enjoy a hassle-free downloading experience
-              with regular updates to our catalog, making it your go-to source
-              for all things Android.
+            <div className="max-[770px]:text-sm mb-5 max-[770px]:mb-3">
+              AndroCat is the ultimate destination for downloading both Android
+              games and programs. From thrilling action games and casual puzzles
+              to essential Android utilities and productivity apps, we provide a
+              wide variety of APKs for all types of users. Every file is
+              carefully tested to ensure safety, speed, and high performance,
+              making it easy to enjoy your favorite apps and programs without
+              risks or interruptions. Explore our constantly updated library and
+              discover the latest trends in both games and Android software.
+            </div>
+
+            <h2 className="text-xl mb-4 font-bold max-[770px]:text-base max-[770px]:mb-2">
+              Safe, Fast, and Reliable Downloads
+            </h2>
+            <div className="max-[770px]:text-sm mb-5 max-[770px]:mb-3">
+              At AndroCat, your security and convenience are our priorities. All
+              APK files, whether games or programs, are scanned for malware and
+              optimized for fast downloads. Our reliable servers guarantee
+              smooth access to your favorite apps without broken links, fake
+              files, or ads disrupting your experience.
+            </div>
+
+            <h2 className="text-xl mb-4 font-bold max-[770px]:text-base max-[770px]:mb-2">
+              Unlock Premium Features for Free
+            </h2>
+            <div className="max-[770px]:text-sm mb-5 max-[770px]:mb-3">
+              With our collection of MOD APKs, you can enjoy premium features in
+              both games and programs for free — unlimited coins, unlocked
+              levels, ad-free functionality, and enhanced capabilities. AndroCat
+              gives you access to the latest and most popular Android apps,
+              ensuring that you always have high-quality content without
+              subscriptions or hidden costs.
             </div>
           </div>
         </div>

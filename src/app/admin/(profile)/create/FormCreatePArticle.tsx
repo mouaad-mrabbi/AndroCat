@@ -6,7 +6,9 @@ import ReCAPTCHA from "react-google-recaptcha";
 import {
   ArticleType,
   GameCategories,
+  PendingArticleAPKS,
   PendingArticleParagraph,
+  PendingArticleXAPKS,
   ProgramCategories,
   ScreenType,
 } from "@prisma/client";
@@ -16,6 +18,13 @@ import PageMultipartFileUploader, {
   UploadState,
 } from "@/components/(MultipartFileUploader)/PageMultipartFileUploader";
 import { DOMAINCDN } from "@/utils/constants";
+import TextareaAutosize from "react-textarea-autosize";
+import APKSection from "@/components/admin/APKSection";
+import { rectSortingStrategy } from "@dnd-kit/sortable";
+import SortableList from "@/components/admin/SortableList";
+
+type FileItemType = "apks" | "xapks";
+type FileItem = PendingArticleAPKS | PendingArticleXAPKS;
 
 const FormCreatePArticle = () => {
   const [formData, setFormData] = useState<CreateArticleDto>({
@@ -43,7 +52,7 @@ const FormCreatePArticle = () => {
     sizeFileOBB: null,
     sizeFileScript: null,
     sizeFileOriginalAPK: null,
-    screenType:ScreenType.SIXTEEN_BY_NINE,
+    screenType: ScreenType.SIXTEEN_BY_NINE,
     appScreens: [],
     keywords: [],
     isMod: false,
@@ -52,6 +61,8 @@ const FormCreatePArticle = () => {
     installs: "",
     createdById: 0,
     paragraphs: [],
+    apks: [],
+    xapks: [],
   });
   const [newKeyword, setNewKeyword] = useState("");
   const [newAppScreen, setNewAppScreen] = useState("");
@@ -61,6 +72,10 @@ const FormCreatePArticle = () => {
   const [selectedUrlModal, setSelectedUrlModal] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [collapsedParagraphs, setCollapsedParagraphs] = useState<boolean[]>([]);
+  const [collapsed, setCollapsed] = useState<Record<FileItemType, boolean[]>>({
+    apks: [],
+    xapks: [],
+  });
 
   const generateRandomText = () => {
     const characters = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -169,7 +184,7 @@ const FormCreatePArticle = () => {
           sizeFileOBB: null,
           sizeFileScript: null,
           sizeFileOriginalAPK: null,
-          screenType:ScreenType.SIXTEEN_BY_NINE,
+          screenType: ScreenType.SIXTEEN_BY_NINE,
           appScreens: [],
           keywords: [],
           isMod: false,
@@ -178,6 +193,8 @@ const FormCreatePArticle = () => {
           installs: "",
           createdById: 0,
           paragraphs: [],
+          apks: [],
+          xapks: [],
         });
       }
 
@@ -215,8 +232,10 @@ const FormCreatePArticle = () => {
       return `${size} B`;
     } else if (size < 1024 * 1024) {
       return `${(size / 1024).toFixed(2)} KB`;
-    } else {
+    } else if (size < 1024 * 1024 * 1024) {
       return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+    } else {
+      return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
     }
   };
 
@@ -274,7 +293,7 @@ const FormCreatePArticle = () => {
     }));
   };
 
-  const handleUploadAPK = async (result: UploadState) => {
+  const handleUploadAPK1 = async (result: UploadState) => {
     const file = result.successful?.[0];
     const key = file?.s3Multipart?.key;
     const size = file?.size;
@@ -309,6 +328,7 @@ const FormCreatePArticle = () => {
     });
   };
 
+  //Paragraph
   const handleParagraphChange = (
     index: number,
     field: keyof PendingArticleParagraph,
@@ -339,6 +359,88 @@ const FormCreatePArticle = () => {
 
     setFormData((prev) => ({ ...prev, paragraphs: newParagraphs }));
     setCollapsedParagraphs(newCollapsed);
+  };
+
+  // APKs and XAPKs logic
+  const handleChangeAPK_XAPK = (
+    type: FileItemType,
+    index: number,
+    field: keyof FileItem,
+    value: any
+  ) => {
+    const newList = [...(formData[type] ?? [])];
+    newList[index] = { ...newList[index], [field]: value };
+    setFormData((prev) => ({ ...prev, [type]: newList }));
+  };
+
+  const addAPK_XAPK = (type: FileItemType) => {
+    setFormData((prev) => ({
+      ...prev,
+      [type]: [
+        { version: "", link: "", size: "", isMod: false ,  order: Math.floor(Math.random() * 10_000)},
+        ...(prev[type] ?? []),
+      ],
+    }));
+    setCollapsed((prev) => ({
+      ...prev,
+      [type]: [ false, ...(prev[type] ?? [])],
+    }));
+  };
+
+  const removeAPK_XAPK = async (
+    type: FileItemType,
+    path: string,
+    index: number
+  ) => {
+    const deleteFromCloud = async () => {
+      try {
+        const res = await fetch("/api/files", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key: path }),
+        });
+        if (!res.ok) throw new Error("Failed to delete file.");
+        return true;
+      } catch (err) {
+        console.error("Error deleting file:", err);
+        toast.error("Error deleting the file from Cloudflare.");
+        return false;
+      }
+    };
+
+    if (path) {
+      const success = await deleteFromCloud();
+      if (!success) return;
+    }
+
+    const newItems = [...(formData[type] ?? [])];
+    newItems.splice(index, 1);
+    setFormData((prev) => ({ ...prev, [type]: newItems }));
+
+    const newCollapsed = [...collapsed[type]];
+    newCollapsed.splice(index, 1);
+    setCollapsed((prev) => ({ ...prev, [type]: newCollapsed }));
+
+    toast.success(`${type.toUpperCase()} item deleted`);
+  };
+
+  const handleUploadAPK_XAPK = (
+    type: FileItemType,
+    result: any,
+    index: number
+  ) => {
+    const file = result.successful?.[0];
+    const key = file?.s3Multipart?.key;
+    const size = file?.size;
+    if (!key || !size) return;
+
+    const updated = [...formData[type]];
+    updated[index] = {
+      ...updated[index],
+      link: key,
+      size: formatSize(Number(size)),
+    };
+    setFormData((prev) => ({ ...prev, [type]: updated }));
   };
 
   return (
@@ -399,7 +501,7 @@ const FormCreatePArticle = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Description:
             </label>
-            <textarea
+            <TextareaAutosize
               name="description"
               value={formData.description}
               onChange={handleChange}
@@ -416,7 +518,7 @@ const FormCreatePArticle = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               descriptionMeta:
             </label>
-            <textarea
+            <TextareaAutosize
               name="descriptionMeta"
               value={formData.descriptionMeta}
               onChange={handleChange}
@@ -475,7 +577,7 @@ const FormCreatePArticle = () => {
                     </div>
                     <div>
                       <label className="text-sm">Content:</label>
-                      <textarea
+                      <TextareaAutosize
                         required
                         value={paragraph.content}
                         onChange={(e) =>
@@ -606,7 +708,7 @@ const FormCreatePArticle = () => {
           {/* Android Version */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Android Version:
+              Android Version Supported:
             </label>
             <input
               type="text"
@@ -695,6 +797,60 @@ const FormCreatePArticle = () => {
               ))}
             </select>
           </div>
+
+          {/* APKs */}
+          <APKSection
+            type="apks"
+            items={formData.apks}
+            collapsed={collapsed.apks}
+            onToggleCollapse={(index) =>
+              setCollapsed((prev) => {
+                const newState = [...prev.apks];
+                newState[index] = !newState[index];
+                return { ...prev, apks: newState };
+              })
+            }
+            onChange={(index, field, value) =>
+              handleChangeAPK_XAPK("apks", index, field, value)
+            }
+            onRemove={(link, index) => removeAPK_XAPK("apks", link, index)}
+            onUpload={(result, index) =>
+              handleUploadAPK_XAPK("apks", result, index)
+            }
+            onAdd={() => addAPK_XAPK("apks")}
+            onReorder={(newItems) => {
+              setFormData((prev) => ({ ...prev, apks: newItems }));
+            }}
+            title={formData.title}
+            randomText={randomText}
+          />
+
+          {/* XAPKs */}
+          <APKSection
+            type="xapks"
+            items={formData.xapks}
+            collapsed={collapsed.xapks}
+            onToggleCollapse={(index) =>
+              setCollapsed((prev) => {
+                const newState = [...prev.xapks];
+                newState[index] = !newState[index];
+                return { ...prev, xapks: newState };
+              })
+            }
+            onChange={(index, field, value) =>
+              handleChangeAPK_XAPK("xapks", index, field, value)
+            }
+            onRemove={(link, index) => removeAPK_XAPK("xapks", link, index)}
+            onUpload={(result, index) =>
+              handleUploadAPK_XAPK("xapks", result, index)
+            }
+            onAdd={() => addAPK_XAPK("xapks")}
+            onReorder={(newItems) => {
+              setFormData((prev) => ({ ...prev, xapks: newItems }));
+            }}
+            title={formData.title}
+            randomText={randomText}
+          />
 
           {/* OBB */}
           <div>
@@ -1010,7 +1166,7 @@ const FormCreatePArticle = () => {
               version={formData.version}
               isMod={formData.isMod}
               onUploadResult={(result) => {
-                handleUploadAPK(result);
+                handleUploadAPK1(result);
               }}
             />
           </div>
@@ -1124,33 +1280,40 @@ const FormCreatePArticle = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               App Screenshots (URLs):
             </label>
-            <div className="flex flex-col gap-2 my-2 ">
-              {formData.appScreens.map((screen, index) => (
-                <div key={index}>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedUrlModal(screen); // هنا نقوم بتحديث `selectedScreen`
-                      setShowModal(true);
-                    }}
-                    className="flex  gap-4 justify-between items-center bg-blue-100 text-blue-700 px-2 py-1 rounded-lg text-sm
-                     dark:bg-blue-900 dark:text-blue-200 w-full break-words overflow-hidden whitespace-nowrap"
-                  >
-                    <div className="w-32">
-                      <img
-                        src={`${DOMAINCDN}/${screen}`}
-                        alt=""
-                        className=" h-14 rounded-lg w-32 object-cover"
-                      />
-                    </div>
 
-                    <p className="flex flex-grow  w-full break-words overflow-hidden whitespace-nowrap">
-                      {screen}
-                    </p>
-                  </button>
-                </div>
-              ))}
-            </div>
+            <SortableList
+              items={formData.appScreens}
+              onChange={(newList) =>
+                setFormData((prev) => ({ ...prev, appScreens: newList }))
+              }
+              renderItem={({ id, isDragging }) => (
+                <button
+                  type="button"
+                  className={`flex gap-4 justify-between items-center px-2 py-1 rounded-lg text-sm w-full break-words 
+                    overflow-hidden whitespace-nowrap cursor-move
+                  ${
+                    isDragging
+                      ? "bg-blue-200 text-blue-800 dark:bg-blue-700 dark:text-blue-100"
+                      : "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
+                  }`}
+                  onClick={() => {
+                    setSelectedUrlModal(id);
+                    setShowModal(true);
+                  }}
+                >
+                  <div className="w-32">
+                    <img
+                      src={id}
+                      alt=""
+                      className="h-14 rounded-lg w-32 object-cover"
+                    />
+                  </div>
+                  <p className="flex flex-grow w-full break-words overflow-hidden whitespace-nowrap">
+                    {id}
+                  </p>
+                </button>
+              )}
+            />
 
             <PageMultipartFileUploader
               title={formData.title}
@@ -1167,24 +1330,33 @@ const FormCreatePArticle = () => {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
               Keywords:
             </label>
-            <div className="flex flex-wrap gap-2 mt-1">
-              {formData.keywords.map((keyword, index) => (
+            <SortableList
+              items={formData.keywords}
+              onChange={(newList) =>
+                setFormData((prev) => ({ ...prev, keywords: newList }))
+              }
+              strategy={rectSortingStrategy}
+              wrapperClassName="flex flex-wrap gap-2 mt-1"
+              renderItem={({ id, isDragging }) => (
                 <div
-                  key={index}
-                  className="flex items-center bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full text-sm
-          dark:bg-indigo-900 dark:text-indigo-200"
+                  className={`flex items-center px-2 py-1 rounded-full text-sm cursor-move
+                  ${
+                    isDragging
+                      ? "bg-indigo-200 text-indigo-800 dark:bg-indigo-700 dark:text-indigo-100"
+                      : "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-200"
+                  }`}
                 >
-                  {keyword}
+                  {id}
                   <button
                     type="button"
-                    onClick={() => removeKeyword(keyword)}
+                    onClick={() => removeKeyword(id)}
                     className="ml-1 text-indigo-500 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-100"
                   >
                     &times;
                   </button>
                 </div>
-              ))}
-            </div>
+              )}
+            />
             <div className="flex gap-2 mt-2">
               <input
                 type="text"
@@ -1249,7 +1421,7 @@ const FormCreatePArticle = () => {
           {/* Rated For */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Rated For:
+              Rated For age number:
             </label>
             <input
               type="number"
@@ -1304,14 +1476,17 @@ const FormCreatePArticle = () => {
           setFormData((prev) => {
             const newData = { ...prev };
 
+            // ✅ حذف من appScreens إذا وُجد
             if (newData.appScreens.includes(deletedPath)) {
               newData.appScreens = newData.appScreens.filter(
                 (path) => path !== deletedPath
               );
             }
 
+            // ✅ حذف من image
             if (newData.image === deletedPath) newData.image = "";
 
+            // ✅ حذف من روابط ثابتة
             if (newData.linkAPK === deletedPath) {
               newData.linkAPK = "";
               newData.sizeFileAPK = "";
@@ -1328,6 +1503,15 @@ const FormCreatePArticle = () => {
               newData.linkOriginalAPK = null;
               newData.sizeFileOriginalAPK = null;
             }
+
+            // apks
+            newData.apks = newData.apks.map((apk) =>
+              apk.link === deletedPath ? { ...apk, link: "", size: "" } : apk
+            );
+            // xapks
+            newData.xapks = newData.xapks.map((xapk) =>
+              xapk.link === deletedPath ? { ...xapk, link: "", size: "" } : xapk
+            );
 
             return newData;
           });
