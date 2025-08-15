@@ -359,7 +359,7 @@ const FormCreatePArticle = () => {
     setFormData((prev) => ({
       ...prev,
       [type]: [
-        { version: "", link: "", size: "", isMod: false ,  order: Math.floor(Math.random() * 10_000)},
+        { version: "", link: "", size: "", isMod: false,  order: Math.floor(Math.random() * 10_000)},
         ...(prev[type] ?? []),
       ],
     }));
@@ -1213,7 +1213,7 @@ const FormCreatePArticle = () => {
                 >
                   <div className="w-32">
                     <img
-                      src={id}
+                      src={`${DOMAINCDN}/${id}`}
                       alt=""
                       className="h-14 rounded-lg w-32 object-cover"
                     />

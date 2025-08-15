@@ -52,8 +52,9 @@ export async function POST(request: NextRequest, { params }: Props) {
     if (!validation.success) {
       return NextResponse.json(
         {
-          message: validation.error.errors[0].message,
-          field: validation.error.errors[0].path.join("."),
+          message: validation.error.errors
+            .map((err) => `${err.path.join(".")}: ${err.message}`)
+            .join(" | "),
         },
         { status: 400 }
       );

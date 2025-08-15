@@ -492,7 +492,7 @@ export default function FormCPUA({ articleId }: pageProps) {
     setFormData((prev) => ({
       ...prev,
       [type]: [
-        { version: "", link: "", size: "", isMod: false },
+        { version: "", link: "", size: "", isMod: false, order: Math.floor(Math.random() * 10_000)},
         ...(prev[type] ?? []),
       ],
     }));
@@ -1344,7 +1344,7 @@ export default function FormCPUA({ articleId }: pageProps) {
                 >
                   <div className="w-32">
                     <img
-                      src={id}
+                      src={`${DOMAINCDN}/${id}`}
                       alt=""
                       className="h-14 rounded-lg w-32 object-cover"
                     />

@@ -91,8 +91,8 @@ export const createArticleSchema = z
           isMod: z.boolean(),
         })
       )
-      .nonempty()
       .optional(),
+
     xapks: z
       .array(
         z.object({
@@ -102,7 +102,6 @@ export const createArticleSchema = z
           isMod: z.boolean(),
         })
       )
-      .nonempty()
       .optional(),
   })
   .superRefine((data, ctx) => {
@@ -278,12 +277,12 @@ export const createArticleSchema = z
       }
     }
 
-    //apk xapk
-    const apksEmpty = !data.apks?.length;
-    const xapksEmpty = !data.xapks?.length;
+    // apk xapk
+    const apksEmpty = !data.apks || data.apks.length === 0;
+    const xapksEmpty = !data.xapks || data.xapks.length === 0;
 
     if (apksEmpty && xapksEmpty) {
-      const message = "APKs or XAPKs must contain at least one element";
+      const message = "Either APKs or XAPKs must contain at least one element";
       ctx.addIssue({ path: ["apks"], code: z.ZodIssueCode.custom, message });
       ctx.addIssue({ path: ["xapks"], code: z.ZodIssueCode.custom, message });
     }
@@ -352,7 +351,6 @@ export const updateArticleSchema = z
           isMod: z.boolean(),
         })
       )
-      .nonempty()
       .optional(),
     xapks: z
       .array(
@@ -363,7 +361,6 @@ export const updateArticleSchema = z
           isMod: z.boolean(),
         })
       )
-      .nonempty()
       .optional(),
   })
   .superRefine((data, ctx) => {
@@ -537,12 +534,12 @@ export const updateArticleSchema = z
       }
     }
 
-    //apk xapk
-    const apksEmpty = !data.apks?.length;
-    const xapksEmpty = !data.xapks?.length;
+    // apk xapk
+    const apksEmpty = !data.apks || data.apks.length === 0;
+    const xapksEmpty = !data.xapks || data.xapks.length === 0;
 
     if (apksEmpty && xapksEmpty) {
-      const message = "APKs or XAPKs must contain at least one element";
+      const message = "Either APKs or XAPKs must contain at least one element";
       ctx.addIssue({ path: ["apks"], code: z.ZodIssueCode.custom, message });
       ctx.addIssue({ path: ["xapks"], code: z.ZodIssueCode.custom, message });
     }

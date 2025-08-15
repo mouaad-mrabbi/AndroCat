@@ -25,6 +25,7 @@ import PageMultipartFileUploader, {
 import APKSection from "@/components/admin/APKSection";
 import SortableList from "@/components/admin/SortableList";
 import { rectSortingStrategy } from "@dnd-kit/sortable";
+import { DOMAINCDN } from "@/utils/constants";
 
 interface pageProps {
   pendingArticleId: number;
@@ -478,13 +479,19 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
     setFormData((prev) => ({
       ...prev,
       [type]: [
-        { version: "", link: "", size: "", isMod: false },
+        {
+          version: "",
+          link: "",
+          size: "",
+          isMod: false,
+          order: Math.floor(Math.random() * 10_000),
+        },
         ...(prev[type] ?? []),
       ],
     }));
     setCollapsed((prev) => ({
       ...prev,
-      [type]: [ false, ...(prev[type] ?? [])],
+      [type]: [false, ...(prev[type] ?? [])],
     }));
   };
 
@@ -1326,7 +1333,7 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
                 >
                   <div className="w-32">
                     <img
-                      src={id}
+                      src={`${DOMAINCDN}/${id}`}
                       alt=""
                       className="h-14 rounded-lg w-32 object-cover"
                     />
