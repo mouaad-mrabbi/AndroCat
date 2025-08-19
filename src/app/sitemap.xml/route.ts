@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import prisma from "@/utils/db";
 import { slugifyTitle } from "@/utils/slugifyTitle";
 
+export const dynamic = "force-dynamic"; // ✅ يمنع الكاش في Next.js
+
+
 type SitemapUrl = {
   loc: string;
   priority: string;

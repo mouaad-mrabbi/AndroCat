@@ -26,7 +26,7 @@ export async function GET(request: NextRequest, { params }: Props) {
     }
 
     const downloadType = (searchParams.get("downloadType") || "").toLowerCase();
-    const validTypes = ["apk", "obb", "script", "original-apk"];
+    const validTypes = ["apk", "xapk", "obb", "script", "original-apk"];
     if (!validTypes.includes(downloadType)) {
       return NextResponse.json(
         {

@@ -21,6 +21,7 @@ export default function PageArticles({ params }: PageparamsProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pages, setPages] = useState<number>(1);
+  const [filter, setFilter] = useState<"all" | "notApproved">("all");
   const router = useRouter();
 
   useEffect(() => {
@@ -51,8 +52,8 @@ export default function PageArticles({ params }: PageparamsProps) {
       setError(null);
 
       try {
-        const Articles = await fetchArticles(pageNumber);
-        const count = await fetchArticlesCount();
+        const Articles = await fetchArticles(pageNumber,filter);
+        const count = await fetchArticlesCount(filter);
 
         const pages = Math.ceil(count / ARTICLE_PER_PAGE);
         setPages(pages);
@@ -66,7 +67,7 @@ export default function PageArticles({ params }: PageparamsProps) {
     };
 
     FetchArticles();
-  }, [pageNumber]);
+  }, [pageNumber, filter]);
 
   if (pageNumber === null || isLoading) {
     return <LoadingArticles />;
@@ -79,6 +80,20 @@ export default function PageArticles({ params }: PageparamsProps) {
   return (
     <div>
       <Toolbar local={"dashboard"} firstLocal={"Articles"} />
+      <div className="px-7 mb-4">
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value as "all" | "notApproved")}
+          className="bg-gray-800 text-white border border-gray-600 px-3 py-2 rounded outline-none focus:border-blue-500"
+        >
+          <option value="all" className="bg-gray-800 text-white">
+            All Articles
+          </option>
+          <option value="notApproved" className="bg-gray-800 text-white">
+            Not Approved
+          </option>
+        </select>
+      </div>
       <div className="px-7 max-[500px]:px-0">
         <AppList articles={articles} url={`articles`} />
         <Pagination

@@ -21,6 +21,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const filter = request.nextUrl.searchParams.get("filter") || "all";
+    if (!["all", "notApproved"].includes(filter)) {
+      return NextResponse.json({ message: "Invalid filter" }, { status: 400 });
+    }
+
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
       return NextResponse.json(
@@ -35,7 +40,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    const whereCondition =
+      filter === "notApproved" ? { isApproved: false } : {};
+
     const articles = await prisma.article.findMany({
+      where: whereCondition,
       skip: ARTICLE_PER_PAGE * (pageNumber - 1),
       take: ARTICLE_PER_PAGE,
       orderBy: { createdAt: "desc" },
@@ -44,13 +53,17 @@ export async function GET(request: NextRequest) {
         title: true,
         image: true,
         developer: true,
-        isMod:true,
-        typeMod:true
+        isMod: true,
+        typeMod: true,
+        isApproved: true,
       },
     });
 
     if (!articles || articles.length === 0) {
-      return NextResponse.json({ message: "No articles found" }, { status: 404 });
+      return NextResponse.json(
+        { message: "No articles found" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(articles, { status: 200 });

@@ -3,10 +3,13 @@ import { allArticle, ArticleAndObjects } from "@/utils/types";
 import axios from "axios";
 
 //get all Articles
-export async function fetchArticles(pageNumber: number): Promise<allArticle[]> {
+export async function fetchArticles(
+  pageNumber: number,
+  filter: "all" | "notApproved"
+): Promise<allArticle[]> {
   try {
     const response = await axios.get(`${DOMAIN}/api/owner/articles`, {
-      params: { pageNumber },
+      params: { pageNumber, filter },
       withCredentials: true,
     });
 
@@ -17,9 +20,12 @@ export async function fetchArticles(pageNumber: number): Promise<allArticle[]> {
 }
 
 // Get Count Articles
-export async function fetchArticlesCount(): Promise<number> {
+export async function fetchArticlesCount(
+  filter: "all" | "notApproved"
+): Promise<number> {
   try {
     const response = await axios.get(`${DOMAIN}/api/owner/articles/count`, {
+      params: { filter },
       headers: { "Cache-Control": "no-store" },
     });
 

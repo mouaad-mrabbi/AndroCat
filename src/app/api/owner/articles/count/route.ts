@@ -6,10 +6,15 @@ import { verifyToken } from "@/utils/verifyToken";
  *  @method  GET
  *  @route   ~/api/owner/articles/count
  *  @desc    Get Count articles
- *  @access  private only owner can get count articles 
+ *  @access  private only owner can get count articles
  */
 export async function GET(request: NextRequest) {
   try {
+    const filter = request.nextUrl.searchParams.get("filter") || "all";
+    if (!["all", "notApproved"].includes(filter)) {
+      return NextResponse.json({ message: "Invalid filter" }, { status: 400 });
+    }
+
     const userFromToken = verifyToken(request);
     if (!userFromToken) {
       return NextResponse.json(
@@ -24,7 +29,12 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const count = await prisma.article.count({});
+    const whereCondition =
+      filter === "notApproved" ? { isApproved: false } : {};
+
+    const count = await prisma.article.count({
+      where: whereCondition,
+    });
     if (!count) {
       return new NextResponse("Pending article not found", { status: 404 });
     }
