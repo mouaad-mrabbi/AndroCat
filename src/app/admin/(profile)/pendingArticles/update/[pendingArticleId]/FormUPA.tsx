@@ -387,22 +387,18 @@ export default function FormUPA({ pendingArticleId }: pageProps) {
   };
 
   const handleUploadScreenshots = async (result: UploadState) => {
-    const file = result.successful?.[0];
-    const key = file?.s3Multipart?.key;
-
-    if (!key) return;
-
-    const newKey = key;
+    const files = result.successful || [];
 
     setFormData((prevData) => {
-      // تأكد أن الرابط غير موجود مسبقًا
-      if (prevData.appScreens.includes(newKey)) {
-        return prevData;
-      }
+      const newKeys = files
+        .map((file) => file.s3Multipart?.key)
+        .filter((key) => key && !prevData.appScreens.includes(key)) as string[];
+
+      if (newKeys.length === 0) return prevData;
 
       return {
         ...prevData,
-        appScreens: [...prevData.appScreens, newKey],
+        appScreens: [...prevData.appScreens, ...newKeys],
       };
     });
   };

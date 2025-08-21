@@ -1,3 +1,5 @@
+//lib/r2.ts
+
 import {
   S3Client,
   PutObjectCommand,
@@ -55,6 +57,29 @@ export async function renameFile(oldKey: string, newKey: string) {
     console.error("Error move file:", error);
     throw error;
   }
+}
+
+/**
+ * نسخة مع إعادة المحاولة (Retry)
+ */
+export async function renameFileWithRetry(
+  oldKey: string,
+  newKey: string,
+  retries = 3,
+  delay = 500
+): Promise<boolean> {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await renameFile(oldKey, newKey);
+      return true; // success
+    } catch (err) {
+      console.error(`Rename attempt ${i + 1} failed for ${oldKey} → ${newKey}`, err);
+      if (i < retries - 1) {
+        await new Promise((res) => setTimeout(res, delay * (i + 1))); // exponential backoff
+      }
+    }
+  }
+  return false; // failed after retries
 }
 
 export async function uploadFile(file: Buffer, key: string) {

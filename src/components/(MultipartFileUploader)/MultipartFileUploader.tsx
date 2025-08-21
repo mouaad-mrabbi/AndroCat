@@ -47,6 +47,9 @@ export function MultipartFileUploader({
   const uppy = useMemo(() => {
     const uppy = new Uppy({
       autoProceed: true,
+      restrictions: {
+        maxFileSize: 8 * 1024 * 1024 * 1024, // Max 8GB
+      },
     }).use(AwsS3Multipart, {
       /*    companionUrl: false,*/
       shouldUseMultipart: () => true,
@@ -79,7 +82,6 @@ export function MultipartFileUploader({
 
   useEffect(() => {
     const onFileAdded = (file: UppyFile<Meta, Body>) => {
-
       if (!customKey || !customKey.fileType || !customKey.title) {
         toast.error("Missing upload configuration");
         // ❌ منع الإضافة
@@ -104,7 +106,7 @@ export function MultipartFileUploader({
         default:
           if (["apks", "original-apks"].includes(customKey.fileType)) {
             extension = "apk";
-          }else if (["xapks"].includes(customKey.fileType)) {
+          } else if (["xapks"].includes(customKey.fileType)) {
             extension = "xapk";
           } else if (["obbs", "scripts"].includes(customKey.fileType)) {
             extension = "zip";

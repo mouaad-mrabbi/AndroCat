@@ -290,22 +290,18 @@ const FormCreatePArticle = () => {
   };
 
   const handleUploadScreenshots = async (result: UploadState) => {
-    const file = result.successful?.[0];
-    const key = file?.s3Multipart?.key;
-
-    if (!key) return;
-
-    const newKey = key;
+    const files = result.successful || [];
 
     setFormData((prevData) => {
-      // تأكد أن الرابط غير موجود مسبقًا
-      if (prevData.appScreens.includes(newKey)) {
-        return prevData;
-      }
+      const newKeys = files
+        .map((file) => file.s3Multipart?.key)
+        .filter((key) => key && !prevData.appScreens.includes(key)) as string[];
+
+      if (newKeys.length === 0) return prevData;
 
       return {
         ...prevData,
-        appScreens: [...prevData.appScreens, newKey],
+        appScreens: [...prevData.appScreens, ...newKeys],
       };
     });
   };
@@ -359,13 +355,19 @@ const FormCreatePArticle = () => {
     setFormData((prev) => ({
       ...prev,
       [type]: [
-        { version: "", link: "", size: "", isMod: false,  order: Math.floor(Math.random() * 10_000)},
+        {
+          version: "",
+          link: "",
+          size: "",
+          isMod: false,
+          order: Math.floor(Math.random() * 10_000),
+        },
         ...(prev[type] ?? []),
       ],
     }));
     setCollapsed((prev) => ({
       ...prev,
-      [type]: [ false, ...(prev[type] ?? [])],
+      [type]: [false, ...(prev[type] ?? [])],
     }));
   };
 

@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/utils/db";
 import { verifyToken } from "@/utils/verifyToken";
-import { renameFile } from "@/lib/r2";
+import { renameFile, renameFileWithRetry } from "@/lib/r2";
 import { CreateArticleDto } from "@/utils/dtos";
 import { createArticleSchema } from "@/utils/validationSchemas";
 
@@ -276,18 +276,21 @@ export async function POST(request: NextRequest, { params }: Props) {
     await prisma.pendingArticle.delete({ where: { id: pendingArticleId } });
 
     const updateFile = async (file: string, path: string) => {
-      await renameFile(
-        file,
-        `${path}/${newArticle.id}/${file.split("/").pop()}`
-      );
-      return `${path}/${newArticle.id}/${file.split("/").pop()}`;
+      const newPath = `${path}/${newArticle.id}/${file.split("/").pop()}`;
+      const success = await renameFileWithRetry(file, newPath);
+
+      // إذا نجح → رجّع الرابط الجديد
+      if (success) return newPath;
+
+      // إذا فشل → رجّع القديم
+      console.warn(`Using old path for ${file}, rename failed`);
+      return file;
     };
 
-    const [image] = await Promise.all([
-      updateFile(newArticle.image, "posts"),
-    ]);
-
-    const updates: any = { image };
+    // ✅ متغير يحتفظ بكل الروابط النهائية
+    const updates: any = {
+      image: await updateFile(newArticle.image, "posts"),
+    };
 
     if (newArticle.OBB && newArticle.linkOBB) {
       updates.linkOBB = await updateFile(newArticle.linkOBB, "obbs");
@@ -302,6 +305,7 @@ export async function POST(request: NextRequest, { params }: Props) {
       );
     }
 
+    // ✅ APKs, XAPKs, Screens
     const [updatedApks, updatedXapks, updatedScreens] = await Promise.all([
       Promise.all(
         pendingArticle.apks.map(async (apk) => ({
@@ -324,6 +328,7 @@ export async function POST(request: NextRequest, { params }: Props) {
       ),
     ]);
 
+    // ✅ تحديث DB بالروابط النهائية فقط
     await prisma.article.update({
       where: { id: newArticle.id },
       data: {
