@@ -52,6 +52,7 @@ export function MultipartFileUploader({
       },
     }).use(AwsS3Multipart, {
       /*    companionUrl: false,*/
+      partSize: 50 * 1024 * 1024, // 50MB لكل part 
       shouldUseMultipart: () => true,
       createMultipartUpload: async (file: UppyFile<Meta, Body>) => {
         // هنا نستخدم key المرسل من الواجهة
