@@ -44,8 +44,12 @@ const Carousel = ({ sectionTitle }: { sectionTitle: "GAME" | "PROGRAM" }) => {
           button.classList.add("hidden");
         });
 
-        const prevButton = document.querySelector(".carousel-prev");
-        const nextButton = document.querySelector(".carousel-next");
+        const prevButton = document.querySelector(
+          `.carousel-prev-${sectionTitle}`
+        );
+        const nextButton = document.querySelector(
+          `.carousel-next-${sectionTitle}`
+        );
 
         prevButton?.addEventListener("click", () => flickity.previous());
         nextButton?.addEventListener("click", () => flickity.next());
@@ -73,15 +77,24 @@ const Carousel = ({ sectionTitle }: { sectionTitle: "GAME" | "PROGRAM" }) => {
 
   return (
     <div className="relative">
-      <div className="carousel w-full" ref={flickityRef}>
-        {articles.map((article, index) => {
-          return <Card article={article} key={index} />;
-        })}
+      <div
+        className={`carousel w-full ${
+          flickityInstance ? "block" : "invisible"
+        }`}
+        ref={flickityRef}
+      >
+        {articles.map((article, index) => (
+          <Card article={article} key={index} />
+        ))}
       </div>
-      <button className="carousel-prev absolute left-2 top-1/2 text-2xl transform -translate-y-1/2 bg-[#78C257] text-white p-3 rounded-full focus:outline-none max-lg:hidden">
+      <button
+        className={`carousel-prev-${sectionTitle} absolute left-2 top-1/2 text-2xl transform -translate-y-1/2 bg-[#78C257] text-white p-3 rounded-full focus:outline-none max-lg:hidden`}
+      >
         <IoArrowBackOutline />
       </button>
-      <button className="carousel-next absolute right-2 top-1/2 text-2xl transform -translate-y-1/2 bg-[#78C257] text-white p-3 rounded-full focus:outline-none max-lg:hidden">
+      <button
+        className={`carousel-next-${sectionTitle} absolute right-2 top-1/2 text-2xl transform -translate-y-1/2 bg-[#78C257] text-white p-3 rounded-full focus:outline-none max-lg:hidden`}
+      >
         <IoArrowForward />
       </button>
     </div>

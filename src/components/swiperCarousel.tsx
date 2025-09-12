@@ -20,7 +20,7 @@ const SwiperCarousel = () => {
         <SwiperSlide>
           <div className="h-80 flex items-center ">
             <Image
-              src="/images/imageGames.png"
+              src="/images/imageGames.webp"
               width={500}
               height={500}
               alt="ALL MOD Games AndroCat"

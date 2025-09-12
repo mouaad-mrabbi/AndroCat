@@ -52,8 +52,8 @@ export function MultipartFileUploader({
       },
     }).use(AwsS3Multipart, {
       /*    companionUrl: false,*/
-      partSize: 50 * 1024 * 1024, // 50MB لكل part 
       shouldUseMultipart: () => true,
+      limitPartSize: 50 * 1024 * 1024, // يبقى كـ hint فقط
       createMultipartUpload: async (file: UppyFile<Meta, Body>) => {
         // هنا نستخدم key المرسل من الواجهة
         const result = await fetchUploadApiEndpoint("create-multipart-upload", {
@@ -66,8 +66,12 @@ export function MultipartFileUploader({
       },
       listParts: (file: UppyFile<Meta, Body>, props: Record<string, any>) =>
         fetchUploadApiEndpoint("list-parts", { file, ...props }),
-      signPart: (file: UppyFile<Meta, Body>, props: Record<string, any>) =>
-        fetchUploadApiEndpoint("sign-part", { file, ...props }),
+      signPart: async (
+        file: UppyFile<Meta, Body>,
+        props: Record<string, any>
+      ) => {
+        return fetchUploadApiEndpoint("sign-part", { file, ...props });
+      },
       abortMultipartUpload: (
         file: UppyFile<Meta, Body>,
         props: Record<string, any>
@@ -173,6 +177,7 @@ export function MultipartFileUploader({
   return (
     <>
       <Dashboard
+        theme="dark"
         uppy={uppy}
         showLinkToFileUploadResult={true}
         proudlyDisplayPoweredByUppy={false}
