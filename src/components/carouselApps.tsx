@@ -80,7 +80,7 @@ const Carousel = ({ sectionTitle }: { sectionTitle: "GAME" | "PROGRAM" }) => {
       <div
         className={`carousel w-full ${
           flickityInstance ? "block" : "invisible"
-        }`}
+        } focus:outline-none`}
         ref={flickityRef}
       >
         {articles.map((article, index) => (
