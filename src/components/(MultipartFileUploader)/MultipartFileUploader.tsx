@@ -52,8 +52,10 @@ export function MultipartFileUploader({
       },
     }).use(AwsS3Multipart, {
       /*    companionUrl: false,*/
+
       shouldUseMultipart: () => true,
       limitPartSize: 50 * 1024 * 1024, // يبقى كـ hint فقط
+      chunkSize: 50 * 1024 * 1024,
       createMultipartUpload: async (file: UppyFile<Meta, Body>) => {
         // هنا نستخدم key المرسل من الواجهة
         const result = await fetchUploadApiEndpoint("create-multipart-upload", {
