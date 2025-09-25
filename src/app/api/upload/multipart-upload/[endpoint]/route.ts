@@ -136,10 +136,23 @@ async function listParts(body: any) {
     });
     const response = await R2.send(command);
 
+/*     // طباعة حجم كل part في الـ console
+    if (response.Parts) {
+      console.log("Parts sizes:");
+      response.Parts.forEach((part) => {
+        console.log(`Part ${part.PartNumber}: ${part.Size} bytes`);
+      });
+      
+      // طباعة الحجم الإجمالي أيضاً
+      const totalSize = response.Parts.reduce((sum, part) => sum + (part.Size || 0), 0);
+      console.log(`Total size: ${totalSize} bytes`);
+    } */
+
     // تأكد من تحويل النتيجة إلى مصفوفة بشكل مناسب
     const formattedParts = (response.Parts || []).map((part) => ({
       PartNumber: part.PartNumber!,
       ETag: part.ETag!,
+      Size: part.Size! // إضافة الحجم في الاستجابة أيضاً إذا أردت
     }));
 
     return NextResponse.json(formattedParts);

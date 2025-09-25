@@ -48,7 +48,7 @@ export function MultipartFileUploader({
       },
     }).use(AwsS3, {
       shouldUseMultipart: true,
-      getChunkSize: () => 50 * 1024 * 1024, // 50MB per part
+      getChunkSize: () => 20 * 1024 * 1024, // 50MB per part
 
       // map to your Next.js API
       createMultipartUpload: async (file: UppyFile<Meta, Body>) => {
