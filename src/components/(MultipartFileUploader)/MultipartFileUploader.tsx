@@ -42,13 +42,13 @@ export function MultipartFileUploader({
 }) {
   const uppy = useMemo(() => {
     const uppy = new Uppy({
-      autoProceed: true,
+      autoProceed: false,
       restrictions: {
         maxFileSize: 8 * 1024 * 1024 * 1024, // 8GB
       },
     }).use(AwsS3, {
       shouldUseMultipart: true,
-      getChunkSize: () => 5 * 1024 * 1024, // 5MB per part
+      getChunkSize: () => 10 * 1024 * 1024, // 5MB per part
 
       // map to your Next.js API
       createMultipartUpload: async (file: UppyFile<Meta, Body>) => {
@@ -177,14 +177,13 @@ export function MultipartFileUploader({
         uppy={uppy}
         showLinkToFileUploadResult
         proudlyDisplayPoweredByUppy={false}
-        /*         showProgressDetails */
         height={250}
         metaFields={[{ id: "name", name: "Name", placeholder: "File name" }]}
         locale={{
           strings: {
             dropPasteFiles: "%{browseFiles}",
             browseFiles: "upload",
-          } as any,
+          },
         }}
       />
       <style>
