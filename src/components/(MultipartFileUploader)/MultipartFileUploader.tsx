@@ -6,15 +6,11 @@ import Uppy, {
   type Body,
 } from "@uppy/core";
 import { Dashboard } from "@uppy/react";
-// @ts-ignore
-import AwsS3Multipart from "@uppy/aws-s3-multipart";
-
-// Uppy styles
-import "@uppy/core/dist/style.min.css";
-import "@uppy/dashboard/dist/style.min.css";
-import "@uppy/progress-bar/dist/style.min.css";
+import AwsS3 from "@uppy/aws-s3";
 import { toast } from "react-toastify";
 import slugify from "slugify";
+
+import "uppy/dist/uppy.min.css";
 
 const fetchUploadApiEndpoint = async (endpoint: string, data: any) => {
   const res = await fetch(`/api/upload/multipart-upload/${endpoint}`, {
@@ -48,32 +44,25 @@ export function MultipartFileUploader({
     const uppy = new Uppy({
       autoProceed: true,
       restrictions: {
-        maxFileSize: 8 * 1024 * 1024 * 1024, // Max 8GB
+        maxFileSize: 8 * 1024 * 1024 * 1024, // 8GB
       },
-    }).use(AwsS3Multipart, {
-      /*    companionUrl: false,*/
+    }).use(AwsS3, {
+      shouldUseMultipart: true,
+      getChunkSize: () => 50 * 1024 * 1024, // 50MB per part
 
-      shouldUseMultipart: () => true,
-      limitPartSize: 50 * 1024 * 1024, // يبقى كـ hint فقط
-      chunkSize: 50 * 1024 * 1024, 
+      // map to your Next.js API
       createMultipartUpload: async (file: UppyFile<Meta, Body>) => {
-        // هنا نستخدم key المرسل من الواجهة
         const result = await fetchUploadApiEndpoint("create-multipart-upload", {
-          filename: file.meta.key || file.name, // استخدم custom key أو الاسم العادي
+          filename: file.meta.key || file.name,
           type: file.type,
         });
-
         file.meta.key = result.key;
         return result;
       },
       listParts: (file: UppyFile<Meta, Body>, props: Record<string, any>) =>
         fetchUploadApiEndpoint("list-parts", { file, ...props }),
-      signPart: async (
-        file: UppyFile<Meta, Body>,
-        props: Record<string, any>
-      ) => {
-        return fetchUploadApiEndpoint("sign-part", { file, ...props });
-      },
+      signPart: (file: UppyFile<Meta, Body>, props: Record<string, any>) =>
+        fetchUploadApiEndpoint("sign-part", { file, ...props }),
       abortMultipartUpload: (
         file: UppyFile<Meta, Body>,
         props: Record<string, any>
@@ -82,23 +71,27 @@ export function MultipartFileUploader({
         file: UppyFile<Meta, Body>,
         props: Record<string, any>
       ) =>
-        fetchUploadApiEndpoint("complete-multipart-upload", { file, ...props }),
+        fetchUploadApiEndpoint("complete-multipart-upload", {
+          file,
+          ...props,
+        }),
     });
+
     return uppy;
   }, []);
 
+  // handle file key naming
   useEffect(() => {
     const onFileAdded = (file: UppyFile<Meta, Body>) => {
       if (!customKey || !customKey.fileType || !customKey.title) {
         toast.error("Missing upload configuration");
-        // ❌ منع الإضافة
         uppy.removeFile(file.id);
         return;
       }
 
       const randomNumber = Math.floor(100000 + Math.random() * 900000);
+      let extension: string | undefined;
 
-      let extension;
       switch (file.type) {
         case "image/png":
           extension = "png";
@@ -156,6 +149,7 @@ export function MultipartFileUploader({
     };
   }, [uppy, customKey]);
 
+  // handle complete
   useEffect(() => {
     uppy.on("complete", onUploadSuccess);
 
@@ -181,9 +175,9 @@ export function MultipartFileUploader({
       <Dashboard
         theme="dark"
         uppy={uppy}
-        showLinkToFileUploadResult={true}
+        showLinkToFileUploadResult
         proudlyDisplayPoweredByUppy={false}
-        showProgressDetails={true}
+        /*         showProgressDetails */
         height={250}
         metaFields={[{ id: "name", name: "Name", placeholder: "File name" }]}
         locale={{
@@ -193,7 +187,6 @@ export function MultipartFileUploader({
           } as any,
         }}
       />
-
       <style>
         {`
         .uppy-Container {
@@ -211,4 +204,3 @@ export function MultipartFileUploader({
     </>
   );
 }
- 
